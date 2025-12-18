@@ -2211,14 +2211,20 @@ PackageMempoolAcceptResult ProcessNewPackage(Chainstate& active_chainstate, CTxM
 
 CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams)
 {
-    int halvings = nHeight / consensusParams.nSubsidyHalvingInterval;
-    // Force block reward to zero when right shift is undefined.
-    if (halvings >= 64)
-        return 0;
+    // Retardio: EXACT DigiByte emission - 12 reductions per year (87,600 blocks at 30s)
+    // Starting reward: 2397.26 RET (for 21 billion max supply, same as DGB)
+    CAmount nSubsidy = 239726 * COIN / 100;
 
-    CAmount nSubsidy = 50 * COIN;
-    // Subsidy is cut in half every 210,000 blocks which will occur approximately every 4 years.
-    nSubsidy >>= halvings;
+    // Calculate number of reduction periods (12 per year, same as DGB)
+    int reductions = nHeight / consensusParams.nSubsidyHalvingInterval;
+
+    // Apply 1% reduction for each period (EXACT DGB model)
+    // Each period: reward = reward × 0.99 = reward × 99 / 100
+    for (int i = 0; i < reductions; i++) {
+        nSubsidy = nSubsidy * 99 / 100;
+        if (nSubsidy == 0) break;
+    }
+
     return nSubsidy;
 }
 

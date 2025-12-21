@@ -1,0 +1,100 @@
+# Retardio Node Configuration File
+# Copy this file to your data directory as retardio.conf
+
+# Network Settings
+#################
+# Listen for incoming connections (required for running a full node)
+listen=1
+
+# Maximum number of inbound+outbound connections
+maxconnections=125
+
+# Server mode - required for mining and RPC access
+server=1
+
+# Port configuration (default: 18333)
+port=18333
+
+# RPC Settings
+##############
+# RPC server port
+rpcport=18332
+
+# RPC username and password (CHANGE THESE!)
+rpcuser=retardiouser
+rpcpassword=CHANGE_THIS_PASSWORD_TO_SOMETHING_SECURE
+
+# Allow RPC connections from localhost only (default)
+rpcbind=127.0.0.1
+rpcallowip=127.0.0.1
+
+# To allow remote RPC access (USE WITH CAUTION):
+# rpcbind=0.0.0.0
+# rpcallowip=192.168.1.0/24
+
+# Mining Settings
+#################
+# Generate blocks (solo mining via built-in miner)
+# gen=1
+# genproclimit=1
+
+# Mining address for solo mining (set your address here)
+# mineraddress=Fyour_retardio_address_here
+
+# Performance Settings
+######################
+# Database cache size in MB (increase for better performance)
+dbcache=450
+
+# Maximum memory pool size in MB
+maxmempool=300
+
+# Logging
+#########
+# Log level (0=minimal, 1=normal, 2=debug)
+debug=0
+
+# Log specific categories (uncomment to enable)
+# debug=net
+# debug=mempool
+# debug=rpc
+# debug=validation
+
+# Print to console instead of debug.log
+# printtoconsole=1
+
+# Network Discovery
+###################
+# DNS seeds (none available yet for new chain)
+# dnsseed=0
+
+# Add peer nodes manually
+# addnode=ip.address.here:18333
+
+# Connect to specific node only
+# connect=ip.address.here:18333
+
+# Advanced Settings
+###################
+# Prune blockchain to save disk space (in MB, 0=disable)
+# prune=550
+
+# Transaction index (required for some applications)
+txindex=1
+
+# Address index (useful for block explorers)
+# addressindex=1
+
+# Timestamp index
+# timestampindex=1
+
+# Spent index
+# spentindex=1
+
+# Testnet/Regtest
+#################
+# Run on testnet
+# testnet=1
+
+# Run on regression test mode (local testing)
+# regtest=1

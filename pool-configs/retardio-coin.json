@@ -1,0 +1,31 @@
+{
+    "name": "Retardio",
+    "symbol": "RET",
+    "algorithm": "sha256",
+
+    "_comment_peerMagic": "Network magic bytes in hex (0xfecabeef)",
+    "peerMagic": "fecabeef",
+    "peerMagicTestnet": "fecabeef",
+
+    "_comment_rewards": "Block reward calculation (handled by daemon)",
+    "rewards": {
+        "_comment": "Retardio uses DigiByte emission: 2397.26 RET starting, 1% reduction every 87,600 blocks",
+        "POW": true,
+        "POS": false
+    },
+
+    "_comment_txMessages": "Support for transaction messages",
+    "txMessages": false,
+
+    "_comment_addressLength": "Valid address length for validation",
+    "addressLength": 34,
+
+    "_comment_publicKeyPrefix": "Address prefix: 35 = 'F' addresses",
+    "publicKeyPrefix": 35,
+
+    "_comment_scriptPrefix": "Script address prefix",
+    "scriptPrefix": 85,
+
+    "_comment_bech32Prefix": "Bech32 address prefix (ret1...)",
+    "bech32Prefix": "ret"
+}

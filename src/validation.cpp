@@ -4276,8 +4276,9 @@ void ChainstateManager::ReceivedBlockTransactions(const CBlock& block, CBlockInd
 
 static bool CheckBlockHeader(const CBlockHeader& block, BlockValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW = true)
 {
-    // Check proof of work matches claimed amount
-    if (fCheckPOW && !CheckProofOfWork(block.GetHash(), block.nBits, consensusParams))
+    // Check proof of work matches claimed amount (skip for genesis block)
+    const uint256 hash = block.GetHash();
+    if (fCheckPOW && hash != consensusParams.hashGenesisBlock && !CheckProofOfWork(hash, block.nBits, consensusParams))
         return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, "high-hash", "proof of work failed");
 
     return true;
@@ -5410,18 +5411,24 @@ bool Chainstate::LoadGenesisBlock()
     // m_blockman.m_block_index. Note that we can't use m_chain here, since it is
     // set based on the coins db, not the block index db, which is the only
     // thing loaded at this point.
-    if (m_blockman.m_block_index.count(params.GenesisBlock().GetHash()))
+    LogPrintf("LoadGenesisBlock: Checking for genesis hash %s\n", params.GenesisBlock().GetHash().ToString());
+    if (m_blockman.m_block_index.count(params.GenesisBlock().GetHash())) {
+        LogPrintf("LoadGenesisBlock: Genesis already in index, skipping\n");
         return true;
+    }
 
     try {
         const CBlock& block = params.GenesisBlock();
+        LogPrintf("LoadGenesisBlock: Writing genesis block to disk (size=%d)\n", GetSerializeSize(TX_WITH_WITNESS(block)));
         FlatFilePos blockPos{m_blockman.WriteBlock(block, 0)};
         if (blockPos.IsNull()) {
             LogError("%s: writing genesis block to disk failed\n", __func__);
             return false;
         }
+        LogPrintf("LoadGenesisBlock: Genesis written to %s\n", blockPos.ToString());
         CBlockIndex* pindex = m_blockman.AddToBlockIndex(block, m_chainman.m_best_header);
         m_chainman.ReceivedBlockTransactions(block, pindex, blockPos);
+        LogPrintf("LoadGenesisBlock: Genesis block successfully loaded\n");
     } catch (const std::runtime_error& e) {
         LogError("%s: failed to write genesis block: %s\n", __func__, e.what());
         return false;

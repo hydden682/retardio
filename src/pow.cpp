@@ -16,35 +16,60 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
     assert(pindexLast != nullptr);
     unsigned int nProofOfWorkLimit = UintToArith256(params.powLimit).GetCompact();
 
-    // Only change once per difficulty adjustment interval
-    if ((pindexLast->nHeight+1) % params.DifficultyAdjustmentInterval() != 0)
+    // DigiShield V3 - Per-block difficulty adjustment (like DigiByte)
+    // Uses average of last 15 blocks to prevent ASIC manipulation
+    const int nBlocksToAverage = 15;
+
+    // Special case for first 15 blocks - use standard Bitcoin adjustment
+    // to establish initial difficulty baseline
+    if (pindexLast->nHeight < nBlocksToAverage)
     {
-        if (params.fPowAllowMinDifficultyBlocks)
+        // Only change once per difficulty adjustment interval
+        if ((pindexLast->nHeight+1) % params.DifficultyAdjustmentInterval() != 0)
         {
-            // Special difficulty rule for testnet:
-            // If the new block's timestamp is more than 2* 10 minutes
-            // then allow mining of a min-difficulty block.
-            if (pblock->GetBlockTime() > pindexLast->GetBlockTime() + params.nPowTargetSpacing*2)
-                return nProofOfWorkLimit;
-            else
+            if (params.fPowAllowMinDifficultyBlocks)
             {
-                // Return the last non-special-min-difficulty-rules-block
-                const CBlockIndex* pindex = pindexLast;
-                while (pindex->pprev && pindex->nHeight % params.DifficultyAdjustmentInterval() != 0 && pindex->nBits == nProofOfWorkLimit)
-                    pindex = pindex->pprev;
-                return pindex->nBits;
+                // Special difficulty rule for testnet:
+                // If the new block's timestamp is more than 2* target spacing
+                // then allow mining of a min-difficulty block.
+                if (pblock->GetBlockTime() > pindexLast->GetBlockTime() + params.nPowTargetSpacing*2)
+                    return nProofOfWorkLimit;
+                else
+                {
+                    // Return the last non-special-min-difficulty-rules-block
+                    const CBlockIndex* pindex = pindexLast;
+                    while (pindex->pprev && pindex->nHeight % params.DifficultyAdjustmentInterval() != 0 && pindex->nBits == nProofOfWorkLimit)
+                        pindex = pindex->pprev;
+                    return pindex->nBits;
+                }
             }
+            return pindexLast->nBits;
         }
-        return pindexLast->nBits;
+
+        // Go back by what we want to be the full interval worth of blocks
+        int nHeightFirst = pindexLast->nHeight - (params.DifficultyAdjustmentInterval()-1);
+        assert(nHeightFirst >= 0);
+        const CBlockIndex* pindexFirst = pindexLast->GetAncestor(nHeightFirst);
+        assert(pindexFirst);
+
+        return CalculateNextWorkRequired(pindexLast, pindexFirst->GetBlockTime(), params);
     }
 
-    // Go back by what we want to be 14 days worth of blocks
-    int nHeightFirst = pindexLast->nHeight - (params.DifficultyAdjustmentInterval()-1);
-    assert(nHeightFirst >= 0);
-    const CBlockIndex* pindexFirst = pindexLast->GetAncestor(nHeightFirst);
-    assert(pindexFirst);
+    // DigiShield V3: Calculate average time of last 15 blocks
+    int64_t nTotalTime = 0;
+    const CBlockIndex* pindex = pindexLast;
 
-    return CalculateNextWorkRequired(pindexLast, pindexFirst->GetBlockTime(), params);
+    for (int i = 0; i < nBlocksToAverage && pindex && pindex->pprev; i++)
+    {
+        nTotalTime += pindex->GetBlockTime() - pindex->pprev->GetBlockTime();
+        pindex = pindex->pprev;
+    }
+
+    // Get average time per block from the sample
+    int64_t nAverageTime = nTotalTime / nBlocksToAverage;
+
+    // Use the average to calculate new difficulty (DigiShield style)
+    return CalculateNextWorkRequired_DigiShield(pindexLast, nAverageTime, params);
 }
 
 unsigned int CalculateNextWorkRequired(const CBlockIndex* pindexLast, int64_t nFirstBlockTime, const Consensus::Params& params)
@@ -84,12 +109,88 @@ unsigned int CalculateNextWorkRequired(const CBlockIndex* pindexLast, int64_t nF
     return bnNew.GetCompact();
 }
 
+unsigned int CalculateNextWorkRequired_DigiShield(const CBlockIndex* pindexLast, int64_t nAverageTime, const Consensus::Params& params)
+{
+    if (params.fPowNoRetargeting)
+        return pindexLast->nBits;
+
+    const arith_uint256 bnPowLimit = UintToArith256(params.powLimit);
+    arith_uint256 bnNew;
+    bnNew.SetCompact(pindexLast->nBits);
+
+    // DigiShield: Limit adjustment to prevent wild swings
+    // Allow max 2x increase or 0.5x decrease per block (less aggressive than Bitcoin's 4x)
+    int64_t nActualTime = nAverageTime;
+    int64_t nTargetTime = params.nPowTargetSpacing;
+
+    // Limit to 2x or 0.5x to prevent difficulty manipulation
+    if (nActualTime < nTargetTime / 2)
+        nActualTime = nTargetTime / 2;
+    if (nActualTime > nTargetTime * 2)
+        nActualTime = nTargetTime * 2;
+
+    // Adjust difficulty based on actual vs target time
+    bnNew *= nActualTime;
+    bnNew /= nTargetTime;
+
+    if (bnNew > bnPowLimit)
+        bnNew = bnPowLimit;
+
+    return bnNew.GetCompact();
+}
+
 // Check that on difficulty adjustments, the new difficulty does not increase
 // or decrease beyond the permitted limits.
 bool PermittedDifficultyTransition(const Consensus::Params& params, int64_t height, uint32_t old_nbits, uint32_t new_nbits)
 {
     if (params.fPowAllowMinDifficultyBlocks) return true;
 
+    // DigiShield: Allow per-block difficulty changes after block 15
+    const int nBlocksToAverage = 15;
+    if (height >= nBlocksToAverage) {
+        // Per-block difficulty adjustment is active
+        // Allow up to 2x change per block (DigiShield limit)
+        int64_t smallest_timespan = params.nPowTargetSpacing / 2;
+        int64_t largest_timespan = params.nPowTargetSpacing * 2;
+
+        const arith_uint256 pow_limit = UintToArith256(params.powLimit);
+        arith_uint256 observed_new_target;
+        observed_new_target.SetCompact(new_nbits);
+
+        // Calculate the largest difficulty value possible (2x easier):
+        arith_uint256 largest_difficulty_target;
+        largest_difficulty_target.SetCompact(old_nbits);
+        largest_difficulty_target *= largest_timespan;
+        largest_difficulty_target /= params.nPowTargetSpacing;
+
+        if (largest_difficulty_target > pow_limit) {
+            largest_difficulty_target = pow_limit;
+        }
+
+        // Round and then compare this new calculated value to what is observed.
+        arith_uint256 maximum_new_target;
+        maximum_new_target.SetCompact(largest_difficulty_target.GetCompact());
+        if (maximum_new_target < observed_new_target) return false;
+
+        // Calculate the smallest difficulty value possible (2x harder):
+        arith_uint256 smallest_difficulty_target;
+        smallest_difficulty_target.SetCompact(old_nbits);
+        smallest_difficulty_target *= smallest_timespan;
+        smallest_difficulty_target /= params.nPowTargetSpacing;
+
+        if (smallest_difficulty_target > pow_limit) {
+            smallest_difficulty_target = pow_limit;
+        }
+
+        // Round and then compare this new calculated value to what is observed.
+        arith_uint256 minimum_new_target;
+        minimum_new_target.SetCompact(smallest_difficulty_target.GetCompact());
+        if (minimum_new_target > observed_new_target) return false;
+
+        return true;
+    }
+
+    // For first 15 blocks, use standard Bitcoin interval-based adjustment
     if (height % params.DifficultyAdjustmentInterval() == 0) {
         int64_t smallest_timespan = params.nPowTargetTimespan/4;
         int64_t largest_timespan = params.nPowTargetTimespan*4;

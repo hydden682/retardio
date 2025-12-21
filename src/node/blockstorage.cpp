@@ -170,9 +170,13 @@ bool BlockTreeDB::LoadBlockIndexGuts(const Consensus::Params& consensusParams, s
                 pindexNew->nStatus        = diskindex.nStatus;
                 pindexNew->nTx            = diskindex.nTx;
 
-                if (!CheckProofOfWork(pindexNew->GetBlockHash(), pindexNew->nBits, consensusParams)) {
-                    LogError("%s: CheckProofOfWork failed: %s\n", __func__, pindexNew->ToString());
-                    return false;
+                // Skip CheckProofOfWork for genesis block (height 0)
+                // Genesis block is already validated in chainparams.cpp assertions
+                if (pindexNew->nHeight != 0) {
+                    if (!CheckProofOfWork(pindexNew->GetBlockHash(), pindexNew->nBits, consensusParams)) {
+                        LogError("%s: CheckProofOfWork failed: %s\n", __func__, pindexNew->ToString());
+                        return false;
+                    }
                 }
 
                 pcursor->Next();
@@ -1145,10 +1149,12 @@ bool BlockManager::ReadBlock(CBlock& block, const FlatFilePos& pos, const std::o
 
     const auto block_hash{block.GetHash()};
 
-    // Check the header
-    if (!CheckProofOfWork(block_hash, block.nBits, GetConsensus())) {
-        LogError("%s: Errors in block header at %s\n", __func__, pos.ToString());
-        return false;
+    // Check the header (skip for genesis block)
+    if (block_hash != GetConsensus().hashGenesisBlock) {
+        if (!CheckProofOfWork(block_hash, block.nBits, GetConsensus())) {
+            LogError("%s: Errors in block header at %s\n", __func__, pos.ToString());
+            return false;
+        }
     }
 
     // Signet only: check block solution

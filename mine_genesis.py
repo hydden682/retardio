@@ -22,12 +22,11 @@ def mine_genesis_block():
     # Genesis block parameters
     version = 1
     prev_block = "00" * 32
-    # Merkle root will be calculated from the coinbase transaction
-    # This needs to match the genesis transaction with the new timestamp
-    # You may need to run the node once to get the correct merkle root
-    merkle_root = "4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"
+    # Merkle root from the actual Retardio genesis transaction
+    # This was calculated by the node's CreateGenesisBlock function
+    merkle_root = "c7e816ed84ae0af8e2d447786bbd936ed7bb3e77294b05c9b6962d7a203282bc"
     timestamp = 1734566400  # December 18, 2024
-    bits = 0x1e0fffff
+    bits = 0x1e7fffff
 
     print("Mining genesis block for Retardio...")
     print("Emission: 2,397.26 RET starting, 12 reductions/year (EXACT DigiByte)")
@@ -62,7 +61,7 @@ def mine_genesis_block():
         hash_int = int.from_bytes(hash_result[::-1], 'big')
 
         if hash_int <= target:
-            print(f"\n✓ Found valid genesis block!")
+            print(f"\n>>> Found valid genesis block!")
             print(f"Nonce: {nonce}")
             print(f"Hash: {hash_result[::-1].hex()}")
             print(f"Time taken: {time.time() - start_time:.2f} seconds")

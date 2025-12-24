@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(chmod:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\noxmay, this is the latest update, added everything into 1 .exe file\n\nMajor improvements:\n- Fixed node networking: Cleared Bitcoin seed nodes from chainparamsseeds.h\n- Created all-in-one master setup script \\(retardio_master_setup.sh\\)\n- Automatic node build, configuration, and peer connection\n- Automatic stratum pool \\(ckpool\\) installation and setup\n- Automatic blockchain sync\n- RPC patching for solo mining without peers\n- Easy setup scripts for Linux/Mac/Windows\n- Complete package creation system \\(create_installer.sh\\)\n- Helper scripts: cli, mine.sh, status.sh\n- Comprehensive documentation\n\nQuick start:\n  ./retardio_master_setup.sh\n\nCreate distributable package:\n  ./create_installer.sh\n\nOne command sets up:\n  ✓ Node with networking fix\n  ✓ Blockchain sync\n  ✓ Stratum mining pool\n  ✓ Wallet and mining address\n  ✓ Helper scripts\n\n🤖 Generated with Claude Code \\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push:*)"
+    ]
+  }
+}

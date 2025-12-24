@@ -1,6 +1,6 @@
 # Retardio Altcoin Fork Guide
 
-This document outlines all the changes made to fork Bitcoin Knots into the Retardio altcoin.
+This document outlines all the changes made to fork Retardio into the Retardio altcoin.
 
 ## Key Parameters
 
@@ -127,7 +127,7 @@ While chainparams.cpp contains the core parameters, you may also want to update:
 #### **src/clientversion.h**
 - Change version strings and client name
 
-#### **src/qt/res/bitcoin-qt-res.rc** (Windows)
+#### **src/qt/res/retardio-qt-res.rc** (Windows)
 - Update application name and descriptions
 
 #### **src/qt/bitcoingui.cpp**

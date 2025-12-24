@@ -1,34 +1,34 @@
-Bitcoin Knots
+Retardio
 =============
 
 Setup
 ---------------------
-Bitcoin Knots is the original Bitcoin client and it builds the backbone of the network. It downloads and, by default, stores the entire history of Bitcoin transactions, which requires several hundred gigabytes or more of disk space. Depending on the speed of your computer and network connection, the synchronization process can take anywhere from a few hours to several days or more.
+Retardio is the original Bitcoin client and it builds the backbone of the network. It downloads and, by default, stores the entire history of Bitcoin transactions, which requires several hundred gigabytes or more of disk space. Depending on the speed of your computer and network connection, the synchronization process can take anywhere from a few hours to several days or more.
 
-To download Bitcoin Knots, visit [bitcoinknots.org](https://bitcoinknots.org/).
+To download Retardio, visit [bitcoinknots.org](https://bitcoinknots.org/).
 
 Running
 ---------------------
-The following are some helpful notes on how to run Bitcoin Knots on your native platform.
+The following are some helpful notes on how to run Retardio on your native platform.
 
 ### Unix
 
 Unpack the files into a directory and run:
 
-- `bin/bitcoin-qt` (GUI) or
-- `bin/bitcoind` (headless)
+- `bin/retardio-qt` (GUI) or
+- `bin/retardiod` (headless)
 
 ### Windows
 
-Unpack the files into a directory, and then run bitcoin-qt.exe.
+Unpack the files into a directory, and then run retardio-qt.exe.
 
 ### macOS
 
-Drag Bitcoin Knots to your applications folder, and then run Bitcoin Knots.
+Drag Retardio to your applications folder, and then run Retardio.
 
 ### Need Help?
 
-* See the documentation at the [Bitcoin Wiki](https://en.bitcoin.it/wiki/Main_Page)
+* See the documentation at the [Bitcoin Wiki](https://en.retardio.it/wiki/Main_Page)
 for help and more information.
 * Ask for help on [Bitcoin StackExchange](https://bitcoin.stackexchange.com).
 * Ask for help on #bitcoin on Libera Chat. If you don't have an IRC client, you can use [web.libera.chat](https://web.libera.chat/#bitcoin).
@@ -36,7 +36,7 @@ for help and more information.
 
 Building
 ---------------------
-The following are developer notes on how to build Bitcoin Knots on your native platform. They are not complete guides, but include notes on the necessary libraries, compile flags, etc.
+The following are developer notes on how to build Retardio on your native platform. They are not complete guides, but include notes on the necessary libraries, compile flags, etc.
 
 - [Dependencies](dependencies.md)
 - [macOS Build Notes](build-osx.md)
@@ -53,7 +53,7 @@ The Bitcoin repo's [root README](/README.md) contains relevant information on th
 - [Developer Notes](developer-notes.md)
 - [Productivity Notes](productivity.md)
 - [Release Process](release-process.md)
-- [Source Code Documentation (External Link)](https://doxygen.bitcoincore.org/)
+- [Source Code Documentation (External Link)](https://doxygen.retardiocore.org/)
 - [Translation Process](translation_process.md)
 - [Translation Strings Policy](translation_strings_policy.md)
 - [JSON-RPC Interface](JSON-RPC-interface.md)

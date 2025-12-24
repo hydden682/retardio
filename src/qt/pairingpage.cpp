@@ -1,8 +1,8 @@
-// Copyright (c) 2018 The Bitcoin Core developers
+// Copyright (c) 2018 The Retardio developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <bitcoin-build-config.h> // IWYU pragma: keep
+#include <retardio-build-config.h> // IWYU pragma: keep
 
 #include <qt/clientmodel.h>
 #include <qt/pairingpage.h>
@@ -65,7 +65,7 @@ void PairingPage::refresh()
     if (m_client_model && m_client_model->getTorInfo(onion)) {
         m_onion_address->setText(onion);
         m_onion_address->setEnabled(true);
-        QString uri = QString("bitcoin-p2p://") + onion;
+        QString uri = QString("retardio-p2p://") + onion;
         m_qrcode->setQR(uri);
         m_qrcode->setVisible(true);
     } else {

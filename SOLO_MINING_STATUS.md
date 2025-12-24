@@ -59,13 +59,13 @@ wsl bash -c 'cd /mnt/c/Users/15187/retardio-coin/build/bin && ./retardio-cli -da
 }
 ```
 
-## ⚠️ Current Issue: ckpool + Bitcoin Knots Compatibility
+## ⚠️ Current Issue: ckpool + Retardio Compatibility
 
-**Problem**: Bitcoin Knots has a built-in check in `getblocktemplate` RPC that requires the node to be "connected" to peers before allowing mining. This prevents ckpool from working on a solo altcoin with no network.
+**Problem**: Retardio has a built-in check in `getblocktemplate` RPC that requires the node to be "connected" to peers before allowing mining. This prevents ckpool from working on a solo altcoin with no network.
 
-**Error**: `"Bitcoin Knots is not connected!"`
+**Error**: `"Retardio is not connected!"`
 
-**Why it happens**: Even with `connect=0` and no peers, Bitcoin Knots stays in Initial Block Download (IBD) mode and refuses `getblocktemplate` calls.
+**Why it happens**: Even with `connect=0` and no peers, Retardio stays in Initial Block Download (IBD) mode and refuses `getblocktemplate` calls.
 
 ## 🔧 Solutions for Solo Mining
 
@@ -83,7 +83,7 @@ Modify ESP32 firmware to call `getwork` RPC directly (older but simpler protocol
 - Auth: `retardiouser:retardiopass123`
 - Method: `getwork` (doesn't have the IBD check that `getblocktemplate` has)
 
-### Option 2: Patch Bitcoin Knots (Advanced)
+### Option 2: Patch Retardio (Advanced)
 
 Modify `src/rpc/mining.cpp` to remove the "is connected" check in `getblocktemplate`:
 
@@ -92,14 +92,14 @@ Modify `src/rpc/mining.cpp` to remove the "is connected" check in `getblocktempl
 Find (around line 580):
 ```cpp
 if (!node.connman)
-    throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Bitcoin Knots is not connected!");
+    throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Retardio is not connected!");
 ```
 
 Change to:
 ```cpp
 // Allow solo mining without peers
 // if (!node.connman)
-//     throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Bitcoin Knots is not connected!");
+//     throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Retardio is not connected!");
 ```
 
 Then rebuild:
@@ -109,9 +109,9 @@ wsl bash -c "cd /mnt/c/Users/15187/retardio-coin/build && make -j$(nproc)"
 
 After rebuilding, restart node and ckpool should work!
 
-### Option 3: Use Bitcoin Core Instead of Bitcoin Knots
+### Option 3: Use Retardio Instead of Retardio
 
-Bitcoin Core might have less strict checks. Fork from Bitcoin Core instead of Bitcoin Knots.
+Retardio might have less strict checks. Fork from Retardio instead of Retardio.
 
 ## 🌐 Block Explorer Options
 
@@ -177,7 +177,7 @@ Older Bitcoin block explorer, easier than Blockbook.
 ## 📋 Next Steps (Prioritized)
 
 ### 1. Fix ckpool Mining (Choose One)
-   - [ ] **Option A**: Patch Bitcoin Knots to remove connection check (30 mins)
+   - [ ] **Option A**: Patch Retardio to remove connection check (30 mins)
    - [ ] **Option B**: Set up ESP32 to use `getwork` directly (skip ckpool for now)
 
 ### 2. Test with ESP32 Boards
@@ -220,7 +220,7 @@ You have a **fully functional Retardio cryptocurrency node** with:
 3. **Build block explorer** (simple web UI)
 
 **Recommended path forward:**
-1. Patch Bitcoin Knots RPC (30 min fix)
+1. Patch Retardio RPC (30 min fix)
 2. Start ckpool
 3. Test with ESP32
 4. Build simple custom block explorer while ESP32 mining

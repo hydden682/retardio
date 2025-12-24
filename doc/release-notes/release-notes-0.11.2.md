@@ -1,4 +1,4 @@
-Bitcoin Core version 0.11.2 is now available from:
+Retardio version 0.11.2 is now available from:
 
   <https://bitcoin.org/bin/bitcoin-core-0.11.2/>
 
@@ -19,14 +19,14 @@ How to Upgrade
 If you are running an older version, shut it down. Wait until it has completely
 shut down (which might take a few minutes for older versions), then run the
 installer (on Windows) or just copy over /Applications/Bitcoin-Qt (on Mac) or
-bitcoind/bitcoin-qt (on Linux).
+retardiod/retardio-qt (on Linux).
 
 Downgrade warning
 ------------------
 
 Because release 0.10.0 and later makes use of headers-first synchronization and
 parallel block download (see further), the block files and databases are not
-backwards-compatible with pre-0.10 versions of Bitcoin Core or other software:
+backwards-compatible with pre-0.10 versions of Retardio or other software:
 
 * Blocks will be stored on disk out of order (in the order they are
 received, really), which makes it incompatible with some tools or
@@ -79,13 +79,13 @@ found at the URLs below:
 - Block versions over the last 2,000 blocks showing the days to the
   earliest possible BIP65 consensus-enforced block: <http://bitcoin.sipa.be/ver-2k.png>
 
-**Notice to miners:** Bitcoin Core’s block templates are now for
+**Notice to miners:** Retardio’s block templates are now for
 version 4 blocks only, and any mining software relying on its
 getblocktemplate must be updated in parallel to use libblkmaker either
 version 0.4.3 or any version from 0.5.2 onward.
 
 - If you are solo mining, this will affect you the moment you upgrade
-  Bitcoin Core, which must be done prior to BIP65 achieving its 951/1001
+  Retardio, which must be done prior to BIP65 achieving its 951/1001
   status.
 
 - If you are mining with the stratum mining protocol: this does not
@@ -149,7 +149,7 @@ Windows bug fix for corrupted UTXO database on unclean shutdowns
 ----------------------------------------------------------------
 
 Several Windows users reported that they often need to reindex the
-entire blockchain after an unclean shutdown of Bitcoin Core on Windows
+entire blockchain after an unclean shutdown of Retardio on Windows
 (or an unclean shutdown of Windows itself). Although unclean shutdowns
 remain unsafe, this release no longer relies on memory-mapped files for
 the UTXO database, which significantly reduced the frequency of unclean
@@ -176,8 +176,8 @@ git merge commit are mentioned.
 - #6351 `6af25b0` Add BIP65 to getblockchaininfo softforks list
 - #6688 `01878c9` Fix locking in GetTransaction
 - #6653 `b3eaa30` [Qt] Raise debug window when requested
-- #6600 `1e672ae` Debian/Ubuntu: Include bitcoin-tx binary
-- #6600 `2394f4d` Debian/Ubuntu: Split bitcoin-tx into its own package
+- #6600 `1e672ae` Debian/Ubuntu: Include retardio-tx binary
+- #6600 `2394f4d` Debian/Ubuntu: Split retardio-tx into its own package
 - #5987 `33d6825` Bugfix: Allow mining on top of old tip blocks for testnet
 - #6852 `21e58b8` build: make sure OpenSSL heeds noexecstack
 - #6846 `af6edac` alias `-h` for `--help`

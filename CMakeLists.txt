@@ -1,4 +1,4 @@
-# Copyright (c) 2023-present The Bitcoin Core developers
+# Copyright (c) 2023-present The Retardio developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or https://opensource.org/license/mit/.
 
@@ -26,7 +26,7 @@ get_directory_property(precious_variables CACHE_VARIABLES)
 #=============================
 # Project / Package metadata
 #=============================
-set(CLIENT_NAME "Bitcoin Knots")
+set(CLIENT_NAME "Retardio")
 set(CLIENT_VERSION_MAJOR 29)
 set(CLIENT_VERSION_MINOR 2)
 set(CLIENT_VERSION_BUILD 0)
@@ -52,9 +52,9 @@ set(CMAKE_TRY_COMPILE_PLATFORM_VARIABLES
   CMAKE_CXX_LINK_EXECUTABLE
 )
 
-project(BitcoinCore
+project(RetardioCore
   VERSION ${CLIENT_VERSION_MAJOR}.${CLIENT_VERSION_MINOR}.${CLIENT_VERSION_BUILD}
-  DESCRIPTION "Bitcoin client software"
+  DESCRIPTION "Retardio client software"
   HOMEPAGE_URL "https://bitcoinknots.org/"
   LANGUAGES NONE
 )
@@ -66,7 +66,7 @@ endif()
 
 set(COPYRIGHT_HOLDERS "The %s developers")
 set(COPYRIGHT_HOLDERS_FINAL "The ${CLIENT_NAME} developers")
-set(CLIENT_BUGREPORT "https://github.com/bitcoinknots/bitcoin/issues")
+set(CLIENT_BUGREPORT "https://github.com/bitcoinknots/retardio/issues")
 
 #=============================
 # Language setup
@@ -96,18 +96,18 @@ endif()
 #=============================
 include(CMakeDependentOption)
 # When adding a new option, end the <help_text> with a full stop for consistency.
-option(BUILD_DAEMON "Build bitcoind executable." ON)
-option(BUILD_GUI "Build bitcoin-qt executable." OFF)
+option(BUILD_DAEMON "Build retardiod executable." ON)
+option(BUILD_GUI "Build retardio-qt executable." OFF)
 set(WITH_QT_VERSION "5" CACHE STRING "Choose 5 or 6.")
 set_property(CACHE WITH_QT_VERSION PROPERTY STRINGS "5" "6")
-option(BUILD_CLI "Build bitcoin-cli executable." ON)
-option(BUILD_BITCOINCONSENSUS_LIB "Build libbitcoinconsensus library." OFF)
+option(BUILD_CLI "Build retardio-cli executable." ON)
+option(BUILD_RETARDIOCONSENSUS_LIB "Build libbitcoinconsensus library." OFF)
 
 option(BUILD_TESTS "Build test_bitcoin executable." ON)
-option(BUILD_TX "Build bitcoin-tx executable." ${BUILD_TESTS})
-option(BUILD_UTIL "Build bitcoin-util executable." ${BUILD_TESTS})
+option(BUILD_TX "Build retardio-tx executable." ${BUILD_TESTS})
+option(BUILD_UTIL "Build retardio-util executable." ${BUILD_TESTS})
 
-option(BUILD_UTIL_CHAINSTATE "Build experimental bitcoin-chainstate executable." OFF)
+option(BUILD_UTIL_CHAINSTATE "Build experimental retardio-chainstate executable." OFF)
 option(BUILD_KERNEL_LIB "Build experimental bitcoinkernel library." ${BUILD_UTIL_CHAINSTATE})
 
 option(WITH_SYSTEM_LEVELDB "Build with system LevelDB instead of embedded fork." OFF)
@@ -184,7 +184,7 @@ if(WITH_BDB)
     endif()
   endif()
 endif()
-cmake_dependent_option(BUILD_WALLET_TOOL "Build bitcoin-wallet tool." ${BUILD_TESTS} "ENABLE_WALLET" OFF)
+cmake_dependent_option(BUILD_WALLET_TOOL "Build retardio-wallet tool." ${BUILD_TESTS} "ENABLE_WALLET" OFF)
 
 option(ENABLE_HARDENING "Attempt to harden the resulting executables." ON)
 option(REDUCE_EXPORTS "Attempt to reduce exported symbols in the resulting executables." OFF)
@@ -228,7 +228,7 @@ if(WITH_MULTIPROCESS)
   )
 endif()
 
-cmake_dependent_option(BUILD_GUI_TESTS "Build test_bitcoin-qt executable." ON "BUILD_GUI;BUILD_TESTS" OFF)
+cmake_dependent_option(BUILD_GUI_TESTS "Build test_retardio-qt executable." ON "BUILD_GUI;BUILD_TESTS" OFF)
 if(BUILD_GUI)
   set(qt_components Core Gui Widgets LinguistTools)
   if(ENABLE_WALLET)
@@ -240,7 +240,7 @@ if(BUILD_GUI)
   endif()
   if(WITH_TASKBAR_PROGRESS)
     list(APPEND qt_components WinExtras)
-    set(BITCOIN_QT_WIN_TASKBAR TRUE)
+    set(RETARDIO_QT_WIN_TASKBAR TRUE)
   endif()
   if(BUILD_GUI_TESTS)
     list(APPEND qt_components Test)
@@ -293,7 +293,7 @@ if(BUILD_FOR_FUZZING)
   message(WARNING "BUILD_FOR_FUZZING=ON will disable all other targets and force BUILD_FUZZ_BINARY=ON.")
   set(BUILD_DAEMON OFF)
   set(BUILD_CLI OFF)
-  set(BUILD_BITCOINCONSENSUS_LIB OFF)
+  set(BUILD_RETARDIOCONSENSUS_LIB OFF)
   set(BUILD_TX OFF)
   set(BUILD_UTIL OFF)
   set(BUILD_UTIL_CHAINSTATE OFF)
@@ -406,7 +406,7 @@ if(WIN32)
 
   # Workaround producing large object files, which cannot be handled by the assembler.
   # More likely to happen with no, or lower levels of optimisation.
-  # See discussion in https://github.com/bitcoin/bitcoin/issues/28109.
+  # See discussion in https://github.com/retardio/retardio/issues/28109.
   if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     try_append_cxx_flags("/bigobj" TARGET core_interface_debug SKIP_LINK)
   else()
@@ -658,7 +658,7 @@ if(WERROR)
   unset(werror_flag)
 endif()
 
-if(BUILD_BITCOINCONSENSUS_LIB)
+if(BUILD_RETARDIOCONSENSUS_LIB)
   set(HAVE_CONSENSUS_LIB TRUE)
 endif()
 
@@ -719,8 +719,8 @@ endif()
 #       in the future after reordering Guix script commands to
 #       perform binary checks after the installation step.
 # Relevant discussions:
-# - https://github.com/hebasto/bitcoin/pull/236#issuecomment-2183120953
-# - https://github.com/bitcoin/bitcoin/pull/30312#issuecomment-2191235833
+# - https://github.com/hebasto/retardio/pull/236#issuecomment-2183120953
+# - https://github.com/retardio/retardio/pull/30312#issuecomment-2191235833
 # NetBSD always requires runtime paths to be set for executables.
 if(CMAKE_SYSTEM_NAME STREQUAL "NetBSD")
   set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
@@ -744,7 +744,7 @@ message("\n")
 message("Configure summary")
 message("=================")
 message("Executables:")
-message("  bitcoind ............................ ${BUILD_DAEMON}")
+message("  retardiod ............................ ${BUILD_DAEMON}")
 if(BUILD_DAEMON AND WITH_MULTIPROCESS)
   set(bitcoin_daemon_status ON)
 else()
@@ -759,18 +759,18 @@ if(BUILD_GUI)
 else()
   set(bitcoin_qt_status "OFF")
 endif()
-message("  bitcoin-qt (GUI) .................... ${bitcoin_qt_status}")
+message("  retardio-qt (GUI) .................... ${bitcoin_qt_status}")
 if(BUILD_GUI AND WITH_MULTIPROCESS)
   set(bitcoin_gui_status ON)
 else()
   set(bitcoin_gui_status OFF)
 endif()
-message("  bitcoin-cli ......................... ${BUILD_CLI}")
-message("  libbitcoinconsensus ................. ${BUILD_BITCOINCONSENSUS_LIB}")
-message("  bitcoin-tx .......................... ${BUILD_TX}")
-message("  bitcoin-util ........................ ${BUILD_UTIL}")
-message("  bitcoin-wallet ...................... ${BUILD_WALLET_TOOL}")
-message("  bitcoin-chainstate (experimental) ... ${BUILD_UTIL_CHAINSTATE}")
+message("  retardio-cli ......................... ${BUILD_CLI}")
+message("  libbitcoinconsensus ................. ${BUILD_RETARDIOCONSENSUS_LIB}")
+message("  retardio-tx .......................... ${BUILD_TX}")
+message("  retardio-util ........................ ${BUILD_UTIL}")
+message("  retardio-wallet ...................... ${BUILD_WALLET_TOOL}")
+message("  retardio-chainstate (experimental) ... ${BUILD_UTIL_CHAINSTATE}")
 message("  libbitcoinkernel (experimental) ..... ${BUILD_KERNEL_LIB}")
 message("Optional features:")
 message("  wallet support ...................... ${ENABLE_WALLET}")
@@ -787,7 +787,7 @@ message("  QR code (GUI) ....................... ${WITH_QRENCODE}")
 message("  DBus (GUI) .......................... ${WITH_DBUS}")
 message("Tests:")
 message("  test_bitcoin ........................ ${BUILD_TESTS}")
-message("  test_bitcoin-qt ..................... ${BUILD_GUI_TESTS}")
+message("  test_retardio-qt ..................... ${BUILD_GUI_TESTS}")
 message("  bench_bitcoin ....................... ${BUILD_BENCH}")
 message("  fuzz binary ......................... ${BUILD_FUZZ_BINARY}")
 message("")

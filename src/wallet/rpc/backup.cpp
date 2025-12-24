@@ -1,8 +1,8 @@
-// Copyright (c) 2009-present The Bitcoin Core developers
+// Copyright (c) 2009-present The Retardio developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <bitcoin-build-config.h> // IWYU pragma: keep
+#include <retardio-build-config.h> // IWYU pragma: keep
 
 #include <chain.h>
 #include <clientversion.h>
@@ -234,7 +234,7 @@ RPCHelpMan importaddress()
             "Note: Use \"getwalletinfo\" to query the scanning progress.\n"
             "Note: For descriptor wallets, this command will create new descriptor/s, and only works if the wallet has private keys disabled.\n",
                 {
-                    {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The Bitcoin address (or hex-encoded script)"},
+                    {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The Retardio address (or hex-encoded script)"},
                     {"label", RPCArg::Type::STR, RPCArg::Default{""}, "An optional label"},
                     {"rescan", RPCArg::Type::BOOL, RPCArg::Default{true}, "Scan the chain and mempool for wallet transactions."},
                     {"p2sh", RPCArg::Type::BOOL, RPCArg::Default{false}, "Add the P2SH version of the script as well"},
@@ -344,7 +344,7 @@ RPCHelpMan importaddress()
                 import_descriptor("raw(" + hex + ")", strLabel);
             }
         } else {
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcoin address or script");
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Retardio address or script");
         }
     }
     if (fRescan)
@@ -682,7 +682,7 @@ RPCHelpMan dumpprivkey()
                 "Then the importprivkey can be used with this output\n"
                 "Note: This command is only compatible with legacy wallets.\n",
                 {
-                    {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The bitcoin address for the private key"},
+                    {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The retardio address for the private key"},
                 },
                 RPCResult{
                     RPCResult::Type::STR, "key", "The private key"
@@ -706,7 +706,7 @@ RPCHelpMan dumpprivkey()
     std::string strAddress = request.params[0].get_str();
     CTxDestination dest = DecodeDestination(strAddress);
     if (!IsValidDestination(dest)) {
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcoin address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Retardio address");
     }
     auto keyid = GetKeyForDestination(spk_man, dest);
     if (keyid.IsNull()) {
@@ -807,7 +807,7 @@ RPCHelpMan dumpwallet()
 
     /* Prevent arbitrary files from being overwritten. There have been reports
      * that users have overwritten wallet files this way:
-     * https://github.com/bitcoin/bitcoin/issues/9934
+     * https://github.com/retardio/retardio/issues/9934
      * It may also avoid other security issues.
      */
     if (fs::exists(filepath)) {
@@ -1527,7 +1527,7 @@ RPCHelpMan importmulti()
                                       "block from time %d, which is after or within %d seconds of key creation, and "
                                       "could contain transactions pertaining to the key. As a result, transactions "
                                       "and coins using this key may not appear in the wallet. This error could be "
-                                      "caused by pruning or data corruption (see bitcoind log for details) and could "
+                                      "caused by pruning or data corruption (see retardiod log for details) and could "
                                       "be dealt with by downloading and rescanning the relevant blocks (see -reindex "
                                       "option and rescanblockchain RPC).",
                                 GetImportTimestamp(request, now), scannedTime - TIMESTAMP_WINDOW - 1, TIMESTAMP_WINDOW)));
@@ -1900,7 +1900,7 @@ RPCHelpMan importdescriptors()
                             GetImportTimestamp(request, now), scanned_time - TIMESTAMP_WINDOW - 1, TIMESTAMP_WINDOW)};
                     if (pwallet->chain().havePruned()) {
                         error_msg += strprintf(" This error could be caused by pruning or data corruption "
-                                "(see bitcoind log for details) and could be dealt with by downloading and "
+                                "(see retardiod log for details) and could be dealt with by downloading and "
                                 "rescanning the relevant blocks (see -reindex option and rescanblockchain RPC).");
                     } else if (pwallet->chain().hasAssumedValidChain()) {
                         error_msg += strprintf(" This error is likely caused by an in-progress assumeutxo "

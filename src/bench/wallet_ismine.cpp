@@ -1,10 +1,10 @@
-// Copyright (c) 2022 The Bitcoin Core developers
+// Copyright (c) 2022 The Retardio developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <addresstype.h>
 #include <bench/bench.h>
-#include <bitcoin-build-config.h> // IWYU pragma: keep
+#include <retardio-build-config.h> // IWYU pragma: keep
 #include <key.h>
 #include <key_io.h>
 #include <script/descriptor.h>

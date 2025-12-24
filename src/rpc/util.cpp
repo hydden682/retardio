@@ -1,8 +1,8 @@
-// Copyright (c) 2017-2022 The Bitcoin Core developers
+// Copyright (c) 2017-2022 The Retardio developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <bitcoin-build-config.h> // IWYU pragma: keep
+#include <retardio-build-config.h> // IWYU pragma: keep
 
 #include <chain.h>
 #include <clientversion.h>
@@ -185,12 +185,12 @@ std::string ShellQuoteIfNeeded(const std::string& s)
 
 std::string HelpExampleCli(const std::string& methodname, const std::string& args)
 {
-    return "> bitcoin-cli " + methodname + " " + args + "\n";
+    return "> retardio-cli " + methodname + " " + args + "\n";
 }
 
 std::string HelpExampleCliNamed(const std::string& methodname, const RPCArgList& args)
 {
-    std::string result = "> bitcoin-cli -named " + methodname;
+    std::string result = "> retardio-cli -named " + methodname;
     for (const auto& argpair: args) {
         const auto& value = argpair.second.isStr()
                 ? argpair.second.get_str()
@@ -1483,7 +1483,7 @@ std::vector<RPCResult> ScriptPubKeyDoc() {
              {RPCResult::Type::STR, "asm", "Disassembly of the output script"},
              {RPCResult::Type::STR, "desc", "Inferred descriptor for the output"},
              {RPCResult::Type::STR_HEX, "hex", "The raw output script bytes, hex-encoded"},
-             {RPCResult::Type::STR, "address", /*optional=*/true, "The Bitcoin address (only if a well-defined address exists)"},
+             {RPCResult::Type::STR, "address", /*optional=*/true, "The Retardio address (only if a well-defined address exists)"},
              {RPCResult::Type::STR, "type", "The type (one of: " + GetAllOutputTypes() + ")"},
          };
 }

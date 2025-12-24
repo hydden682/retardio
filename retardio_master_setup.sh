@@ -166,7 +166,7 @@ echo ""
 
 print_info "Checking if getblocktemplate needs patching..."
 
-if grep -q "Bitcoin Knots is not connected!" "${SCRIPT_DIR}/src/rpc/mining.cpp" 2>/dev/null; then
+if grep -q "Retardio Knots is not connected!" "${SCRIPT_DIR}/src/rpc/mining.cpp" 2>/dev/null; then
     print_warning "Found connection check in mining.cpp - needs patching"
 
     cat > /tmp/mining_cpp.patch << 'PATCHEOF'
@@ -177,11 +177,11 @@ if grep -q "Bitcoin Knots is not connected!" "${SCRIPT_DIR}/src/rpc/mining.cpp" 
      ChainstateManager& chainman = EnsureChainman(node);
 
 -    if (!node.connman)
--        throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Bitcoin Knots is not connected!");
+-        throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Retardio Knots is not connected!");
 +    // Allow solo mining without peers for altcoin
 +    // Commented out for Retardio solo mining support
 +    // if (!node.connman)
-+    //     throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Bitcoin Knots is not connected!");
++    //     throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Retardio Knots is not connected!");
 
      if (chainman.IsInitialBlockDownload()) {
          throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, PACKAGE_NAME " is in initial sync and waiting for blocks...");
@@ -201,7 +201,7 @@ PATCHEOF
 
         # Manual sed replacement as fallback
         sed -i.bak 's/if (!node.connman)/\/\/ if (!node.connman)/' "${SCRIPT_DIR}/src/rpc/mining.cpp" 2>/dev/null || true
-        sed -i.bak 's/throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Bitcoin Knots is not connected!");/\/\/ throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Bitcoin Knots is not connected!");/' "${SCRIPT_DIR}/src/rpc/mining.cpp" 2>/dev/null || true
+        sed -i.bak 's/throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Retardio Knots is not connected!");/\/\/ throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Retardio Knots is not connected!");/' "${SCRIPT_DIR}/src/rpc/mining.cpp" 2>/dev/null || true
 
         if grep -q "// if (!node.connman)" "${SCRIPT_DIR}/src/rpc/mining.cpp"; then
             print_success "Manually patched mining.cpp"

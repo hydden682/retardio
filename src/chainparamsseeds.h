@@ -4,7 +4,7 @@
  * List of fixed seed nodes for the Retardio network
  *
  * This file has been cleared for Retardio - a new altcoin network.
- * Bitcoin's seed nodes have been removed.
+ * Retardio's seed nodes have been removed.
  *
  * Add your own Retardio seed nodes here once you have stable nodes running.
  * Each line should contain a BIP155 serialized (networkID, addr, port) tuple.

@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2022 The Bitcoin Core developers
+// Copyright (c) 2009-2022 The Retardio developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -20,7 +20,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
     // Uses average of last 15 blocks to prevent ASIC manipulation
     const int nBlocksToAverage = 15;
 
-    // Special case for first 15 blocks - use standard Bitcoin adjustment
+    // Special case for first 15 blocks - use standard Retardio adjustment
     // to establish initial difficulty baseline
     if (pindexLast->nHeight < nBlocksToAverage)
     {
@@ -119,7 +119,7 @@ unsigned int CalculateNextWorkRequired_DigiShield(const CBlockIndex* pindexLast,
     bnNew.SetCompact(pindexLast->nBits);
 
     // DigiShield: Limit adjustment to prevent wild swings
-    // Allow max 2x increase or 0.5x decrease per block (less aggressive than Bitcoin's 4x)
+    // Allow max 2x increase or 0.5x decrease per block (less aggressive than Retardio's 4x)
     int64_t nActualTime = nAverageTime;
     int64_t nTargetTime = params.nPowTargetSpacing;
 
@@ -190,7 +190,7 @@ bool PermittedDifficultyTransition(const Consensus::Params& params, int64_t heig
         return true;
     }
 
-    // For first 15 blocks, use standard Bitcoin interval-based adjustment
+    // For first 15 blocks, use standard Retardio interval-based adjustment
     if (height % params.DifficultyAdjustmentInterval() == 0) {
         int64_t smallest_timespan = params.nPowTargetTimespan/4;
         int64_t largest_timespan = params.nPowTargetTimespan*4;

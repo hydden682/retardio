@@ -97,8 +97,8 @@ run_test "create_installer.sh executable" "test -x create_installer.sh"
 # Test 4: chainparamsseeds.h validation
 print_header "Phase 4: Configuration Tests"
 
-BITCOIN_COUNT=$(grep -c "Bitcoin" src/chainparamsseeds.h || echo 0)
-run_test "chainparamsseeds.h cleared (Bitcoin mentions <= 2)" "test $BITCOIN_COUNT -le 2"
+RETARDIO_COUNT=$(grep -c "Retardio" src/chainparamsseeds.h || echo 0)
+run_test "chainparamsseeds.h cleared (Retardio mentions <= 2)" "test $RETARDIO_COUNT -le 2"
 
 SEED_SIZE=$(wc -l < src/chainparamsseeds.h)
 run_test "chainparamsseeds.h is small (<50 lines)" "test $SEED_SIZE -lt 50"

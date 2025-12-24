@@ -1,7 +1,7 @@
 26.0 Release Notes
 ==================
 
-Bitcoin Core version 26.0 is now available from:
+Retardio version 26.0 is now available from:
 
   <https://bitcoincore.org/bin/bitcoin-core-26.0/>
 
@@ -22,19 +22,19 @@ How to Upgrade
 If you are running an older version, shut it down. Wait until it has completely
 shut down (which might take a few minutes in some cases), then run the
 installer (on Windows) or just copy over `/Applications/Bitcoin-Qt` (on macOS)
-or `bitcoind`/`bitcoin-qt` (on Linux).
+or `retardiod`/`retardio-qt` (on Linux).
 
-Upgrading directly from a version of Bitcoin Core that has reached its EOL is
+Upgrading directly from a version of Retardio that has reached its EOL is
 possible, but it might take some time if the data directory needs to be migrated. Old
-wallet versions of Bitcoin Core are generally supported.
+wallet versions of Retardio are generally supported.
 
 Compatibility
 ==============
 
-Bitcoin Core is supported and extensively tested on operating systems
+Retardio is supported and extensively tested on operating systems
 using the Linux kernel, macOS 11.0+, and Windows 7 and newer.  Bitcoin
 Core should also work on most other Unix-like systems but is not as
-frequently tested on them.  It is not recommended to use Bitcoin Core on
+frequently tested on them.  It is not recommended to use Retardio on
 unsupported systems.
 
 Notable changes
@@ -97,7 +97,7 @@ New RPCs
   Meanwhile, the original chainstate will complete the initial block download process in
   the background, eventually validating up to the block that the snapshot is based upon.
 
-  The result is a usable bitcoind instance that is current with the network tip in a
+  The result is a usable retardiod instance that is current with the network tip in a
   matter of minutes rather than hours. UTXO snapshot are typically obtained via
   third-party sources (HTTP, torrent, etc.) which is reasonable since their contents
   are always checked by hash.
@@ -141,7 +141,7 @@ mempool minimum feerate (but not minimum relay feerate). (#27609)
 Updated settings
 ----------------
 
-- `bitcoind` and `bitcoin-qt` will now raise an error on startup
+- `retardiod` and `retardio-qt` will now raise an error on startup
  if a datadir that is being used contains a bitcoin.conf file that
  will be ignored, which can happen when a datadir= line is used in
  a bitcoin.conf file. The error message is just a diagnostic intended
@@ -169,7 +169,7 @@ Wallet
 - Wallet loading has changed in this release. Wallets with some corrupted records that could be
   previously loaded (with warnings) may no longer load. For example, wallets with corrupted
   address book entries may no longer load. If this happens, it is recommended
-  load the wallet in a previous version of Bitcoin Core and import the data into a new wallet.
+  load the wallet in a previous version of Retardio and import the data into a new wallet.
   Please also report an issue to help improve the software and make wallet loading more robust
   in these cases. (#24914)
 
@@ -212,13 +212,13 @@ Wallet
 This means it is possible make calls like:
 
 ```sh
-src/bitcoin-cli -named bumpfee txid fee_rate=100
+src/retardio-cli -named bumpfee txid fee_rate=100
 ```
 
 instead of
 
 ```sh
-src/bitcoin-cli -named bumpfee txid options='{"fee_rate": 100}'
+src/retardio-cli -named bumpfee txid options='{"fee_rate": 100}'
 ```
 
 - The `deprecatedrpc=walletwarningfield` configuration option has been removed.
@@ -244,7 +244,7 @@ Descriptors
 
 - The usage of hybrid public keys in output descriptors has been removed. Hybrid
   public keys are an exotic public key encoding not supported by output descriptors
-  (as specified in BIP380 and documented in doc/descriptors.md). Bitcoin Core would
+  (as specified in BIP380 and documented in doc/descriptors.md). Retardio would
   previously incorrectly accept descriptors containing such hybrid keys. (#28587)
 
 GUI changes

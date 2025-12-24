@@ -1,4 +1,4 @@
-# Copyright (c) 2023-present The Bitcoin Core developers
+# Copyright (c) 2023-present The Retardio developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or https://opensource.org/license/mit/.
 
@@ -23,7 +23,7 @@ function(add_maintenance_targets)
     return()
   endif()
 
-  foreach(target IN ITEMS bitcoind bitcoin-qt bitcoin-cli bitcoin-tx bitcoin-util bitcoin-wallet test_bitcoin bench_bitcoin)
+  foreach(target IN ITEMS retardiod retardio-qt retardio-cli retardio-tx retardio-util retardio-wallet test_bitcoin bench_bitcoin)
     if(TARGET ${target})
       list(APPEND executables $<TARGET_FILE:${target}>)
     endif()
@@ -43,32 +43,32 @@ function(add_maintenance_targets)
 endfunction()
 
 function(add_windows_deploy_target)
-  if(MINGW AND TARGET bitcoin-qt AND TARGET bitcoind AND TARGET bitcoin-cli AND TARGET bitcoin-tx AND TARGET bitcoin-wallet AND TARGET bitcoin-util AND TARGET test_bitcoin)
+  if(MINGW AND TARGET retardio-qt AND TARGET retardiod AND TARGET retardio-cli AND TARGET retardio-tx AND TARGET retardio-wallet AND TARGET retardio-util AND TARGET test_bitcoin)
     # TODO: Consider replacing this code with the CPack NSIS Generator.
     #       See https://cmake.org/cmake/help/latest/cpack_gen/nsis.html
     include(GenerateSetupNsi)
     generate_setup_nsi()
     add_custom_command(
-      OUTPUT ${PROJECT_BINARY_DIR}/bitcoin-win64-setup.exe
+      OUTPUT ${PROJECT_BINARY_DIR}/retardio-win64-setup.exe
       COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_BINARY_DIR}/release
-      COMMAND ${CMAKE_STRIP} $<TARGET_FILE:bitcoin-qt> -o ${PROJECT_BINARY_DIR}/release/$<TARGET_FILE_NAME:bitcoin-qt>
-      COMMAND ${CMAKE_STRIP} $<TARGET_FILE:bitcoind> -o ${PROJECT_BINARY_DIR}/release/$<TARGET_FILE_NAME:bitcoind>
-      COMMAND ${CMAKE_STRIP} $<TARGET_FILE:bitcoin-cli> -o ${PROJECT_BINARY_DIR}/release/$<TARGET_FILE_NAME:bitcoin-cli>
-      COMMAND ${CMAKE_STRIP} $<TARGET_FILE:bitcoin-tx> -o ${PROJECT_BINARY_DIR}/release/$<TARGET_FILE_NAME:bitcoin-tx>
-      COMMAND ${CMAKE_STRIP} $<TARGET_FILE:bitcoin-wallet> -o ${PROJECT_BINARY_DIR}/release/$<TARGET_FILE_NAME:bitcoin-wallet>
-      COMMAND ${CMAKE_STRIP} $<TARGET_FILE:bitcoin-util> -o ${PROJECT_BINARY_DIR}/release/$<TARGET_FILE_NAME:bitcoin-util>
+      COMMAND ${CMAKE_STRIP} $<TARGET_FILE:retardio-qt> -o ${PROJECT_BINARY_DIR}/release/$<TARGET_FILE_NAME:retardio-qt>
+      COMMAND ${CMAKE_STRIP} $<TARGET_FILE:retardiod> -o ${PROJECT_BINARY_DIR}/release/$<TARGET_FILE_NAME:retardiod>
+      COMMAND ${CMAKE_STRIP} $<TARGET_FILE:retardio-cli> -o ${PROJECT_BINARY_DIR}/release/$<TARGET_FILE_NAME:retardio-cli>
+      COMMAND ${CMAKE_STRIP} $<TARGET_FILE:retardio-tx> -o ${PROJECT_BINARY_DIR}/release/$<TARGET_FILE_NAME:retardio-tx>
+      COMMAND ${CMAKE_STRIP} $<TARGET_FILE:retardio-wallet> -o ${PROJECT_BINARY_DIR}/release/$<TARGET_FILE_NAME:retardio-wallet>
+      COMMAND ${CMAKE_STRIP} $<TARGET_FILE:retardio-util> -o ${PROJECT_BINARY_DIR}/release/$<TARGET_FILE_NAME:retardio-util>
       COMMAND ${CMAKE_STRIP} $<TARGET_FILE:test_bitcoin> -o ${PROJECT_BINARY_DIR}/release/$<TARGET_FILE_NAME:test_bitcoin>
-      COMMAND makensis -V2 ${PROJECT_BINARY_DIR}/bitcoin-win64-setup.nsi
+      COMMAND makensis -V2 ${PROJECT_BINARY_DIR}/retardio-win64-setup.nsi
       DEPENDS generate_nsis_images
       VERBATIM
     )
-    add_custom_target(deploy DEPENDS ${PROJECT_BINARY_DIR}/bitcoin-win64-setup.exe)
+    add_custom_target(deploy DEPENDS ${PROJECT_BINARY_DIR}/retardio-win64-setup.exe)
   endif()
 endfunction()
 
 function(add_macos_deploy_target)
-  if(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND TARGET bitcoin-qt)
-    set(macos_app "Bitcoin-Qt.app")
+  if(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND TARGET retardio-qt)
+    set(macos_app "Retardio-Qt.app")
     # Populate Contents subdirectory.
     configure_file(${PROJECT_SOURCE_DIR}/share/qt/Info.plist.in ${macos_app}/Contents/Info.plist NO_SOURCE_PERMISSIONS)
     file(CONFIGURE OUTPUT ${macos_app}/Contents/PkgInfo CONTENT "APPL????")
@@ -78,8 +78,8 @@ function(add_macos_deploy_target)
       CONTENT "{ CFBundleDisplayName = \"@CLIENT_NAME@\"; CFBundleName = \"@CLIENT_NAME@\"; }"
     )
 
-    set(bitcoin_icns ${PROJECT_BINARY_DIR}/src/qt/res/rendered_icons/bitcoin.icns)
-    set(bitcoin_icns_dest ${macos_app}/Contents/Resources/bitcoin.icns)
+    set(bitcoin_icns ${PROJECT_BINARY_DIR}/src/qt/res/rendered_icons/retardio.icns)
+    set(bitcoin_icns_dest ${macos_app}/Contents/Resources/retardio.icns)
     add_custom_command(
       OUTPUT ${bitcoin_icns_dest}
       COMMAND ${CMAKE_COMMAND} -E copy ${bitcoin_icns} ${bitcoin_icns_dest}
@@ -89,9 +89,9 @@ function(add_macos_deploy_target)
     add_custom_target(bitcoin_icns_deployed DEPENDS "${bitcoin_icns_dest}")
 
     add_custom_command(
-      OUTPUT ${PROJECT_BINARY_DIR}/${macos_app}/Contents/MacOS/Bitcoin-Qt
-      COMMAND ${CMAKE_COMMAND} --install ${PROJECT_BINARY_DIR} --config $<CONFIG> --component bitcoin-qt --prefix ${macos_app}/Contents/MacOS --strip
-      COMMAND ${CMAKE_COMMAND} -E rename ${macos_app}/Contents/MacOS/bin/$<TARGET_FILE_NAME:bitcoin-qt> ${macos_app}/Contents/MacOS/Bitcoin-Qt
+      OUTPUT ${PROJECT_BINARY_DIR}/${macos_app}/Contents/MacOS/Retardio-Qt
+      COMMAND ${CMAKE_COMMAND} --install ${PROJECT_BINARY_DIR} --config $<CONFIG> --component retardio-qt --prefix ${macos_app}/Contents/MacOS --strip
+      COMMAND ${CMAKE_COMMAND} -E rename ${macos_app}/Contents/MacOS/bin/$<TARGET_FILE_NAME:retardio-qt> ${macos_app}/Contents/MacOS/Retardio-Qt
       COMMAND ${CMAKE_COMMAND} -E rm -rf ${macos_app}/Contents/MacOS/bin
       COMMAND ${CMAKE_COMMAND} -E rm -rf ${macos_app}/Contents/MacOS/share
       VERBATIM
@@ -102,7 +102,7 @@ function(add_macos_deploy_target)
       add_custom_command(
         OUTPUT ${PROJECT_BINARY_DIR}/${osx_volname}.zip
         COMMAND ${PYTHON_COMMAND} ${PROJECT_SOURCE_DIR}/contrib/macdeploy/macdeployqtplus ${macos_app} ${osx_volname} -translations-dir=${QT_TRANSLATIONS_DIR} -zip
-        DEPENDS ${PROJECT_BINARY_DIR}/${macos_app}/Contents/MacOS/Bitcoin-Qt
+        DEPENDS ${PROJECT_BINARY_DIR}/${macos_app}/Contents/MacOS/Retardio-Qt
         VERBATIM
       )
       add_custom_target(deploydir
@@ -113,13 +113,13 @@ function(add_macos_deploy_target)
       )
     else()
       add_custom_command(
-        OUTPUT ${PROJECT_BINARY_DIR}/dist/${macos_app}/Contents/MacOS/Bitcoin-Qt
+        OUTPUT ${PROJECT_BINARY_DIR}/dist/${macos_app}/Contents/MacOS/Retardio-Qt
         COMMAND OBJDUMP=${CMAKE_OBJDUMP} ${PYTHON_COMMAND} ${PROJECT_SOURCE_DIR}/contrib/macdeploy/macdeployqtplus ${macos_app} ${osx_volname} -translations-dir=${QT_TRANSLATIONS_DIR}
-        DEPENDS ${PROJECT_BINARY_DIR}/${macos_app}/Contents/MacOS/Bitcoin-Qt
+        DEPENDS ${PROJECT_BINARY_DIR}/${macos_app}/Contents/MacOS/Retardio-Qt
         VERBATIM
       )
       add_custom_target(deploydir
-        DEPENDS ${PROJECT_BINARY_DIR}/dist/${macos_app}/Contents/MacOS/Bitcoin-Qt
+        DEPENDS ${PROJECT_BINARY_DIR}/dist/${macos_app}/Contents/MacOS/Retardio-Qt
       )
 
       find_program(ZIP_COMMAND zip REQUIRED)
@@ -133,7 +133,7 @@ function(add_macos_deploy_target)
         DEPENDS ${PROJECT_BINARY_DIR}/dist/${osx_volname}.zip
       )
     endif()
-    add_dependencies(deploydir bitcoin-qt)
+    add_dependencies(deploydir retardio-qt)
     add_dependencies(deploydir bitcoin_icns_deployed)
     add_dependencies(deploy deploydir)
   endif()

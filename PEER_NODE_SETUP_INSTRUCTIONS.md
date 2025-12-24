@@ -54,7 +54,7 @@ make -j$(nproc)
 
 This will take 15-30 minutes. You should see:
 ```
-[100%] Built target bitcoind
+[100%] Built target retardiod
 ```
 
 ## Step 5: Create Configuration File
@@ -88,12 +88,12 @@ Save and exit (Ctrl+X, then Y, then Enter).
 
 ```bash
 cd ~/retardio-coin/build/bin
-./bitcoind -datadir=~/.retardio -daemon
+./retardiod -datadir=~/.retardio -daemon
 ```
 
 You should see:
 ```
-Bitcoin Knots starting
+Retardio starting
 ```
 
 ## Step 7: Check Connection Status
@@ -101,14 +101,14 @@ Bitcoin Knots starting
 Wait 30 seconds, then check:
 
 ```bash
-./bitcoin-cli -datadir=~/.retardio getconnectioncount
+./retardio-cli -datadir=~/.retardio getconnectioncount
 ```
 
 Should show: `1` (connected to your node)
 
 Check blockchain info:
 ```bash
-./bitcoin-cli -datadir=~/.retardio getblockchaininfo
+./retardio-cli -datadir=~/.retardio getblockchaininfo
 ```
 
 The node should start syncing blocks from your node!
@@ -117,7 +117,7 @@ The node should start syncing blocks from your node!
 
 Check sync status:
 ```bash
-./bitcoin-cli -datadir=~/.retardio getblockcount
+./retardio-cli -datadir=~/.retardio getblockcount
 ```
 
 This should match the block count on your node.
@@ -141,9 +141,9 @@ This should match the block count on your node.
 
 3. Restart the node:
    ```bash
-   ./bitcoin-cli -datadir=~/.retardio stop
+   ./retardio-cli -datadir=~/.retardio stop
    sleep 3
-   ./bitcoind -datadir=~/.retardio -daemon
+   ./retardiod -datadir=~/.retardio -daemon
    ```
 
 ### Node won't start
@@ -213,27 +213,27 @@ Should now work! ckpool will start accepting mining connections on port 3333.
 
 **Start node:**
 ```bash
-cd ~/retardio-coin/build/bin && ./bitcoind -datadir=~/.retardio -daemon
+cd ~/retardio-coin/build/bin && ./retardiod -datadir=~/.retardio -daemon
 ```
 
 **Stop node:**
 ```bash
-./bitcoin-cli -datadir=~/.retardio stop
+./retardio-cli -datadir=~/.retardio stop
 ```
 
 **Check status:**
 ```bash
-./bitcoin-cli -datadir=~/.retardio getblockchaininfo
+./retardio-cli -datadir=~/.retardio getblockchaininfo
 ```
 
 **Check connections:**
 ```bash
-./bitcoin-cli -datadir=~/.retardio getpeerinfo
+./retardio-cli -datadir=~/.retardio getpeerinfo
 ```
 
 **Check block count:**
 ```bash
-./bitcoin-cli -datadir=~/.retardio getblockcount
+./retardio-cli -datadir=~/.retardio getblockcount
 ```
 
 ---

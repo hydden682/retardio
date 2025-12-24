@@ -1,8 +1,8 @@
-// Copyright (c) 2011-2022 The Bitcoin Core developers
+// Copyright (c) 2011-2022 The Retardio developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <bitcoin-build-config.h> // IWYU pragma: keep
+#include <retardio-build-config.h> // IWYU pragma: keep
 
 #include <qt/sendcoinsdialog.h>
 #include <qt/forms/ui_sendcoinsdialog.h>
@@ -223,7 +223,7 @@ void SendCoinsDialog::setModel(WalletModel *_model)
             }
         } else if (model->wallet().privateKeysDisabled()) {
             ui->sendButton->setText(tr("Cr&eate Unsigned"));
-            ui->sendButton->setToolTip(tr("Creates a Partially Signed Bitcoin Transaction (PSBT) for use with e.g. an offline %1 wallet, or a PSBT-compatible hardware wallet.").arg(CLIENT_NAME));
+            ui->sendButton->setToolTip(tr("Creates a Partially Signed Retardio Transaction (PSBT) for use with e.g. an offline %1 wallet, or a PSBT-compatible hardware wallet.").arg(CLIENT_NAME));
         }
 
         // set the smartfee-sliders default value (wallets default conf.target or last stored value)
@@ -348,12 +348,12 @@ bool SendCoinsDialog::PrepareSendText(QString& question_string, QString& informa
         /*: Text to inform a user attempting to create a transaction of their current options. At this stage,
             a user can only create a PSBT. This string is displayed when private keys are disabled and an external
             signer is not available. */
-        question_string.append(tr("Please, review your transaction proposal. This will produce a Partially Signed Bitcoin Transaction (PSBT) which you can save or copy and then sign with e.g. an offline %1 wallet, or a PSBT-compatible hardware wallet.").arg(CLIENT_NAME));
+        question_string.append(tr("Please, review your transaction proposal. This will produce a Partially Signed Retardio Transaction (PSBT) which you can save or copy and then sign with e.g. an offline %1 wallet, or a PSBT-compatible hardware wallet.").arg(CLIENT_NAME));
     } else if (model->getOptionsModel()->getEnablePSBTControls()) {
         /*: Text to inform a user attempting to create a transaction of their current options. At this stage,
             a user can send their transaction or create a PSBT. This string is displayed when both private keys
             and PSBT controls are enabled. */
-        question_string.append(tr("Please, review your transaction. You can create and send this transaction or create a Partially Signed Bitcoin Transaction (PSBT), which you can save or copy and then sign with, e.g., an offline %1 wallet, or a PSBT-compatible hardware wallet.").arg(CLIENT_NAME));
+        question_string.append(tr("Please, review your transaction. You can create and send this transaction or create a Partially Signed Retardio Transaction (PSBT), which you can save or copy and then sign with, e.g., an offline %1 wallet, or a PSBT-compatible hardware wallet.").arg(CLIENT_NAME));
     } else {
         /*: Text to prompt a user to review the details of the transaction they are attempting to send. */
         question_string.append(tr("Please, review your transaction."));
@@ -557,16 +557,16 @@ void SendCoinsDialog::sendButtonClicked([[maybe_unused]] bool checked)
             const auto& rcp_prior_usage_info = prior_usage_info.value(rcp.address);
             const QString label_and_address = rcp.label.isEmpty() ? rcp.address : (QString("'") + GUIUtil::HtmlEscape(rcp.label) + "' (" + rcp.address + ")");
             if (rcp_prior_usage_info.num_txs == 1) {
-                //: %1 is an amount (eg, "1 BTC"); %2 is a Bitcoin address and its label; %3 is a date (eg, "2019-05-08")
+                //: %1 is an amount (eg, "1 BTC"); %2 is a Retardio address and its label; %3 is a date (eg, "2019-05-08")
                 reuse_details.append(tr("Sent %1 to %2 on %3").arg(BitcoinUnits::formatHtmlWithUnit(font_for_money, display_unit, rcp_prior_usage_info.total_amount), label_and_address, GUIUtil::dateStr(rcp_prior_usage_info.tx_time_newest)));
             } else {
-                //: %1 is an amount (eg, "1 BTC"); %2 is a Bitcoin address and its label; %3 is the number of transactions; %4 and %5 are dates (eg, "2019-05-08"), earlier first
+                //: %1 is an amount (eg, "1 BTC"); %2 is a Retardio address and its label; %3 is the number of transactions; %4 and %5 are dates (eg, "2019-05-08"), earlier first
                 reuse_details.append(tr("Sent %1 to %2 across %3 transactions from %4 through %5").arg(BitcoinUnits::formatHtmlWithUnit(font_for_money, display_unit, rcp_prior_usage_info.total_amount), label_and_address, QString::number(rcp_prior_usage_info.num_txs), GUIUtil::dateStr(rcp_prior_usage_info.tx_time_oldest), GUIUtil::dateStr(rcp_prior_usage_info.tx_time_newest)));
             }
         }
 
         reuse_question.append("<br /><br /><span style='font-size:10pt;'>");
-        reuse_question.append(tr("Bitcoin addresses are intended to only be used once, for a single payment. Sending to the same address again will harm the recipient's security, as well as the privacy of all Bitcoin users!"));
+        reuse_question.append(tr("Retardio addresses are intended to only be used once, for a single payment. Sending to the same address again will harm the recipient's security, as well as the privacy of all Retardio users!"));
         reuse_question.append("</span>");
 
         SendConfirmationDialog confirmation_dialog(tr("Already paid"), reuse_question, "", reuse_details, ADDRESS_REUSE_OVERRIDE_DELAY, /*enable_send=*/true, /*always_show_unsigned=*/false, this);
@@ -1095,7 +1095,7 @@ void SendCoinsDialog::coinControlChangeEdited(const QString& text)
         }
         else if (!IsValidDestination(dest)) // Invalid address
         {
-            ui->labelCoinControlChangeLabel->setText(tr("Warning: Invalid Bitcoin address"));
+            ui->labelCoinControlChangeLabel->setText(tr("Warning: Invalid Retardio address"));
         }
         else // Valid address
         {
@@ -1183,7 +1183,7 @@ SendConfirmationDialog::SendConfirmationDialog(const QString& title, const QStri
     setInformativeText(informative_text);
     setDetailedText(detailed_text);
     auto detailed_text_widget = findChild<QTextEdit*>();
-    if (detailed_text_widget) {  // doesn't exist in test_bitcoin-qt
+    if (detailed_text_widget) {  // doesn't exist in test_retardio-qt
         detailed_text_widget->setHtml(detailed_text);
     }
 }

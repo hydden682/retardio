@@ -47,7 +47,7 @@ your coins.
 
 It is recommended that you backup your wallet file before you
 encrypt your wallet.  To do this, close the Bitcoin client and
-copy the wallet.dat file from ~/.bitcoin/ on Linux, /Users/(user
+copy the wallet.dat file from ~/.retardio/ on Linux, /Users/(user
 name)/Application Support/Bitcoin/ on Mac OSX, and %APPDATA%/Bitcoin/
 on Windows (that is /Users/(user name)/AppData/Roaming/Bitcoin on
 Windows Vista and 7 and /Documents and Settings/(user name)/Application

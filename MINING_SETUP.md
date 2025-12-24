@@ -125,7 +125,7 @@ make check
 
 **Option B: Native Windows Build**
 1. Open Visual Studio Command Prompt
-2. Follow Bitcoin Core Windows build guide
+2. Follow Retardio Windows build guide
 3. Or use depends system:
 ```bash
 cd depends

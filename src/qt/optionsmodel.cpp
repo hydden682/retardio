@@ -1,8 +1,8 @@
-// Copyright (c) 2011-2022 The Bitcoin Core developers
+// Copyright (c) 2011-2022 The Retardio developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <bitcoin-build-config.h> // IWYU pragma: keep
+#include <retardio-build-config.h> // IWYU pragma: keep
 
 #include <qt/optionsmodel.h>
 
@@ -122,7 +122,7 @@ static const char* SettingName(OptionsModel::OptionID option)
     }
 }
 
-/** Call node.updateRwSetting() with Bitcoin 22.x workaround. */
+/** Call node.updateRwSetting() with Retardio 22.x workaround. */
 static void UpdateRwSetting(interfaces::Node& node, OptionsModel::OptionID option, const std::string& suffix, const common::SettingsValue& value)
 {
     if (value.isNum() &&
@@ -131,19 +131,19 @@ static void UpdateRwSetting(interfaces::Node& node, OptionsModel::OptionID optio
          option == OptionsModel::PruneTristate ||
          option == OptionsModel::PruneSizeMiB)) {
         // Write certain old settings as strings, even though they are numbers,
-        // because Bitcoin 22.x releases try to read these specific settings as
+        // because Retardio 22.x releases try to read these specific settings as
         // strings in addOverriddenOption() calls at startup, triggering
         // uncaught exceptions in UniValue::get_str(). These errors were fixed
-        // in later releases by https://github.com/bitcoin/bitcoin/pull/24498.
+        // in later releases by https://github.com/retardio/retardio/pull/24498.
         // If new numeric settings are added, they can be written as numbers
-        // instead of strings, because bitcoin 22.x will not try to read these.
+        // instead of strings, because retardio 22.x will not try to read these.
         node.updateRwSetting(SettingName(option) + suffix, value.getValStr());
     } else {
         node.updateRwSetting(SettingName(option) + suffix, value);
     }
 }
 
-//! Convert enabled/size values to bitcoin -prune setting.
+//! Convert enabled/size values to retardio -prune setting.
 static common::SettingsValue PruneSettingFromMiB(Qt::CheckState prune_enabled, int prune_size_mib)
 {
     assert(prune_enabled != Qt::Checked || prune_size_mib >= 1); // PruneSizeMiB and ParsePruneSizeMiB never return less
@@ -157,14 +157,14 @@ static common::SettingsValue PruneSettingFromMiB(Qt::CheckState prune_enabled, i
     }
 }
 
-//! Get pruning enabled value to show in GUI from bitcoin -prune setting.
+//! Get pruning enabled value to show in GUI from retardio -prune setting.
 static bool PruneEnabled(const common::SettingsValue& prune_setting)
 {
     // -prune=1 setting is manual pruning mode, so disabled for purposes of the gui
     return SettingToInt(prune_setting, 0) > 1;
 }
 
-//! Get pruning enabled value to show in GUI from bitcoin -prune setting.
+//! Get pruning enabled value to show in GUI from retardio -prune setting.
 static Qt::CheckState PruneSettingAsTristate(const common::SettingsValue& prune_setting)
 {
     switch (SettingToInt(prune_setting, 0)) {
@@ -177,7 +177,7 @@ static Qt::CheckState PruneSettingAsTristate(const common::SettingsValue& prune_
     }
 }
 
-//! Get pruning size value to show in GUI from bitcoin -prune setting. If
+//! Get pruning size value to show in GUI from retardio -prune setting. If
 //! pruning is not enabled, just show default recommended pruning size (2GB).
 static int PruneSizeAsMiB(const common::SettingsValue& prune_setting)
 {
@@ -200,7 +200,7 @@ static const QString fontchoice_str_custom_prefix{QStringLiteral("custom, ")};
 static const std::map<OutputType, std::pair<const char*, const char*>> UntranslatedOutputTypeDescriptions{
     {OutputType::LEGACY, {
         QT_TRANSLATE_NOOP("Output type name", "Base58 (Legacy)"),
-        QT_TRANSLATE_NOOP("Output type description", "Widest compatibility and best for health of the Bitcoin network, but may result in higher fees later. Recommended."),
+        QT_TRANSLATE_NOOP("Output type description", "Widest compatibility and best for health of the Retardio network, but may result in higher fees later. Recommended."),
     }},
     {OutputType::P2SH_SEGWIT, {
         QT_TRANSLATE_NOOP("Output type name", "Base58 (P2SH Segwit)"),
@@ -560,7 +560,7 @@ void OptionsModel::SetPruneTargetMiB(int prune_target_mib)
     m_prune_forced_by_gui = true;
 
     // Update settings.json if value configured in intro screen is different
-    // from saved value. Avoid writing settings.json if bitcoin.conf value
+    // from saved value. Avoid writing settings.json if retardio.conf value
     // doesn't need to be overridden.
     if (cur_value.write() != new_value.write()) {
         // Call UpdateRwSetting() instead of setOption() to avoid setting
@@ -1537,7 +1537,7 @@ void OptionsModel::checkAndMigrate()
     if (settingsVersion < CLIENT_VERSION)
     {
         // -dbcache was bumped from 100 to 300 in 0.13
-        // see https://github.com/bitcoin/bitcoin/pull/8273
+        // see https://github.com/retardio/retardio/pull/8273
         // force people to upgrade to the new value if they are using 100MB
         if (settingsVersion < 130000 && settings.contains("nDatabaseCache") && settings.value("nDatabaseCache").toLongLong() == 100)
             settings.setValue("nDatabaseCache", (qint64)(DEFAULT_DB_CACHE >> 20));
@@ -1607,6 +1607,6 @@ void OptionsModel::checkAndMigrate()
     // parameter interaction code to update other settings. This is particularly
     // important for the -listen setting, which should cause -listenonion, -upnp,
     // and other settings to default to false if it was set to false.
-    // (https://github.com/bitcoin-core/gui/issues/567).
+    // (https://github.com/retardio-core/gui/issues/567).
     node().initParameterInteraction();
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2022 The Bitcoin Core developers
+// Copyright (c) 2012-2022 The Retardio developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -312,60 +312,60 @@ BOOST_AUTO_TEST_CASE(patharg)
     BOOST_CHECK_EQUAL(local_args.GetPathArg("-dir"), win_root_path);
 #endif
 
-    const fs::path absolute_path{"/home/user/.bitcoin"};
-    ResetArgs(local_args, "-dir=/home/user/.bitcoin");
+    const fs::path absolute_path{"/home/user/.retardio"};
+    ResetArgs(local_args, "-dir=/home/user/.retardio");
     BOOST_CHECK_EQUAL(local_args.GetPathArg("-dir"), absolute_path);
 
-    ResetArgs(local_args, "-dir=/root/../home/user/.bitcoin");
+    ResetArgs(local_args, "-dir=/root/../home/user/.retardio");
     BOOST_CHECK_EQUAL(local_args.GetPathArg("-dir"), absolute_path);
 
-    ResetArgs(local_args, "-dir=/home/./user/.bitcoin");
+    ResetArgs(local_args, "-dir=/home/./user/.retardio");
     BOOST_CHECK_EQUAL(local_args.GetPathArg("-dir"), absolute_path);
 
-    ResetArgs(local_args, "-dir=/home/user/.bitcoin/");
+    ResetArgs(local_args, "-dir=/home/user/.retardio/");
     BOOST_CHECK_EQUAL(local_args.GetPathArg("-dir"), absolute_path);
 
-    ResetArgs(local_args, "-dir=/home/user/.bitcoin//");
+    ResetArgs(local_args, "-dir=/home/user/.retardio//");
     BOOST_CHECK_EQUAL(local_args.GetPathArg("-dir"), absolute_path);
 
-    ResetArgs(local_args, "-dir=/home/user/.bitcoin/.");
+    ResetArgs(local_args, "-dir=/home/user/.retardio/.");
     BOOST_CHECK_EQUAL(local_args.GetPathArg("-dir"), absolute_path);
 
-    ResetArgs(local_args, "-dir=/home/user/.bitcoin/./");
+    ResetArgs(local_args, "-dir=/home/user/.retardio/./");
     BOOST_CHECK_EQUAL(local_args.GetPathArg("-dir"), absolute_path);
 
-    ResetArgs(local_args, "-dir=/home/user/.bitcoin/.//");
+    ResetArgs(local_args, "-dir=/home/user/.retardio/.//");
     BOOST_CHECK_EQUAL(local_args.GetPathArg("-dir"), absolute_path);
 
-    const fs::path relative_path{"user/.bitcoin"};
-    ResetArgs(local_args, "-dir=user/.bitcoin");
+    const fs::path relative_path{"user/.retardio"};
+    ResetArgs(local_args, "-dir=user/.retardio");
     BOOST_CHECK_EQUAL(local_args.GetPathArg("-dir"), relative_path);
 
-    ResetArgs(local_args, "-dir=somewhere/../user/.bitcoin");
+    ResetArgs(local_args, "-dir=somewhere/../user/.retardio");
     BOOST_CHECK_EQUAL(local_args.GetPathArg("-dir"), relative_path);
 
-    ResetArgs(local_args, "-dir=user/./.bitcoin");
+    ResetArgs(local_args, "-dir=user/./.retardio");
     BOOST_CHECK_EQUAL(local_args.GetPathArg("-dir"), relative_path);
 
-    ResetArgs(local_args, "-dir=user/.bitcoin/");
+    ResetArgs(local_args, "-dir=user/.retardio/");
     BOOST_CHECK_EQUAL(local_args.GetPathArg("-dir"), relative_path);
 
-    ResetArgs(local_args, "-dir=user/.bitcoin//");
+    ResetArgs(local_args, "-dir=user/.retardio//");
     BOOST_CHECK_EQUAL(local_args.GetPathArg("-dir"), relative_path);
 
-    ResetArgs(local_args, "-dir=user/.bitcoin/.");
+    ResetArgs(local_args, "-dir=user/.retardio/.");
     BOOST_CHECK_EQUAL(local_args.GetPathArg("-dir"), relative_path);
 
-    ResetArgs(local_args, "-dir=user/.bitcoin/./");
+    ResetArgs(local_args, "-dir=user/.retardio/./");
     BOOST_CHECK_EQUAL(local_args.GetPathArg("-dir"), relative_path);
 
-    ResetArgs(local_args, "-dir=user/.bitcoin/.//");
+    ResetArgs(local_args, "-dir=user/.retardio/.//");
     BOOST_CHECK_EQUAL(local_args.GetPathArg("-dir"), relative_path);
 
     // Check negated and default argument handling. Specifying an empty argument
     // is the same as not specifying the argument. This is convenient for
     // scripting so later command line arguments can override earlier command
-    // line arguments or bitcoin.conf values. Currently the -dir= case cannot be
+    // line arguments or retardio.conf values. Currently the -dir= case cannot be
     // distinguished from -dir case with no assignment, but #16545 would add the
     // ability to distinguish these in the future (and treat the no-assign case
     // like an imperative command or an error).

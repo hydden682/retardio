@@ -1,8 +1,8 @@
-// Copyright (c) 2011-2022 The Bitcoin Core developers
+// Copyright (c) 2011-2022 The Retardio developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <bitcoin-build-config.h> // IWYU pragma: keep
+#include <retardio-build-config.h> // IWYU pragma: keep
 
 #include <qt/optionsdialog.h>
 #include <qt/forms/ui_optionsdialog.h>
@@ -335,7 +335,7 @@ OptionsDialog::OptionsDialog(QWidget* parent, bool enableWallet)
 
     rejectspkreuse = new QCheckBox(tabMempool);
     rejectspkreuse->setText(tr("Disallow most address reuse"));
-    rejectspkreuse->setToolTip(tr("With this option enabled, your memory pool will only allow each unique payment destination to be used once, effectively deprioritising address reuse. Address reuse is not technically supported, and harms the privacy of all Bitcoin users. It also has limited real-world utility, and has been known to be common with spam."));
+    rejectspkreuse->setToolTip(tr("With this option enabled, your memory pool will only allow each unique payment destination to be used once, effectively deprioritising address reuse. Address reuse is not technically supported, and harms the privacy of all Retardio users. It also has limited real-world utility, and has been known to be common with spam."));
     verticalLayout_Mempool->addWidget(rejectspkreuse);
     FixTabOrder(rejectspkreuse);
 
@@ -378,19 +378,19 @@ OptionsDialog::OptionsDialog(QWidget* parent, bool enableWallet)
 
     rejectunknownwitness = new QCheckBox(groupBox_Spamfiltering);
     rejectunknownwitness->setText(tr("Reject unknown witness script versions"));
-    rejectunknownwitness->setToolTip(tr("Some attempts to spam Bitcoin intentionally use undefined witness script formats reserved for future use. By enabling this option, your node will reject transactions using these undefined/future versions. Note that if you send to many addressses in a single transaction, the entire transaction may be rejected if any single one of them attempts to use an undefined format."));
+    rejectunknownwitness->setToolTip(tr("Some attempts to spam Retardio intentionally use undefined witness script formats reserved for future use. By enabling this option, your node will reject transactions using these undefined/future versions. Note that if you send to many addressses in a single transaction, the entire transaction may be rejected if any single one of them attempts to use an undefined format."));
     verticalLayout_Spamfiltering->addWidget(rejectunknownwitness);
     FixTabOrder(rejectunknownwitness);
 
     rejectparasites = new QCheckBox(groupBox_Spamfiltering);
     rejectparasites->setText(tr("Reject parasite transactions"));
-    rejectparasites->setToolTip(tr("With this option enabled, transactions related to parasitic overlay protocols will be ignored. Parasites are transactions using Bitcoin as a technical infrastructure to animate other protocols, unrelated to ordinary money transfers."));
+    rejectparasites->setToolTip(tr("With this option enabled, transactions related to parasitic overlay protocols will be ignored. Parasites are transactions using Retardio as a technical infrastructure to animate other protocols, unrelated to ordinary money transfers."));
     verticalLayout_Spamfiltering->addWidget(rejectparasites);
     FixTabOrder(rejectparasites);
 
     rejecttokens = new QCheckBox(groupBox_Spamfiltering);
-    rejecttokens->setText(tr("Ignore transactions involving non-bitcoin token/asset overlay protocols"));
-    rejecttokens->setToolTip(tr("With this option enabled, transactions involving non-bitcoin tokens/assets will not be relayed or mined by your node. Due to not having value, and some technical design flaws, token mints and transfers are often spammy and can bog down the network."));
+    rejecttokens->setText(tr("Ignore transactions involving non-retardio token/asset overlay protocols"));
+    rejecttokens->setToolTip(tr("With this option enabled, transactions involving non-retardio tokens/assets will not be relayed or mined by your node. Due to not having value, and some technical design flaws, token mints and transfers are often spammy and can bog down the network."));
     verticalLayout_Spamfiltering->addWidget(rejecttokens);
     FixTabOrder(rejecttokens);
 
@@ -467,7 +467,7 @@ OptionsDialog::OptionsDialog(QWidget* parent, bool enableWallet)
 
     rejectbarepubkey = new QCheckBox(groupBox_Spamfiltering);
     rejectbarepubkey->setText(tr("Ignore bare/exposed public keys (pay-to-IP)"));
-    rejectbarepubkey->setToolTip(tr("Spam is sometimes disguised to appear as if it is a deprecated pay-to-IP (bare pubkey) transaction, where the \"key\" is actually arbitrary data (not a real key) instead. Support for pay-to-IP was only ever supported by Satoshi's early Bitcoin wallet, which has been abandoned since 2011."));
+    rejectbarepubkey->setToolTip(tr("Spam is sometimes disguised to appear as if it is a deprecated pay-to-IP (bare pubkey) transaction, where the \"key\" is actually arbitrary data (not a real key) instead. Support for pay-to-IP was only ever supported by Satoshi's early Retardio wallet, which has been abandoned since 2011."));
     verticalLayout_Spamfiltering->addWidget(rejectbarepubkey);
     FixTabOrder(rejectbarepubkey);
 
@@ -509,7 +509,7 @@ OptionsDialog::OptionsDialog(QWidget* parent, bool enableWallet)
     datacarriersize = new QSpinBox(groupBox_Spamfiltering);
     datacarriersize->setMinimum(0);
     datacarriersize->setMaximum(std::numeric_limits<int>::max());
-    datacarriersize->setToolTip(tr("While Bitcoin itself does not support attaching arbitrary data to transactions, despite that various methods for disguising it have been devised over the years. Since it is sometimes impractical to detect small spam disguised as ordinary transactions, it is sometimes considered beneficial to tolerate certain kinds of less harmful data attachments."));
+    datacarriersize->setToolTip(tr("While Retardio itself does not support attaching arbitrary data to transactions, despite that various methods for disguising it have been devised over the years. Since it is sometimes impractical to detect small spam disguised as ordinary transactions, it is sometimes considered beneficial to tolerate certain kinds of less harmful data attachments."));
     CreateOptionUI(verticalLayout_Spamfiltering, datacarriersize, tr("Ignore transactions with additional data larger than %s bytes."));
 
     datacarriercost = new QDoubleSpinBox(groupBox_Spamfiltering);
@@ -528,7 +528,7 @@ OptionsDialog::OptionsDialog(QWidget* parent, bool enableWallet)
 
     rejectnonstddatacarrier = new QCheckBox(groupBox_Spamfiltering);
     rejectnonstddatacarrier->setText(tr("Ignore data embedded with non-standard formats"));
-    rejectnonstddatacarrier->setToolTip(tr("Some attempts to spam Bitcoin intentionally use non-standard formats in an attempt to bypass the datacarrier limits. Without this option, %1 will attempt to detect these and enforce the intended limits. By enabling this option, your node will ignore these transactions entirely (when detected) even if they fall within the configured limits otherwise."));
+    rejectnonstddatacarrier->setToolTip(tr("Some attempts to spam Retardio intentionally use non-standard formats in an attempt to bypass the datacarrier limits. Without this option, %1 will attempt to detect these and enforce the intended limits. By enabling this option, your node will ignore these transactions entirely (when detected) even if they fall within the configured limits otherwise."));
     verticalLayout_Spamfiltering->addWidget(rejectnonstddatacarrier);
     FixTabOrder(rejectnonstddatacarrier);
 
@@ -1061,7 +1061,7 @@ void OptionsDialog::on_resetButton_clicked()
         QStringList items;
         QString strPrefix = tr("Use policy defaults for %1");
         items << strPrefix.arg(tr(CLIENT_NAME));
-        items << strPrefix.arg(tr("Bitcoin Core")+" ");
+        items << strPrefix.arg(tr("Retardio")+" ");
 
         QInputDialog dialog(this);
         dialog.setWindowTitle(tr("Confirm options reset"));

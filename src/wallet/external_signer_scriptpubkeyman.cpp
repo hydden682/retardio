@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2022 The Bitcoin Core developers
+// Copyright (c) 2020-2022 The Retardio developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -53,7 +53,7 @@ ExternalSigner ExternalSignerScriptPubKeyMan::GetExternalSigner() {
 
 util::Result<ExternalSigner> ExternalSignerScriptPubKeyMan::GetExternalSigner2() {
     const std::string command = gArgs.GetArg("-signer", "");
-    if (command == "") return util::Error{Untranslated("restart bitcoind with -signer=<cmd>")};
+    if (command == "") return util::Error{Untranslated("restart retardiod with -signer=<cmd>")};
     std::vector<ExternalSigner> signers;
     ExternalSigner::Enumerate(command, signers, Params().GetChainTypeString());
     if (signers.empty()) return util::Error{Untranslated("No external signers found")};

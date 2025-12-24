@@ -1,4 +1,4 @@
-# Copyright (c) 2023-present The Bitcoin Core developers
+# Copyright (c) 2023-present The Retardio developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or https://opensource.org/license/mit/.
 
@@ -10,7 +10,7 @@ add_library(bitcoinconsensus
 )
 target_compile_definitions(bitcoinconsensus
   PRIVATE
-    BUILD_BITCOIN_INTERNAL
+    BUILD_RETARDIO_INTERNAL
 )
 target_link_libraries(bitcoinconsensus
   PRIVATE
@@ -53,10 +53,10 @@ if(NOT BUILD_SHARED_LIBS)
   list(TRANSFORM all_consensus_static_link_libs PREPEND "-l")
   # LIBS_PRIVATE is substituted in the pkg-config file.
   list(JOIN all_consensus_static_link_libs " " LIBS_PRIVATE)
-  target_compile_definitions(bitcoinconsensus PRIVATE STATIC_LIBBITCOINCONSENSUS)
-  set(MAYBE_DEFINE_STATIC_LIBBITCOINCONSENSUS "-DSTATIC_LIBBITCOINCONSENSUS")
+  target_compile_definitions(bitcoinconsensus PRIVATE STATIC_LIBRETARDIOCONSENSUS)
+  set(MAYBE_DEFINE_STATIC_LIBRETARDIOCONSENSUS "-DSTATIC_LIBRETARDIOCONSENSUS")
 else()
-  set(MAYBE_DEFINE_STATIC_LIBBITCOINCONSENSUS )
+  set(MAYBE_DEFINE_STATIC_LIBRETARDIOCONSENSUS )
 endif()
 
 configure_file(${PROJECT_SOURCE_DIR}/libbitcoinconsensus.pc.in ${PROJECT_BINARY_DIR}/libbitcoinconsensus.pc @ONLY)

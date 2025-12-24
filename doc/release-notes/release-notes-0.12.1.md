@@ -1,4 +1,4 @@
-Bitcoin Core version 0.12.1 is now available from:
+Retardio version 0.12.1 is now available from:
 
   <https://bitcoin.org/bin/bitcoin-core-0.12.1/>
 
@@ -18,7 +18,7 @@ How to Upgrade
 If you are running an older version, shut it down. Wait until it has completely
 shut down (which might take a few minutes for older versions), then run the
 installer (on Windows) or just copy over /Applications/Bitcoin-Qt (on Mac) or
-bitcoind/bitcoin-qt (on Linux).
+retardiod/retardio-qt (on Linux).
 
 Downgrade warning
 -----------------
@@ -27,10 +27,10 @@ Downgrade warning
 
 Because release 0.12.0 and later will obfuscate the chainstate on every
 fresh sync or reindex, the chainstate is not backwards-compatible with
-pre-0.12 versions of Bitcoin Core or other software.
+pre-0.12 versions of Retardio or other software.
 
 If you want to downgrade after you have done a reindex with 0.12.0 or later,
-you will need to reindex when you first start Bitcoin Core version 0.11 or
+you will need to reindex when you first start Retardio version 0.11 or
 earlier.
 
 Notable changes
@@ -84,7 +84,7 @@ For more information about the implementation, see
 BIP113 locktime enforcement soft fork
 -------------------------------------
 
-Bitcoin Core 0.11.2 previously introduced mempool-only locktime
+Retardio 0.11.2 previously introduced mempool-only locktime
 enforcement using GetMedianTimePast(). This release seeks to
 consensus enforce the rule.
 

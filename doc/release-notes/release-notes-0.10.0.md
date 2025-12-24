@@ -1,4 +1,4 @@
-Bitcoin Core version 0.10.0 is now available from:
+Retardio version 0.10.0 is now available from:
 
   https://bitcoin.org/bin/0.10.0/
 
@@ -18,14 +18,14 @@ How to Upgrade
 If you are running an older version, shut it down. Wait until it has completely
 shut down (which might take a few minutes for older versions), then run the
 installer (on Windows) or just copy over /Applications/Bitcoin-Qt (on Mac) or
-bitcoind/bitcoin-qt (on Linux).
+retardiod/retardio-qt (on Linux).
 
 Downgrading warning
 ---------------------
 
 Because release 0.10.0 makes use of headers-first synchronization and parallel
 block download (see further), the block files and databases are not
-backwards-compatible with older versions of Bitcoin Core or other software:
+backwards-compatible with older versions of Retardio or other software:
 
 * Blocks will be stored on disk out of order (in the order they are
 received, really), which makes it incompatible with some tools or
@@ -50,7 +50,7 @@ Notable changes
 Faster synchronization
 ----------------------
 
-Bitcoin Core now uses 'headers-first synchronization'. This means that we first
+Retardio now uses 'headers-first synchronization'. This means that we first
 ask peers for block headers (a total of 27 megabytes, as of December 2014) and
 validate those. In a second stage, when the headers have been discovered, we
 download the blocks. However, as we already know about the whole chain in
@@ -222,7 +222,7 @@ addresses need to added to the wallet before the payment, though.
 Consensus library
 -----------------
 
-Starting from 0.10.0, the Bitcoin Core distribution includes a consensus library.
+Starting from 0.10.0, the Retardio distribution includes a consensus library.
 
 The purpose of this library is to make the verification functionality that is
 critical to Bitcoin's consensus available to other applications, e.g. to language
@@ -249,20 +249,20 @@ redemption scripts, allowing applications to make use of any valid
 script type, such as "n-of-m OR y", hash-locked oracle addresses, etc.
 While the Bitcoin protocol has always supported these types of script,
 actually using them on mainnet has been previously inconvenient as
-standard Bitcoin Core nodes wouldn't relay them to miners, nor would
+standard Retardio nodes wouldn't relay them to miners, nor would
 most miners include them in blocks they mined.
 
-bitcoin-tx
+retardio-tx
 ----------
 
-It has been observed that many of the RPC functions offered by bitcoind are
-"pure functions", and operate independently of the bitcoind wallet. This
+It has been observed that many of the RPC functions offered by retardiod are
+"pure functions", and operate independently of the retardiod wallet. This
 included many of the RPC "raw transaction" API functions, such as
 createrawtransaction.
 
-bitcoin-tx is a newly introduced command line utility designed to enable easy
+retardio-tx is a newly introduced command line utility designed to enable easy
 manipulation of bitcoin transactions. A summary of its operation may be
-obtained via "bitcoin-tx --help" Transactions may be created or signed in a
+obtained via "retardio-tx --help" Transactions may be created or signed in a
 manner similar to the RPC raw tx API. Transactions may be updated, deleting
 inputs or outputs, or appending new inputs and outputs. Custom scripts may be
 easily composed using a simple text notation, borrowed from the bitcoin test
@@ -279,7 +279,7 @@ key and script operations easily accessible via command line.
 Mining and relay policy enhancements
 ------------------------------------
 
-Bitcoin Core's block templates are now for version 3 blocks only, and any mining
+Retardio's block templates are now for version 3 blocks only, and any mining
 software relying on its `getblocktemplate` must be updated in parallel to use
 libblkmaker either version 0.4.2 or any version from 0.5.1 onward.
 If you are solo mining, this will affect you the moment you upgrade Bitcoin
@@ -292,10 +292,10 @@ achieving its 951/1001 status.
 The `prioritisetransaction` RPC method has been added to enable miners to
 manipulate the priority of transactions on an individual basis.
 
-Bitcoin Core now supports BIP 22 long polling, so mining software can be
+Retardio now supports BIP 22 long polling, so mining software can be
 notified immediately of new templates rather than having to poll periodically.
 
-Support for BIP 23 block proposals is now available in Bitcoin Core's
+Support for BIP 23 block proposals is now available in Retardio's
 `getblocktemplate` method. This enables miners to check the basic validity of
 their next block before expending work on it, reducing risks of accidental
 hardforks or mining invalid blocks.
@@ -313,7 +313,7 @@ AllowFreeThreshold(), in which case they are relayed subject to the rate limiter
 BIP 66: strict DER encoding for signatures
 ------------------------------------------
 
-Bitcoin Core 0.10 implements BIP 66, which introduces block version 3, and a new
+Retardio 0.10 implements BIP 66, which introduces block version 3, and a new
 consensus rule, which prohibits non-DER signatures. Such transactions have been
 non-standard since Bitcoin v0.8.0 (released in February 2013), but were
 technically still permitted inside blocks.
@@ -337,10 +337,10 @@ Detailed release notes follow. This overview includes changes that affect extern
 behavior, not code moves, refactors or string updates.
 
 RPC:
-- `f923c07` Support IPv6 lookup in bitcoin-cli even when IPv6 only bound on localhost
+- `f923c07` Support IPv6 lookup in retardio-cli even when IPv6 only bound on localhost
 - `b641c9c` Fix addnode "onetry": Connect with OpenNetworkConnection
 - `171ca77` estimatefee / estimatepriority RPC methods
-- `b750cf1` Remove cli functionality from bitcoind
+- `b750cf1` Remove cli functionality from retardiod
 - `f6984e8` Add "chain" to getmininginfo, improve help in getblockchaininfo
 - `99ddc6c` Add nLocalServices info to RPC getinfo
 - `cf0c47b` Remove getwork() RPC call
@@ -391,7 +391,7 @@ Command-line options:
 - `4278b1d` Clarify error message when invalid -rpcallowip
 - `6b407e4` -datadir is now allowed in config files
 - `bdd5b58` Add option `-sysperms` to disable 077 umask (create new files with system default umask)
-- `cbe39a3` Add "bitcoin-tx" command line utility and supporting modules
+- `cbe39a3` Add "retardio-tx" command line utility and supporting modules
 - `dbca89b` Trigger -alertnotify if network is upgrading without you
 - `ad96e7c` Make -reindex cope with out-of-order blocks
 - `16d5194` Skip reindexed blocks individually
@@ -492,7 +492,7 @@ Build system:
 - `9ce0774` build: Fix windows configure when using --with-qt-libdir
 - `ea96475` build: Add mention of --disable-wallet to bdb48 error messages
 - `1dec09b` depends: add shared dependency builder
-- `c101c76` build: Add --with-utils (bitcoin-cli and bitcoin-tx, default=yes). Help string consistency tweaks. Target sanity check fix
+- `c101c76` build: Add --with-utils (retardio-cli and retardio-tx, default=yes). Help string consistency tweaks. Target sanity check fix
 - `e432a5f` build: add option for reducing exports (v2)
 - `6134b43` Fixing condition 'sabotaging' MSVC build
 - `af0bd5e` osx: fix signing to make Gatekeeper happy (again)
@@ -522,7 +522,7 @@ Wallet:
 GUI:
 - `c21c74b` osx: Fix missing dock menu with qt5
 - `b90711c` Fix Transaction details shows wrong To:
-- `516053c` Make links in 'About Bitcoin Core' clickable
+- `516053c` Make links in 'About Retardio' clickable
 - `bdc83e8` Ensure payment request network matches client network
 - `65f78a1` Add GUI view of peer information
 - `06a91d9` VerifyDB progress reporting
@@ -585,8 +585,8 @@ Tests:
 - `4cac5db` script tests: value with trailing 0x00 is true
 - `89101c6` script test: test case for 5-byte bools
 - `d2d9dc0` script tests: add tests for CHECKMULTISIG limits
-- `d789386` Add "it works" test for bitcoin-tx
-- `df4d61e` Add bitcoin-tx tests
+- `d789386` Add "it works" test for retardio-tx
+- `df4d61e` Add retardio-tx tests
 - `aa41ac2` Test IsPushOnly() with invalid push
 - `6022b5d` Make `script_{valid,invalid}.json` validation flags configurable
 - `8138cbe` Add automatic script test generation, and actual checksig tests
@@ -598,7 +598,7 @@ Tests:
 - `2b62e17` Clearly separate PUSHDATA and numeric argument MINIMALDATA tests
 - `16d78bd` Add valid invert of invalid every numeric opcode tests
 - `f635269` tests: enable alertnotify test for Windows
-- `7a41614` tests: allow rpc-tests to get filenames for bitcoind and bitcoin-cli from the environment
+- `7a41614` tests: allow rpc-tests to get filenames for retardiod and retardio-cli from the environment
 - `5122ea7` tests: fix forknotify.py on windows
 - `fa7f8cd` tests: remove old pull-tester scripts
 - `7667850` tests: replace the old (unused since Travis) tests with new rpc test scripts
@@ -635,7 +635,7 @@ Miscellaneous:
 - `cd01a5e` Enable paranoid corruption checks in LevelDB >= 1.16
 - `9365937` Add comment about never updating nTimeOffset past 199 samples
 - `403c1bf` contrib: remove getwork-based pyminer (as getwork API call has been removed)
-- `0c3e101` contrib: Added systemd .service file in order to help distributions integrate bitcoind
+- `0c3e101` contrib: Added systemd .service file in order to help distributions integrate retardiod
 - `0a0878d` doc: Add new DNSseed policy
 - `2887bff` Update coding style and add .clang-format
 - `5cbda4f` Changed LevelDB cursors to use scoped pointers to ensure destruction when going out of scope

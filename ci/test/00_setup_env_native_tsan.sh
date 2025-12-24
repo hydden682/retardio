@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-present The Bitcoin Core developers
+# Copyright (c) 2019-present The Retardio Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -14,6 +14,6 @@ LIBCXX_FLAGS="-fsanitize=thread -nostdinc++ -nostdlib++ -isystem ${LIBCXX_DIR}in
 export PACKAGES="clang-${APT_LLVM_V} llvm-${APT_LLVM_V} llvm-${APT_LLVM_V}-dev libclang-${APT_LLVM_V}-dev libclang-rt-${APT_LLVM_V}-dev python3-zmq ninja-build"
 export DEP_OPTS="CC=clang CXX=clang++ CXXFLAGS='${LIBCXX_FLAGS}' NO_QT=1"
 export GOAL="install"
-export BITCOIN_CONFIG="-DWITH_ZMQ=ON -DSANITIZERS=thread \
+export RETARDIO_CONFIG="-DWITH_ZMQ=ON -DSANITIZERS=thread \
 -DAPPEND_CPPFLAGS='-DARENA_DEBUG -DDEBUG_LOCKCONTENTION -D_LIBCPP_REMOVE_TRANSITIVE_INCLUDES'"
 export USE_INSTRUMENTED_LIBCPP="Thread"

@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2022 The Bitcoin Core developers
+// Copyright (c) 2011-2022 The Retardio developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -1293,7 +1293,7 @@ static auto InitBlocksdirXorKey(const BlockManager::Options& opts)
         // Create initial or missing xor key file
         AutoFile xor_key_file{fsbridge::fopen(xor_key_path,
 #ifdef __MINGW64__
-            "wb" // Temporary workaround for https://github.com/bitcoin/bitcoin/issues/30210
+            "wb" // Temporary workaround for https://github.com/retardio/retardio/issues/30210
 #else
             "wbx"
 #endif

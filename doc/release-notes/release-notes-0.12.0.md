@@ -1,4 +1,4 @@
-Bitcoin Core version 0.12.0 is now available from:
+Retardio version 0.12.0 is now available from:
 
   <https://bitcoin.org/bin/bitcoin-core-0.12.0/>
 
@@ -17,7 +17,7 @@ How to Upgrade
 If you are running an older version, shut it down. Wait until it has completely
 shut down (which might take a few minutes for older versions), then run the
 installer (on Windows) or just copy over /Applications/Bitcoin-Qt (on Mac) or
-bitcoind/bitcoin-qt (on Linux).
+retardiod/retardio-qt (on Linux).
 
 Downgrade warning
 -----------------
@@ -26,7 +26,7 @@ Downgrade warning
 
 Because release 0.10.0 and later makes use of headers-first synchronization and
 parallel block download (see further), the block files and databases are not
-backwards-compatible with pre-0.10 versions of Bitcoin Core or other software:
+backwards-compatible with pre-0.10 versions of Retardio or other software:
 
 * Blocks will be stored on disk out of order (in the order they are
 received, really), which makes it incompatible with some tools or
@@ -48,10 +48,10 @@ This does not affect wallet forward or backward compatibility.
 
 Because release 0.12.0 and later will obfuscate the chainstate on every
 fresh sync or reindex, the chainstate is not backwards-compatible with
-pre-0.12 versions of Bitcoin Core or other software.
+pre-0.12 versions of Retardio or other software.
 
 If you want to downgrade after you have done a reindex with 0.12.0 or later,
-you will need to reindex when you first start Bitcoin Core version 0.11 or
+you will need to reindex when you first start Retardio version 0.11 or
 earlier.
 
 Notable changes
@@ -107,15 +107,15 @@ can often prevent an extra roundtrip before the actual block is downloaded.
 Memory pool limiting
 --------------------
 
-Previous versions of Bitcoin Core had their mempool limited by checking
+Previous versions of Retardio had their mempool limited by checking
 a transaction's fees against the node's minimum relay fee. There was no
 upper bound on the size of the mempool and attackers could send a large
 number of transactions paying just slighly more than the default minimum
 relay fee to crash nodes with relatively low RAM. A temporary workaround
-for previous versions of Bitcoin Core was to raise the default minimum
+for previous versions of Retardio was to raise the default minimum
 relay fee.
 
-Bitcoin Core 0.12 will have a strict maximum size on the mempool. The
+Retardio 0.12 will have a strict maximum size on the mempool. The
 default value is 300 MB and can be configured with the `-maxmempool`
 parameter. Whenever a transaction would cause the mempool to exceed
 its maximum size, the transaction that (along with in-mempool descendants) has
@@ -124,7 +124,7 @@ minimum relay feerate will be increased to match this feerate plus the initial
 minimum relay feerate. The initial minimum relay feerate is set to
 1000 satoshis per kB.
 
-Bitcoin Core 0.12 also introduces new default policy limits on the length and
+Retardio 0.12 also introduces new default policy limits on the length and
 size of unconfirmed transaction chains that are allowed in the mempool
 (generally limiting the length of unconfirmed chains to 25 transactions, with a
 total size of 101 KB).  These limits can be overridden using command line
@@ -134,7 +134,7 @@ Opt-in Replace-by-fee transactions
 ----------------------------------
 
 It is now possible to replace transactions in the transaction memory pool of
-Bitcoin Core 0.12 nodes. Bitcoin Core will only allow replacement of
+Retardio 0.12 nodes. Retardio will only allow replacement of
 transactions which have any of their inputs' `nSequence` number set to less
 than `0xffffffff - 1`.  Moreover, a replacement transaction may only be
 accepted when it pays sufficient fee, as described in [BIP 125]
@@ -156,7 +156,7 @@ updated RPC calls `gettransaction` and `listtransactions`, which now have an
 additional field in the output indicating if a transaction is replaceable under
 BIP125 ("bip125-replaceable").
 
-Note that the wallet in Bitcoin Core 0.12 does not yet have support for
+Note that the wallet in Retardio 0.12 does not yet have support for
 creating transactions that would be replaceable under BIP 125.
 
 
@@ -173,7 +173,7 @@ overridden with the option `-rpccookiefile`.
 This is similar to Tor's CookieAuthentication: see
 https://www.torproject.org/docs/tor-manual.html.en
 
-This allows running bitcoind without having to do any manual configuration.
+This allows running retardiod without having to do any manual configuration.
 
 Relay: Any sequence of pushdatas in OP_RETURN outputs now allowed
 -----------------------------------------------------------------
@@ -196,14 +196,14 @@ returned (previously all relevant hashes were returned).
 Relay and Mining: Priority transactions
 ---------------------------------------
 
-Bitcoin Core has a heuristic 'priority' based on coin value and age. This
+Retardio has a heuristic 'priority' based on coin value and age. This
 calculation is used for relaying of transactions which do not pay the
 minimum relay fee, and can be used as an alternative way of sorting
-transactions for mined blocks. Bitcoin Core will relay transactions with
+transactions for mined blocks. Retardio will relay transactions with
 insufficient fees depending on the setting of `-limitfreerelay=<r>` (default:
 `r=15` kB per minute) and `-blockprioritysize=<s>`.
 
-In Bitcoin Core 0.12, when mempool limit has been reached a higher minimum
+In Retardio 0.12, when mempool limit has been reached a higher minimum
 relay fee takes effect to limit memory usage. Transactions which do not meet
 this higher effective minimum relay fee will not be relayed or mined even if
 they rank highly according to the priority heuristic.
@@ -224,7 +224,7 @@ Note, however, that if mining priority transactions is left disabled, the
 priority delta will be ignored and only the fee metric will be effective.
 
 This internal automatic prioritization handling is being considered for removal
-entirely in Bitcoin Core 0.13, and it is at this time undecided whether the
+entirely in Retardio 0.13, and it is at this time undecided whether the
 more accurate priority calculation for chained unconfirmed transactions will be
 restored. Community direction on this topic is particularly requested to help
 set project priorities.
@@ -234,15 +234,15 @@ Automatically use Tor hidden services
 
 Starting with Tor version 0.2.7.1 it is possible, through Tor's control socket
 API, to create and destroy 'ephemeral' hidden services programmatically.
-Bitcoin Core has been updated to make use of this.
+Retardio has been updated to make use of this.
 
 This means that if Tor is running (and proper authorization is available),
-Bitcoin Core automatically creates a hidden service to listen on, without
-manual configuration. Bitcoin Core will also use Tor automatically to connect
+Retardio automatically creates a hidden service to listen on, without
+manual configuration. Retardio will also use Tor automatically to connect
 to other .onion nodes if the control socket can be successfully opened. This
 will positively affect the number of available .onion nodes and their usage.
 
-This new feature is enabled by default if Bitcoin Core is listening, and
+This new feature is enabled by default if Retardio is listening, and
 a connection to Tor can be made. It can be configured with the `-listenonion`,
 `-torcontrol` and `-torpassword` settings. To show verbose debugging
 information, pass `-debug=tor`.
@@ -264,7 +264,7 @@ transaction fees.
 
 Users can decide to pay a predefined fee rate by setting `-paytxfee=<n>`
 (or `settxfee <n>` rpc during runtime). A value of `n=0` signals Bitcoin
-Core to use floating fees. By default, Bitcoin Core will use floating
+Core to use floating fees. By default, Retardio will use floating
 fees.
 
 Based on past transaction data, floating fees approximate the fees
@@ -275,9 +275,9 @@ Sometimes, it is not possible to give good estimates, or an estimate
 at all. Therefore, a fallback value can be set with `-fallbackfee=<f>`
 (default: `0.0002` BTC/kB).
 
-At all times, Bitcoin Core will cap fees at `-maxtxfee=<x>` (default:
+At all times, Retardio will cap fees at `-maxtxfee=<x>` (default:
 0.10) BTC.
-Furthermore, Bitcoin Core will never create transactions paying less than
+Furthermore, Retardio will never create transactions paying less than
 the current minimum relay fee.
 Finally, a user can set the minimum fee rate for all transactions with
 `-mintxfee=<i>`, which defaults to 1000 satoshis per kB.
@@ -379,7 +379,7 @@ and are affected by this change:
 - RPC `decodescript`
 - REST `/rest/tx/` (JSON format)
 - REST `/rest/block/` (JSON format when including extended tx details)
-- `bitcoin-tx -json`
+- `retardio-tx -json`
 
 For example, the `scriptSig.asm` property of a transaction input that
 previously showed an assembly representation of:
@@ -436,7 +436,7 @@ caching. A sample config for apache2 could look like:
         # AuthType Digest
         # ...
 
-        # optional bypass bitcoind rpc basic auth
+        # optional bypass retardiod rpc basic auth
         # RequestHeader set Authorization "Basic <hash>"
         # get the <hash> from the shell with: base64 <<< bitcoinrpc:<password>
     </Location>
@@ -459,7 +459,7 @@ Other P2P Changes
 -----------------
 
 The list of banned peers is now stored on disk rather than in memory.
-Restarting bitcoind will no longer clear out the list of banned peers; instead
+Restarting retardiod will no longer clear out the list of banned peers; instead
 a new RPC call (`clearbanned`) can be used to manually clear the list.  The new
 `setban` RPC call can also be used to manually ban or unban a peer.
 
@@ -644,7 +644,7 @@ git merge commit are mentioned.
 - #6373 `1ae3196` depends: non-qt bumps for 0.12 (Cory Fields)
 - #6434 `059b352` Preserve user-passed CXXFLAGS with --enable-debug (Gavin Andresen)
 - #6501 `fee6554` Misc build fixes (Cory Fields)
-- #6600 `ef4945f` Include bitcoin-tx binary on Debian/Ubuntu (Zak Wilcox)
+- #6600 `ef4945f` Include retardio-tx binary on Debian/Ubuntu (Zak Wilcox)
 - #6619 `4862708` depends: bump miniupnpc and ccache (Michael Ford)
 - #6801 `ae69a75` [depends] Latest config.guess and config.sub (Michael Ford)
 - #6938 `193f7b5` build: If both Qt4 and Qt5 are installed, use Qt5 (Wladimir J. van der Laan)
@@ -719,7 +719,7 @@ git merge commit are mentioned.
 - #6337 `0564c5b` Testing infrastructure: mocktime fixes (Gavin Andresen)
 - #6350 `60abba1` add unit tests for the decodescript rpc (mruddy)
 - #5881 `3203a08` Fix and improve txn_doublespend.py test (Tom Harding)
-- #6390 `6a73d66` tests: Fix bitcoin-tx signing test case (Wladimir J. van der Laan)
+- #6390 `6a73d66` tests: Fix retardio-tx signing test case (Wladimir J. van der Laan)
 - #6368 `7fc25c2` CLTV: Add more tests to improve coverage (Esteban Ordano)
 - #6414 `5121c68` Fix intermittent test failure, reduce test time (Tom Harding)
 - #6417 `44fa82d` [QA] fix possible reorg issue in (fund)rawtransaction(s).py RPC test (Jonas Schnelli)
@@ -732,7 +732,7 @@ git merge commit are mentioned.
 - #6509 `bb4faee` Fix race condition on test node shutdown (Casey Rodarmor)
 - #6523 `561f8af` Add p2p-fullblocktest.py (Casey Rodarmor)
 - #6590 `981fd92` Fix stale socket rebinding and re-enable python tests for Windows (Cory Fields)
-- #6730 `cb4d6d0` build: Remove dependency of bitcoin-cli on secp256k1 (Wladimir J. van der Laan)
+- #6730 `cb4d6d0` build: Remove dependency of retardio-cli on secp256k1 (Wladimir J. van der Laan)
 - #6616 `5ab5dca` Regression Tests: Migrated rpc-tests.sh to all Python rpc-tests.py (Peter Tschipper)
 - #6720 `d479311` Creates unittests for addrman, makes addrman more testable. (Ethan Heilman)
 - #6853 `c834f56` Added fPowNoRetargeting field to Consensus::Params (Eric Lombrozo)
@@ -764,7 +764,7 @@ git merge commit are mentioned.
 - #5975 `1fea667` Consensus: Decouple ContextualCheckBlockHeader from checkpoints (Jorge Timón)
 - #6061 `eba2f06` Separate Consensus::CheckTxInputs and GetSpendHeight in CheckInputs (Jorge Timón)
 - #5994 `786ed11` detach wallet from miner (Jonas Schnelli)
-- #6387 `11576a5` [bitcoin-cli] improve error output (Jonas Schnelli)
+- #6387 `11576a5` [retardio-cli] improve error output (Jonas Schnelli)
 - #6401 `6db53b4` Add BITCOIND_SIGTERM_TIMEOUT to OpenRC init scripts (Florian Schmaus)
 - #6430 `b01981e` doc: add documentation for shared library libbitcoinconsensus (Braydon Fuller)
 - #6372 `dcc495e` Update Linearize tool to support Windows paths; fix variable scope; update README and example configuration (Paul Georgiou)

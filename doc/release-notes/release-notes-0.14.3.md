@@ -1,4 +1,4 @@
-Bitcoin Core version *0.14.3* is now available from:
+Retardio version *0.14.3* is now available from:
 
   <https://bitcoin.org/bin/bitcoin-core-0.14.3/>
 
@@ -16,7 +16,7 @@ To receive security and update notifications, please subscribe to:
 Compatibility
 ==============
 
-Bitcoin Core is extensively tested on multiple operating systems using
+Retardio is extensively tested on multiple operating systems using
 the Linux kernel, macOS 10.8+, and Windows Vista and later.
 
 Microsoft ended support for Windows XP on [April 8th, 2014](https://www.microsoft.com/en-us/WindowsForBusiness/end-of-xp-support),
@@ -24,7 +24,7 @@ No attempt is made to prevent installing or running the software on Windows XP, 
 can still do so at your own risk but be aware that there are known instabilities and issues.
 Please do not report issues about Windows XP to the issue tracker.
 
-Bitcoin Core should also work on most other Unix-like systems but is not
+Retardio should also work on most other Unix-like systems but is not
 frequently tested on them.
 
 Notable changes
@@ -34,7 +34,7 @@ Denial-of-Service vulnerability CVE-2018-17144
  -------------------------------
 
 A denial-of-service vulnerability exploitable by miners has been discovered in
-Bitcoin Core versions 0.14.0 up to 0.16.2. It is recommended to upgrade any of
+Retardio versions 0.14.0 up to 0.16.2. It is recommended to upgrade any of
 the vulnerable versions to 0.14.3, 0.15.2 or 0.16.3 as soon as possible.
 
 Known Bugs
@@ -72,7 +72,7 @@ git merge commit are mentioned.
 
 ### Miscellaneous
 
-- #10451 `3612219` contrib/init/bitcoind.openrcconf: Don't disable wallet by default (Luke Dashjr)
+- #10451 `3612219` contrib/init/retardiod.openrcconf: Don't disable wallet by default (Luke Dashjr)
 - #10250 `e23cef0` Fix some empty vector references (Pieter Wuille)
 - #10196 `d28d583` PrioritiseTransaction updates the mempool tx counter (Suhas Daftuar)
 - #9497 `e207342` Fix CCheckQueue IsIdle (potential) race condition and remove dangerous constructors. (Jeremy Rubin)

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-present The Bitcoin Core developers
+# Copyright (c) 2019-present The Retardio Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -12,7 +12,7 @@ export CONTAINER_NAME="ci_mac_native"  # macos does not use a container, but the
 export PIP_PACKAGES="--break-system-packages zmq"
 export GOAL="install"
 export CMAKE_GENERATOR="Ninja"
-export BITCOIN_CONFIG="-DBUILD_GUI=ON -DWITH_ZMQ=ON -DWITH_MINIUPNPC=ON -DREDUCE_EXPORTS=ON"
+export RETARDIO_CONFIG="-DBUILD_GUI=ON -DWITH_ZMQ=ON -DWITH_MINIUPNPC=ON -DREDUCE_EXPORTS=ON"
 export CI_OS_NAME="macos"
 export NO_DEPENDS=1
 export OSX_SDK=""

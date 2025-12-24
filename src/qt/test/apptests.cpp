@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2022 The Bitcoin Core developers
+// Copyright (c) 2018-2022 The Retardio developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -8,7 +8,7 @@
 #include <common/args.h>
 #include <key.h>
 #include <logging.h>
-#include <qt/bitcoin.h>
+#include <qt/retardio.h>
 #include <qt/bitcoingui.h>
 #include <qt/networkstyle.h>
 #include <qt/rpcconsole.h>
@@ -62,7 +62,7 @@ void AppTests::appTests()
         // and fails to handle returned nulls
         // (https://bugreports.qt.io/browse/QTBUG-49686).
         qWarning() << "Skipping AppTests on mac build with 'minimal' platform set due to Qt bugs. To run AppTests, invoke "
-                      "with 'QT_QPA_PLATFORM=cocoa test_bitcoin-qt' on mac, or else use a linux or windows build.";
+                      "with 'QT_QPA_PLATFORM=cocoa test_retardio-qt' on mac, or else use a linux or windows build.";
         return;
     }
 #endif

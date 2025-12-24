@@ -1,10 +1,10 @@
-# Copyright (c) 2023-present The Bitcoin Core developers
+# Copyright (c) 2023-present The Retardio developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or https://opensource.org/license/mit/.
 
 include(AddWindowsResources)
 
-configure_file(${PROJECT_SOURCE_DIR}/cmake/bitcoin-build-config.h.in bitcoin-build-config.h USE_SOURCE_PERMISSIONS @ONLY)
+configure_file(${PROJECT_SOURCE_DIR}/cmake/retardio-build-config.h.in retardio-build-config.h USE_SOURCE_PERMISSIONS @ONLY)
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
 
 #=============================
@@ -85,9 +85,9 @@ if(NOT CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
 endif()
 
 add_custom_target(generate_build_info
-  BYPRODUCTS ${PROJECT_BINARY_DIR}/src/bitcoin-build-info.h
-  COMMAND ${CMAKE_COMMAND} -DBUILD_INFO_HEADER_PATH=${PROJECT_BINARY_DIR}/src/bitcoin-build-info.h -DSOURCE_DIR=${PROJECT_SOURCE_DIR} -P ${PROJECT_SOURCE_DIR}/cmake/script/GenerateBuildInfo.cmake
-  COMMENT "Generating bitcoin-build-info.h"
+  BYPRODUCTS ${PROJECT_BINARY_DIR}/src/retardio-build-info.h
+  COMMAND ${CMAKE_COMMAND} -DBUILD_INFO_HEADER_PATH=${PROJECT_BINARY_DIR}/src/retardio-build-info.h -DSOURCE_DIR=${PROJECT_SOURCE_DIR} -P ${PROJECT_SOURCE_DIR}/cmake/script/GenerateBuildInfo.cmake
+  COMMENT "Generating retardio-build-info.h"
   VERBATIM
 )
 add_library(bitcoin_clientversion STATIC EXCLUDE_FROM_ALL
@@ -203,13 +203,13 @@ if(ENABLE_WALLET)
   add_subdirectory(wallet)
 
   if(BUILD_WALLET_TOOL)
-    add_executable(bitcoin-wallet
-      bitcoin-wallet.cpp
-      init/bitcoin-wallet.cpp
+    add_executable(retardio-wallet
+      retardio-wallet.cpp
+      init/retardio-wallet.cpp
       wallet/wallettool.cpp
     )
-    add_windows_resources(bitcoin-wallet bitcoin-wallet-res.rc)
-    target_link_libraries(bitcoin-wallet
+    add_windows_resources(retardio-wallet retardio-wallet-res.rc)
+    target_link_libraries(retardio-wallet
       core_interface
       bitcoin_wallet
       bitcoin_common
@@ -217,12 +217,12 @@ if(ENABLE_WALLET)
       univalue
       Boost::headers
     )
-    install_binary_component(bitcoin-wallet HAS_MANPAGE)
+    install_binary_component(retardio-wallet HAS_MANPAGE)
   endif()
 endif()
 
 
-# P2P and RPC server functionality used by `bitcoind` and `bitcoin-qt` executables.
+# P2P and RPC server functionality used by `retardiod` and `retardio-qt` executables.
 add_library(bitcoin_node STATIC EXCLUDE_FROM_ALL
   addrdb.cpp
   addrman.cpp
@@ -337,32 +337,32 @@ target_link_libraries(bitcoin_node
 )
 
 
-# Bitcoin Core bitcoind.
+# Retardio retardiod.
 if(BUILD_DAEMON)
-  add_executable(bitcoind
-    bitcoind.cpp
-    init/bitcoind.cpp
+  add_executable(retardiod
+    retardiod.cpp
+    init/retardiod.cpp
   )
-  add_windows_resources(bitcoind bitcoind-res.rc)
-  target_link_libraries(bitcoind
+  add_windows_resources(retardiod retardiod-res.rc)
+  target_link_libraries(retardiod
     core_interface
     bitcoin_node
     $<TARGET_NAME_IF_EXISTS:bitcoin_wallet>
   )
-  install_binary_component(bitcoind HAS_MANPAGE)
+  install_binary_component(retardiod HAS_MANPAGE)
 endif()
 if(WITH_MULTIPROCESS AND BUILD_DAEMON)
-  add_executable(bitcoin-node
-    bitcoind.cpp
-    init/bitcoin-node.cpp
+  add_executable(retardio-node
+    retardiod.cpp
+    init/retardio-node.cpp
   )
-  target_link_libraries(bitcoin-node
+  target_link_libraries(retardio-node
     core_interface
     bitcoin_node
     bitcoin_ipc
     $<TARGET_NAME_IF_EXISTS:bitcoin_wallet>
   )
-  install_binary_component(bitcoin-node)
+  install_binary_component(retardio-node)
 endif()
 
 if(WITH_MULTIPROCESS AND BUILD_TESTS)
@@ -393,11 +393,11 @@ target_link_libraries(bitcoin_cli
 )
 
 
-# Bitcoin Core RPC client
+# Retardio RPC client
 if(BUILD_CLI)
-  add_executable(bitcoin-cli bitcoin-cli.cpp)
-  add_windows_resources(bitcoin-cli bitcoin-cli-res.rc)
-  target_link_libraries(bitcoin-cli
+  add_executable(retardio-cli retardio-cli.cpp)
+  add_windows_resources(retardio-cli retardio-cli-res.rc)
+  target_link_libraries(retardio-cli
     core_interface
     bitcoin_cli
     bitcoin_common
@@ -405,32 +405,32 @@ if(BUILD_CLI)
     libevent::core
     libevent::extra
   )
-  install_binary_component(bitcoin-cli HAS_MANPAGE)
+  install_binary_component(retardio-cli HAS_MANPAGE)
 endif()
 
 
 if(BUILD_TX)
-  add_executable(bitcoin-tx bitcoin-tx.cpp)
-  add_windows_resources(bitcoin-tx bitcoin-tx-res.rc)
-  target_link_libraries(bitcoin-tx
+  add_executable(retardio-tx retardio-tx.cpp)
+  add_windows_resources(retardio-tx retardio-tx-res.rc)
+  target_link_libraries(retardio-tx
     core_interface
     bitcoin_common
     bitcoin_util
     univalue
   )
-  install_binary_component(bitcoin-tx HAS_MANPAGE)
+  install_binary_component(retardio-tx HAS_MANPAGE)
 endif()
 
 
 if(BUILD_UTIL)
-  add_executable(bitcoin-util bitcoin-util.cpp)
-  add_windows_resources(bitcoin-util bitcoin-util-res.rc)
-  target_link_libraries(bitcoin-util
+  add_executable(retardio-util retardio-util.cpp)
+  add_windows_resources(retardio-util retardio-util-res.rc)
+  target_link_libraries(retardio-util
     core_interface
     bitcoin_common
     bitcoin_util
   )
-  install_binary_component(bitcoin-util HAS_MANPAGE)
+  install_binary_component(retardio-util HAS_MANPAGE)
 endif()
 
 
@@ -439,7 +439,7 @@ if(BUILD_GUI)
 endif()
 
 
-if(BUILD_BITCOINCONSENSUS_LIB)
+if(BUILD_RETARDIOCONSENSUS_LIB)
   add_subdirectory(consensus)
 endif()
 
@@ -448,19 +448,19 @@ if(BUILD_KERNEL_LIB)
 endif()
 
 if(BUILD_UTIL_CHAINSTATE)
-  add_executable(bitcoin-chainstate
-    bitcoin-chainstate.cpp
+  add_executable(retardio-chainstate
+    retardio-chainstate.cpp
   )
   # TODO: The `SKIP_BUILD_RPATH` property setting can be deleted
   #       in the future after reordering Guix script commands to
   #       perform binary checks after the installation step.
   # Relevant discussions:
-  # - https://github.com/hebasto/bitcoin/pull/236#issuecomment-2183120953
-  # - https://github.com/bitcoin/bitcoin/pull/30312#issuecomment-2191235833
-  set_target_properties(bitcoin-chainstate PROPERTIES
+  # - https://github.com/hebasto/retardio/pull/236#issuecomment-2183120953
+  # - https://github.com/retardio/retardio/pull/30312#issuecomment-2191235833
+  set_target_properties(retardio-chainstate PROPERTIES
     SKIP_BUILD_RPATH OFF
   )
-  target_link_libraries(bitcoin-chainstate
+  target_link_libraries(retardio-chainstate
     PRIVATE
       core_interface
       bitcoinkernel

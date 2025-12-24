@@ -5,7 +5,7 @@
 #ifndef BITCOIN_UTIL_IOPRIO_H
 #define BITCOIN_UTIL_IOPRIO_H
 
-#include <bitcoin-build-config.h> // IWYU pragma: keep
+#include <retardio-build-config.h> // IWYU pragma: keep
 
 #include <logging.h>
 

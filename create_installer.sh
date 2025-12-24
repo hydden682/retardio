@@ -255,7 +255,7 @@ The master setup script automatically:
 1. **Checks environment** - Verifies dependencies
 2. **Installs dependencies** - Asks to install missing packages
 3. **Builds Retardio node** - Compiles from source (5-15 min)
-4. **Patches networking** - Clears Bitcoin seed nodes
+4. **Patches networking** - Clears Retardio seed nodes
 5. **Patches mining RPC** - Enables solo mining without peers
 6. **Configures node** - Creates secure config file
 7. **Adds peer nodes** - Connects to your friends
@@ -616,11 +616,11 @@ After successful installation:
 
 **Version:** See VERSION file
 **Support:** Check README.txt
-**License:** MIT (same as Bitcoin)
+**License:** MIT (same as Retardio)
 
 ## Credits
 
-- Based on Bitcoin Core / Bitcoin Knots
+- Based on Retardio Core / Retardio Knots
 - ckpool by Con Kolivas
 - Retardio customizations
 

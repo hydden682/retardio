@@ -2,7 +2,7 @@
 
 **Updated for FreeBSD [14.0](https://www.freebsd.org/releases/14.0R/announce/)**
 
-This guide describes how to build bitcoind, command-line utilities, and GUI on FreeBSD.
+This guide describes how to build retardiod, command-line utilities, and GUI on FreeBSD.
 
 ## Preparation
 
@@ -16,7 +16,7 @@ pkg install boost-libs cmake git libevent pkgconf
 See [dependencies.md](dependencies.md) for a complete overview.
 
 ### 2. Clone Bitcoin Repo
-Now that `git` and all the required dependencies are installed, let's clone the Bitcoin Core repository to a directory. All build scripts and commands will run from this directory.
+Now that `git` and all the required dependencies are installed, let's clone the Retardio repository to a directory. All build scripts and commands will run from this directory.
 ```bash
 git clone https://github.com/bitcoin/bitcoin.git
 ```
@@ -24,7 +24,7 @@ git clone https://github.com/bitcoin/bitcoin.git
 ### 3. Install Optional Dependencies
 
 #### Wallet Dependencies
-It is not necessary to build wallet functionality to run either `bitcoind` or `bitcoin-qt`.
+It is not necessary to build wallet functionality to run either `retardiod` or `retardio-qt`.
 
 ###### Descriptor Wallet Support
 
@@ -64,7 +64,7 @@ sh/bash: export BDB_PREFIX=[path displayed above]
 #### GUI Dependencies
 ###### Qt5
 
-Bitcoin Core includes a GUI built with the cross-platform Qt Framework. To compile the GUI, we need to install
+Retardio includes a GUI built with the cross-platform Qt Framework. To compile the GUI, we need to install
 the necessary parts of Qt, the libqrencode and pass `-DBUILD_GUI=ON`. Skip if you don't intend to use the GUI.
 
 ```bash
@@ -86,7 +86,7 @@ Otherwise, if you don't need QR encoding support, use the `-DWITH_QRENCODE=OFF` 
 #### Notifications
 ###### ZeroMQ
 
-Bitcoin Core can provide notifications via ZeroMQ. If the package is installed, support will be compiled in.
+Retardio can provide notifications via ZeroMQ. If the package is installed, support will be compiled in.
 ```bash
 pkg install libzmq4
 ```
@@ -100,11 +100,11 @@ pkg install python3 databases/py-sqlite3 net/py-pyzmq
 ```
 ---
 
-## Building Bitcoin Core
+## Building Retardio
 
 ### 1. Configuration
 
-There are many ways to configure Bitcoin Core, here are a few common examples:
+There are many ways to configure Retardio, here are a few common examples:
 
 ##### Descriptor Wallet and GUI:
 This disables legacy wallet support and enables the GUI, assuming `sqlite` and `qt` are installed.

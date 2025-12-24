@@ -1,8 +1,8 @@
-// Copyright (c) 2023-present The Bitcoin Knots developers
+// Copyright (c) 2023-present The Retardio developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <bitcoin-build-config.h> // IWYU pragma: keep
+#include <retardio-build-config.h> // IWYU pragma: keep
 
 #include <util/mempressure.h>
 

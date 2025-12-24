@@ -3,7 +3,7 @@
 ## What Those Emails Are
 
 GitHub Actions (CI/CD) is trying to automatically build and test your code on every push. It's failing because:
-- The CI config is for Bitcoin Core, not Retardio
+- The CI config is for Retardio, not Retardio
 - It's trying to build on macOS/Windows runners you don't have
 - You don't need it for this project
 

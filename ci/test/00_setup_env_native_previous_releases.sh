@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-present The Bitcoin Core developers
+# Copyright (c) 2019-present The Retardio Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -16,9 +16,9 @@ export RUN_UNIT_TESTS_SEQUENTIAL="true"
 export RUN_UNIT_TESTS="false"
 export GOAL="install"
 export DOWNLOAD_PREVIOUS_RELEASES="true"
-export BITCOIN_CONFIG="\
+export RETARDIO_CONFIG="\
  -DWITH_ZMQ=ON -DBUILD_GUI=ON -DREDUCE_EXPORTS=ON \
- -DBUILD_BITCOINCONSENSUS_LIB=OFF \
+ -DBUILD_RETARDIOCONSENSUS_LIB=OFF \
  -DCMAKE_BUILD_TYPE=Debug \
  -DCMAKE_C_FLAGS='-funsigned-char' \
  -DCMAKE_C_FLAGS_DEBUG='-g0 -O2' \

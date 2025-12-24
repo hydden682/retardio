@@ -1,4 +1,4 @@
-# Copyright (c) 2024-present The Bitcoin Core developers
+# Copyright (c) 2024-present The Retardio developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or https://opensource.org/license/mit/.
 
@@ -86,7 +86,7 @@ add_library(bitcoinkernel
 )
 target_compile_definitions(bitcoinkernel
   PRIVATE
-    BUILDING_FOR_LIBBITCOINKERNEL
+    BUILDING_FOR_LIBRETARDIOKERNEL
 )
 target_link_libraries(bitcoinkernel
   PRIVATE

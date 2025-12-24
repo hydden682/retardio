@@ -1,5 +1,5 @@
 // Copyright (c) 2010 Satoshi Nakamoto
-// Copyright (c) 2009-2021 The Bitcoin Core developers
+// Copyright (c) 2009-2021 The Retardio developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -149,7 +149,8 @@ public:
 
         bech32_hrp = "ret";  // Retardio bech32 prefix
 
-        vFixedSeeds = std::vector<unsigned char>(std::begin(chainparams_seed_main), std::end(chainparams_seed_main));
+        // Retardio: No hardcoded seed nodes - use manual peer connections
+        vFixedSeeds.clear();
 
         fDefaultConsistencyChecks = false;
         m_is_mockable_chain = false;
@@ -232,9 +233,9 @@ public:
         vFixedSeeds.clear();
         vSeeds.clear();
         // nodes with support for servicebits filtering should be at the top
-        vSeeds.emplace_back("testnet-seed.bitcoin.jonasschnelli.ch.");
+        vSeeds.emplace_back("testnet-seed.retardio.jonasschnelli.ch.");
         vSeeds.emplace_back("seed.tbtc.petertodd.net.");
-        vSeeds.emplace_back("seed.testnet.bitcoin.sprovoost.nl.");
+        vSeeds.emplace_back("seed.testnet.retardio.sprovoost.nl.");
         vSeeds.emplace_back("testnet-seed.bluematt.me."); // Just a static list of stable node(s), only supports x9
         vSeeds.emplace_back("seed.testnet.achownodes.xyz."); // Ava Chow, only supports x1, x5, x9, x49, x809, x849, xd, x400, x404, x408, x448, xc08, xc48, x40c
 
@@ -246,7 +247,8 @@ public:
 
         bech32_hrp = "tb";
 
-        vFixedSeeds = std::vector<uint8_t>(std::begin(chainparams_seed_test), std::end(chainparams_seed_test));
+        // Retardio: No testnet seed nodes
+        vFixedSeeds.clear();
 
         fDefaultConsistencyChecks = false;
         m_is_mockable_chain = false;
@@ -340,7 +342,7 @@ public:
         vFixedSeeds.clear();
         vSeeds.clear();
         // nodes with support for servicebits filtering should be at the top
-        vSeeds.emplace_back("seed.testnet4.bitcoin.sprovoost.nl."); // Sjors Provoost
+        vSeeds.emplace_back("seed.testnet4.retardio.sprovoost.nl."); // Sjors Provoost
         vSeeds.emplace_back("seed.testnet4.wiz.biz."); // Jason Maurice
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
@@ -351,7 +353,8 @@ public:
 
         bech32_hrp = "tb";
 
-        vFixedSeeds = std::vector<uint8_t>(std::begin(chainparams_seed_testnet4), std::end(chainparams_seed_testnet4));
+        // Retardio: No testnet4 seed nodes
+        vFixedSeeds.clear();
 
         fDefaultConsistencyChecks = false;
         m_is_mockable_chain = false;
@@ -388,8 +391,9 @@ public:
 
         if (!options.challenge) {
             bin = "512103ad5e0edad18cb1f0fc0d28a3d4f1f3e445640337489abb10404f2d1e086be430210359ef5021964fe22d6f8e05b2463c9540ce96883fe3b278760f048f5189f2e6c452ae"_hex_v_u8;
-            vFixedSeeds = std::vector<uint8_t>(std::begin(chainparams_seed_signet), std::end(chainparams_seed_signet));
-            vSeeds.emplace_back("seed.signet.bitcoin.sprovoost.nl.");
+            // Retardio: No hardcoded seed nodes - use manual peer connections
+            vFixedSeeds.clear();
+            vSeeds.emplace_back("seed.signet.retardio.sprovoost.nl.");
             vSeeds.emplace_back("seed.signet.achownodes.xyz."); // Ava Chow, only supports x1, x5, x9, x49, x809, x849, xd, x400, x404, x408, x448, xc08, xc48, x40c
 
             consensus.nMinimumChainWork = uint256{"000000000000000000000000000000000000000000000000000002b517f3d1a1"};

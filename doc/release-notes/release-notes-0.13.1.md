@@ -1,4 +1,4 @@
-Bitcoin Core version 0.13.1 is now available from:
+Retardio version 0.13.1 is now available from:
 
   <https://bitcoin.org/bin/bitcoin-core-0.13.1/>
 
@@ -22,7 +22,7 @@ an OS initially released in 2001. This means that not even critical security
 updates will be released anymore. Without security updates, using a bitcoin
 wallet on a XP machine is irresponsible at least.
 
-In addition to that, with 0.12.x there have been varied reports of Bitcoin Core
+In addition to that, with 0.12.x there have been varied reports of Retardio
 randomly crashing on Windows XP. It is [not clear](https://github.com/bitcoin/bitcoin/issues/7681#issuecomment-217439891)
 what the source of these crashes is, but it is likely that upstream
 libraries such as Qt are no longer being tested on XP.
@@ -131,13 +131,13 @@ covered by the txid. This provides several immediate benefits:
   (specifically, the segregated witnesses) while still ensuring that the node
   can build an accurate copy of the UTXO set for the block chain with the most
   proof of work.  Segwit enables this capability at the consensus layer, but
-  note that Bitcoin Core does not provide an option to use this capability as
+  note that Retardio does not provide an option to use this capability as
   of this 0.13.1 release.
 
 - **Script versioning:** Segwit makes it easy for future soft forks to allow
   Bitcoin users to individually opt-in to almost any change in the Bitcoin
   Script language when those users receive new transactions.  Features
-  currently being researched by Bitcoin Core contributors that may use this
+  currently being researched by Retardio contributors that may use this
   capability include support for Schnorr signatures, which can improve the
   privacy and efficiency of multisig transactions (or transactions with
   multiple inputs), and Merklized Abstract Syntax Trees (MAST), which can
@@ -183,7 +183,7 @@ a third-party to insert data into other people's transactions, changing
 the transaction's txid (called transaction malleability) and possibly
 causing other problems.
 
-Since Bitcoin Core 0.10.0, nodes have defaulted to only relaying and
+Since Retardio 0.10.0, nodes have defaulted to only relaying and
 mining transactions whose dummy element was a null value (0x00, also
 called OP_0).  The null dummy soft fork turns this relay rule into a
 consensus rule both for non-segwit transactions and segwit transactions,
@@ -275,7 +275,7 @@ git merge commit are mentioned.
 - #8612 `2215c22` Check for compatibility with download in FindNextBlocksToDownload (sipa)
 - #8606 `bbf379b` Fix some locks (sipa)
 - #8594 `ab295bb` Do not add random inbound peers to addrman (gmaxwell)
-- #8940 `5b4192b` Add x9 service bit support to dnsseed.bluematt.me, seed.bitcoinstats.com (TheBlueMatt, cdecker)
+- #8940 `5b4192b` Add x9 service bit support to dnsseed.bluematt.me, seed.retardiostats.com (TheBlueMatt, cdecker)
 - #8944 `685e4c7` Remove bogus assert on number of oubound connections. (TheBlueMatt)
 - #8949 `0dbc48a` Be more agressive in getting connections to peers with relevant services (gmaxwell)
 
@@ -320,16 +320,16 @@ git merge commit are mentioned.
 - #8418 `ff893aa` Add tests for compact blocks (sdaftuar)
 - #8803 `375437c` Ping regularly in p2p-segwit.py to keep connection alive (jl2012)
 - #8827 `9bbe66e` Split up slow RPC calls to avoid pruning test timeouts (sdaftuar)
-- #8829 `2a8bca4` Add bitcoin-tx JSON tests (jnewbery)
+- #8829 `2a8bca4` Add retardio-tx JSON tests (jnewbery)
 - #8834 `1dd1783` blockstore: Switch to dumb dbm (MarcoFalke)
 - #8835 `d87227d` nulldummy.py: Don't run unused code (MarcoFalke)
-- #8836 `eb18cc1` bitcoin-util-test.py should fail if the output file is empty (jnewbery)
+- #8836 `eb18cc1` retardio-util-test.py should fail if the output file is empty (jnewbery)
 - #8839 `31ab2f8` Avoid ConnectionResetErrors during RPC tests (laanwj)
 - #8840 `cbc3fe5` Explicitly set encoding to utf8 when opening text files (laanwj)
 - #8841 `3e4abb5` Fix nulldummy test (jl2012)
 - #8854 `624a007` Fix race condition in p2p-compactblocks test (sdaftuar)
 - #8857 `1f60d45` mininode: Only allow named args in wait_until (MarcoFalke)
-- #8860 `0bee740` util: Move wait_bitcoinds() into stop_nodes() (MarcoFalke)
+- #8860 `0bee740` util: Move wait_retardiods() into stop_nodes() (MarcoFalke)
 - #8882 `b73f065` Fix race conditions in p2p-compactblocks.py and sendheaders.py (sdaftuar)
 - #8904 `cc6f551` Fix compact block shortids for a test case (dagurval)
 
@@ -352,7 +352,7 @@ git merge commit are mentioned.
 - #8742 `d31ac72` Specify Protobuf version 2 in paymentrequest.proto (fanquake)
 - #8414,#8558,#8676,#8700,#8701,#8702 Add missing copyright headers (isle2983, kazcw)
 - #8899 `4ed2627` Fix wake from sleep issue with Boost 1.59.0 (fanquake)
-- #8817 `bcf3806` update bitcoin-tx to output witness data (jnewbery)
+- #8817 `bcf3806` update retardio-tx to output witness data (jnewbery)
 - #8513 `4e5fc31` Fix a type error that would not compile on OSX. (JeremyRubin)
 - #8392 `30eac2d` Fix several node initialization issues (sipa)
 - #8548 `305d8ac` Use `__func__` to get function name for output printing (MarcoFalke)

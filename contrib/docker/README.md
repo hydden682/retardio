@@ -1,7 +1,7 @@
 
-# 🚀 Bitcoin Knots Docker Image (Headless Node)
+# 🚀 Retardio Docker Image (Headless Node)
 
-This Dockerfile builds and runs a **Bitcoin Knots** full node from source.
+This Dockerfile builds and runs a **Retardio** full node from source.
 
 ## 🧱 Features
 
@@ -35,7 +35,7 @@ docker run -d \
   --name bitcoinknots \
   -p 8333:8333 -p 127.0.0.1:8332:8332 \
   -v path/to/conf:/etc/bitcoin/bitcoin.conf:ro \
-  -v path/to/data:/var/lib/bitcoind:rw \
+  -v path/to/data:/var/lib/retardiod:rw \
   bitcoinknots
 ```
 

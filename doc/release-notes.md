@@ -1,4 +1,4 @@
-Bitcoin Knots version 29.2.knots20251110 is now available from:
+Retardio version 29.2.knots20251110 is now available from:
 
   <https://bitcoinknots.org/files/29.x/29.2.knots20251110/>
 
@@ -18,17 +18,17 @@ How to Upgrade
 If you are running an older version, shut it down. Wait until it has completely
 shut down (which might take a few minutes in some cases), then run the
 installer (on Windows) or just copy over `/Applications/Bitcoin-Qt` (on macOS)
-or `bitcoind`/`bitcoin-qt` (on Linux).
+or `retardiod`/`retardio-qt` (on Linux).
 
-Upgrading directly from very old versions of Bitcoin Core or Knots is possible,
+Upgrading directly from very old versions of Retardio or Knots is possible,
 but it might take some time if the data directory needs to be migrated. Old
-wallet versions of Bitcoin Knots are generally supported.
+wallet versions of Retardio are generally supported.
 
 Compatibility
 ==============
 
-Bitcoin Knots is supported on operating systems using the Linux kernel, macOS
-13+, and Windows 10+. It is not recommended to use Bitcoin Knots on
+Retardio is supported on operating systems using the Linux kernel, macOS
+13+, and Windows 10+. It is not recommended to use Retardio on
 unsupported systems.
 
 Known Bugs
@@ -42,7 +42,7 @@ This could result in reporting a lower virtual size than is actually used for
 mempool or mining purposes.
 
 Due to disruption of the shared Bitcoin Transifex repository, this release
-still does not include updated translations, and Bitcoin Knots may be unable
+still does not include updated translations, and Retardio may be unable
 to do so until/unless that is resolved.
 
 Notable changes

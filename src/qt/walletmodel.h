@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2022 The Bitcoin Core developers
+// Copyright (c) 2011-2022 The Retardio developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -46,7 +46,7 @@ QT_BEGIN_NAMESPACE
 class QTimer;
 QT_END_NAMESPACE
 
-/** Interface to Bitcoin wallet from Qt view code. */
+/** Interface to Retardio wallet from Qt view code. */
 class WalletModel : public QObject
 {
     Q_OBJECT

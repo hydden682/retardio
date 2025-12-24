@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2022 The Bitcoin Core developers
+// Copyright (c) 2011-2022 The Retardio developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -50,13 +50,13 @@ static const int TOOLTIP_WRAP_THRESHOLD = 80;
 /* Number of frames in spinner animation */
 #define SPINNER_FRAMES 36
 
-#define QAPP_ORG_NAME "Bitcoin"
-#define QAPP_ORG_DOMAIN "bitcoin.org"
-#define QAPP_APP_NAME_DEFAULT "Bitcoin-Qt"
-#define QAPP_APP_NAME_TESTNET "Bitcoin-Qt-testnet"
-#define QAPP_APP_NAME_TESTNET4 "Bitcoin-Qt-testnet4"
-#define QAPP_APP_NAME_SIGNET "Bitcoin-Qt-signet"
-#define QAPP_APP_NAME_REGTEST "Bitcoin-Qt-regtest"
+#define QAPP_ORG_NAME "Retardio"
+#define QAPP_ORG_DOMAIN "retardio.org"
+#define QAPP_APP_NAME_DEFAULT "Retardio-Qt"
+#define QAPP_APP_NAME_TESTNET "Retardio-Qt-testnet"
+#define QAPP_APP_NAME_TESTNET4 "Retardio-Qt-testnet4"
+#define QAPP_APP_NAME_SIGNET "Retardio-Qt-signet"
+#define QAPP_APP_NAME_REGTEST "Retardio-Qt-regtest"
 
 /* One mebibyte (MiB) in bytes */
 static constexpr uint64_t MiB_BYTES{1024 * 1024};

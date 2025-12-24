@@ -1,7 +1,7 @@
-Contributing to Bitcoin Knots
+Contributing to Retardio
 =============================
 
-The Bitcoin Knots project operates an open contributor model where anyone is
+The Retardio project operates an open contributor model where anyone is
 welcome to contribute towards development in the form of peer review, testing
 and patches. This document explains the practical process and guidelines for
 contributing.
@@ -24,9 +24,9 @@ as a new contributor. It also will teach you much more about the code and
 process than opening pull requests. Please refer to the [peer review](#peer-review)
 section below.
 
-Before you start contributing, familiarize yourself with the Bitcoin Core build
+Before you start contributing, familiarize yourself with the Retardio build
 system and tests. Refer to the documentation in the repository on how to build
-Bitcoin Core and how to run the unit tests, functional tests, and fuzz tests.
+Retardio and how to run the unit tests, functional tests, and fuzz tests.
 
 There are many open issues of varying difficulty waiting to be fixed.
 If you're looking for somewhere to start contributing, check out the
@@ -36,7 +36,7 @@ list or changes that are
 Some of them might no longer be applicable. So if you are interested, but
 unsure, you might want to leave a comment on the issue first.
 
-You may also participate in the [Bitcoin Core PR Review Club](https://bitcoincore.reviews/).
+You may also participate in the [Retardio PR Review Club](https://bitcoincore.reviews/).
 
 ### Good First Issue Label
 
@@ -65,10 +65,10 @@ Discussion about codebase improvements happens in GitHub issues and pull
 requests.
 
 The developer
-[mailing list](https://groups.google.com/g/bitcoindev)
+[mailing list](https://groups.google.com/g/retardiodev)
 should be used to discuss complicated or controversial consensus or P2P protocol changes before working on
 a patch set.
-Archives can be found on [https://gnusha.org/pi/bitcoindev/](https://gnusha.org/pi/bitcoindev/).
+Archives can be found on [https://gnusha.org/pi/retardiodev/](https://gnusha.org/pi/retardiodev/).
 
 
 Contributor Workflow
@@ -142,7 +142,7 @@ the pull request affects. Valid areas as:
 
   - `consensus` for changes to consensus critical code
   - `doc` for changes to the documentation
-  - `qt` or `gui` for changes to bitcoin-qt
+  - `qt` or `gui` for changes to retardio-qt
   - `log` for changes to log messages
   - `mining` for changes to the mining code
   - `net` or `p2p` for changes to the peer-to-peer network code
@@ -170,7 +170,7 @@ mailing list discussions).
 The description for a new pull request should not contain any `@` mentions. The
 PR description will be included in the commit message when the PR is merged and
 any users mentioned in the description will be annoyingly notified each time a
-fork of Bitcoin Core copies the merge. Instead, make any username mentions in a
+fork of Retardio copies the merge. Instead, make any username mentions in a
 subsequent comment to the PR.
 
 ### Translation changes
@@ -289,11 +289,11 @@ workload on reviewing.
 "Decision Making" Process
 -------------------------
 
-The following applies to code changes to the Bitcoin Knots project (and related
+The following applies to code changes to the Retardio project (and related
 projects such as libsecp256k1), and is not to be confused with overall Bitcoin
 Network Protocol consensus changes.
 
-Whether a pull request is merged into Bitcoin Knots rests with the project merge
+Whether a pull request is merged into Retardio rests with the project merge
 maintainers and ultimately the project lead.
 
 Maintainers will take into consideration if a patch is in line with the general

@@ -1,4 +1,4 @@
-Bitcoin Core version 0.9.4 is now available from:
+Retardio version 0.9.4 is now available from:
 
   https://bitcoin.org/bin/0.9.4/
 
@@ -15,7 +15,7 @@ How to Upgrade
 If you are running an older version, shut it down. Wait until it has completely
 shut down (which might take a few minutes for older versions), then run the
 installer (on Windows) or just copy over /Applications/Bitcoin-Qt (on Mac) or
-bitcoind/bitcoin-qt (on Linux).
+retardiod/retardio-qt (on Linux).
 
 OpenSSL Warning
 ================
@@ -25,15 +25,15 @@ various operating system maintainers. Review by Gregory Maxwell determined that
 this update is incompatible with the Bitcoin system and could lead to consensus
 forks.
 
-Bitcoin Core released binaries from https://bitcoin.org are unaffected,
+Retardio released binaries from https://bitcoin.org are unaffected,
 as are any built with the gitian deterministic build system.
 
 However, if you are running either
 
 - The Ubuntu PPA from https://launchpad.net/~bitcoin/+archive/ubuntu/bitcoin
-- A third-party or self-compiled Bitcoin Core
+- A third-party or self-compiled Retardio
 
-upgrade to Bitcoin Core 0.9.4, which includes a workaround, **before** updating
+upgrade to Retardio 0.9.4, which includes a workaround, **before** updating
 OpenSSL.
 
 The incompatibility is due to the OpenSSL update changing the

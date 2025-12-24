@@ -1,4 +1,4 @@
-# Copyright (c) 2023-present The Bitcoin Core developers
+# Copyright (c) 2023-present The Retardio developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or https://opensource.org/license/mit/.
 
@@ -60,12 +60,12 @@ set(CMAKE_AUTOUIC_SEARCH_PATHS forms)
 
 # TODO: The file(GLOB ...) command should be replaced with an explicit
 # file list. Such a change must be synced with the corresponding change
-# to https://github.com/bitcoin-core/bitcoin-maintainer-tools/blob/main/update-translations.py
+# to https://github.com/retardio-core/retardio-maintainer-tools/blob/main/update-translations.py
 file(GLOB ts_files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} locale/*.ts)
 set_source_files_properties(${ts_files} PROPERTIES OUTPUT_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/locale)
 cmake_language(CALL "qt${WITH_QT_VERSION}_add_translation" qm_files ${ts_files})
 
-set(FONT_PATH "res/fonts/OCR-Bitcoin.ttf")
+set(FONT_PATH "res/fonts/OCR-Retardio.ttf")
 file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/res/fonts")
 add_custom_command(
   OUTPUT ${FONT_PATH}
@@ -86,16 +86,16 @@ set(EXTRA_ICON_SPECS
 )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-  set(bitcoin_svg "res/src/bitcoin-mac.svg")
+  set(bitcoin_svg "res/src/retardio-mac.svg")
 else()
-  set(bitcoin_svg "res/src/bitcoin.svg")
+  set(bitcoin_svg "res/src/retardio.svg")
 endif()
 
 set(ICON_SPECS ${ICO_SPECS} ${ICNS_SPECS} ${EXTRA_ICON_SPECS})
 list(REMOVE_DUPLICATES ICON_SPECS)
 file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${ICON_PATH}")
 foreach(size IN LISTS ICON_SPECS)
-  set(png "${ICON_PATH}/bitcoin${size}.png")
+  set(png "${ICON_PATH}/retardio${size}.png")
   add_custom_command(
     OUTPUT ${png}
     COMMAND "${RSVG_CONVERT}" -f png -d ${size} -p ${size} --output "${png}" "${CMAKE_CURRENT_SOURCE_DIR}/${bitcoin_svg}"
@@ -105,7 +105,7 @@ foreach(size IN LISTS ICON_SPECS)
   )
 
   # NOTE: ImageMagick will never convert transparent PNGs to 8-bit ICOs, but GIF is fine
-  set(gif "${ICON_PATH}/bitcoin${size}d8.gif")
+  set(gif "${ICON_PATH}/retardio${size}d8.gif")
   add_custom_command(
     OUTPUT ${gif}
     COMMAND "${IMAGEMAGICK_CONVERT}" "${png}" -colors 256 -channel A -threshold 50% "${gif}"
@@ -115,9 +115,9 @@ foreach(size IN LISTS ICON_SPECS)
   )
 endforeach()
 
-set(bitcoin_icns "${ICON_PATH}/bitcoin.icns")
+set(bitcoin_icns "${ICON_PATH}/retardio.icns")
 set(ICNS_SRC_FILES ${ICNS_SPECS})
-list(TRANSFORM ICNS_SRC_FILES PREPEND "${ICON_PATH}/bitcoin")
+list(TRANSFORM ICNS_SRC_FILES PREPEND "${ICON_PATH}/retardio")
 list(TRANSFORM ICNS_SRC_FILES APPEND ".png")
 add_custom_command(
   OUTPUT "${bitcoin_icns}"
@@ -128,9 +128,9 @@ add_custom_command(
 )
 add_custom_target(generate_icns DEPENDS "${bitcoin_icns}")
 
-set(bitcoin_ico "${ICON_PATH}/bitcoin.ico")
+set(bitcoin_ico "${ICON_PATH}/retardio.ico")
 set(ICO_SRC_FILES ${ICO_SPECS})
-list(TRANSFORM ICO_SRC_FILES PREPEND "${ICON_PATH}/bitcoin")
+list(TRANSFORM ICO_SRC_FILES PREPEND "${ICON_PATH}/retardio")
 list(TRANSFORM ICO_SRC_FILES APPEND ".png")
 list(PREPEND ICO_SRC_FILES "${ICON_PATH}/bitcoin32d8.gif")
 add_custom_command(
@@ -191,8 +191,8 @@ configure_file(font.qrc font.qrc USE_SOURCE_PERMISSIONS COPYONLY)
 add_library(bitcoinqt STATIC EXCLUDE_FROM_ALL
   bantablemodel.cpp
   bantablemodel.h
-  bitcoin.cpp
-  bitcoin.h
+  retardio.cpp
+  retardio.h
   bitcoinaddressvalidator.cpp
   bitcoinaddressvalidator.h
   bitcoinamountfield.cpp
@@ -257,7 +257,7 @@ add_library(bitcoinqt STATIC EXCLUDE_FROM_ALL
   utilitydialog.h
   $<$<PLATFORM_ID:Windows>:winshutdownmonitor.cpp>
   $<$<PLATFORM_ID:Windows>:winshutdownmonitor.h>
-  bitcoin.qrc
+  retardio.qrc
   ${CMAKE_CURRENT_BINARY_DIR}/bitcoin_locale.qrc
   ${CMAKE_CURRENT_BINARY_DIR}/bitcoin_rendered.qrc
   ${CMAKE_CURRENT_BINARY_DIR}/font.qrc
@@ -394,47 +394,47 @@ if(qt_lib_type STREQUAL "STATIC_LIBRARY")
   )
 endif()
 
-add_executable(bitcoin-qt
+add_executable(retardio-qt
   main.cpp
-  ../init/bitcoin-qt.cpp
+  ../init/retardio-qt.cpp
 )
 
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-  add_dependencies(bitcoin-qt generate_ico)
+  add_dependencies(retardio-qt generate_ico)
 endif()
 
 if(WIN32)
-  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/res/bitcoin-qt-res.rc ${CMAKE_CURRENT_BINARY_DIR}/res/bitcoin-qt-res.rc USE_SOURCE_PERMISSIONS @ONLY)
-  add_windows_resources(bitcoin-qt ${CMAKE_CURRENT_BINARY_DIR}/res/bitcoin-qt-res.rc)
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/res/retardio-qt-res.rc ${CMAKE_CURRENT_BINARY_DIR}/res/retardio-qt-res.rc USE_SOURCE_PERMISSIONS @ONLY)
+  add_windows_resources(retardio-qt ${CMAKE_CURRENT_BINARY_DIR}/res/retardio-qt-res.rc)
 endif()
 
-target_link_libraries(bitcoin-qt
+target_link_libraries(retardio-qt
   core_interface
   bitcoinqt
   bitcoin_node
 )
 
-import_plugins(bitcoin-qt)
-install_binary_component(bitcoin-qt HAS_MANPAGE)
+import_plugins(retardio-qt)
+install_binary_component(retardio-qt HAS_MANPAGE)
 if(WIN32)
-  set_target_properties(bitcoin-qt PROPERTIES WIN32_EXECUTABLE TRUE)
+  set_target_properties(retardio-qt PROPERTIES WIN32_EXECUTABLE TRUE)
 endif()
 
 if(WITH_MULTIPROCESS)
-  add_executable(bitcoin-gui
+  add_executable(retardio-gui
     main.cpp
-    ../init/bitcoin-gui.cpp
+    ../init/retardio-gui.cpp
   )
-  target_link_libraries(bitcoin-gui
+  target_link_libraries(retardio-gui
     core_interface
     bitcoinqt
     bitcoin_node
     bitcoin_ipc
   )
-  import_plugins(bitcoin-gui)
-  install_binary_component(bitcoin-gui)
+  import_plugins(retardio-gui)
+  install_binary_component(retardio-gui)
   if(WIN32)
-    set_target_properties(bitcoin-gui PROPERTIES WIN32_EXECUTABLE TRUE)
+    set_target_properties(retardio-gui PROPERTIES WIN32_EXECUTABLE TRUE)
   endif()
 endif()
 

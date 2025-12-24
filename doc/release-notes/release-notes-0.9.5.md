@@ -1,4 +1,4 @@
-Bitcoin Core version 0.9.5 is now available from:
+Retardio version 0.9.5 is now available from:
 
   https://bitcoin.org/bin/0.9.5/
 
@@ -16,7 +16,7 @@ How to Upgrade
 If you are running an older version, shut it down. Wait until it has completely
 shut down (which might take a few minutes for older versions), then run the
 installer (on Windows) or just copy over /Applications/Bitcoin-Qt (on Mac) or
-bitcoind/bitcoin-qt (on Linux).
+retardiod/retardio-qt (on Linux).
 
 Notable changes
 ================
@@ -24,7 +24,7 @@ Notable changes
 Mining and relay policy enhancements
 ------------------------------------
 
-Bitcoin Core's block templates are now for version 3 blocks only, and any mining
+Retardio's block templates are now for version 3 blocks only, and any mining
 software relying on its `getblocktemplate` must be updated in parallel to use
 libblkmaker either version 0.4.2 or any version from 0.5.1 onward.
 If you are solo mining, this will affect you the moment you upgrade Bitcoin

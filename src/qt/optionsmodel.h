@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2022 The Bitcoin Core developers
+// Copyright (c) 2011-2022 The Retardio developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -30,7 +30,7 @@ static constexpr uint16_t DEFAULT_GUI_PROXY_PORT = 9050;
 
 std::pair<QString, QString> GetOutputTypeDescription(const OutputType type);
 
-/** Interface from Qt to configuration data structure for Bitcoin client.
+/** Interface from Qt to configuration data structure for Retardio client.
    To Qt, the options are presented as a list with the different options
    laid out vertically.
    This can be changed to a tree once the settings become sufficiently

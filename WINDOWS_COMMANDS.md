@@ -11,7 +11,7 @@ Already done! The `.github` folder is removed and pushed. **No more failure emai
 **In PowerShell, run:**
 
 ```powershell
-wsl bash -c "cd /mnt/c/Users/15187/retardio-coin && ./build_release_package.sh"
+wsl bash -c "cd /mnt/c/Users/YourUsername/retardio-coin && ./build_release_package.sh"
 ```
 
 This will:
@@ -27,7 +27,7 @@ This will:
 
 ```powershell
 # Extract to temp folder
-wsl bash -c "cd /tmp && tar -xzf /mnt/c/Users/15187/retardio-coin/retardio_v1.0.0_ready_to_use.tar.gz"
+wsl bash -c "cd /tmp && tar -xzf /mnt/c/Users/YourUsername/retardio-coin/retardio_v1.0.0_ready_to_use.tar.gz"
 
 # Run installer
 wsl bash -c "cd /tmp/retardio_release && ./INSTALL.sh"
@@ -50,7 +50,7 @@ Should show your node running!
 
 **The file is here:**
 ```
-C:\Users\15187\retardio-coin\retardio_v1.0.0_ready_to_use.tar.gz
+C:\Users\YourUsername\retardio-coin\retardio_v1.0.0_ready_to_use.tar.gz
 ```
 
 **Send this file to your friend!**
@@ -66,12 +66,12 @@ They just:
 
 **Build package:**
 ```powershell
-wsl bash -c "cd /mnt/c/Users/15187/retardio-coin && ./build_release_package.sh"
+wsl bash -c "cd /mnt/c/Users/YourUsername/retardio-coin && ./build_release_package.sh"
 ```
 
 **Test package:**
 ```powershell
-wsl bash -c "cd /tmp && tar -xzf /mnt/c/Users/15187/retardio-coin/retardio_v1.0.0_ready_to_use.tar.gz && cd retardio_release && ./INSTALL.sh"
+wsl bash -c "cd /tmp && tar -xzf /mnt/c/Users/YourUsername/retardio-coin/retardio_v1.0.0_ready_to_use.tar.gz && cd retardio_release && ./INSTALL.sh"
 ```
 
 **Check status:**
@@ -91,7 +91,7 @@ wsl bash -c "retardio-mine 10"
 **Run this to build the package:**
 
 ```powershell
-wsl bash -c "cd /mnt/c/Users/15187/retardio-coin && ./build_release_package.sh"
+wsl bash -c "cd /mnt/c/Users/YourUsername/retardio-coin && ./build_release_package.sh"
 ```
 
 Wait 10-15 minutes, then you'll have a ready-to-share installer! 🚀

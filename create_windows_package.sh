@@ -45,6 +45,17 @@ cp README.md "$PACKAGE_NAME/" 2>/dev/null || echo "No README.md found"
 cp WINDOWS_COMMANDS.md "$PACKAGE_NAME/" 2>/dev/null || true
 cp SIMPLE_WORKFLOW.md "$PACKAGE_NAME/" 2>/dev/null || true
 
+# Copy block explorer
+echo "Copying block explorer..."
+cp block_explorer.html "$PACKAGE_NAME/" 2>/dev/null || echo "No block explorer found"
+cp block_explorer_server.py "$PACKAGE_NAME/" 2>/dev/null || echo "No block explorer server found"
+cp start_explorer.sh "$PACKAGE_NAME/" 2>/dev/null || echo "No start explorer script found"
+
+# Copy GUI wallet
+echo "Copying GUI wallet..."
+cp wallet_gui.html "$PACKAGE_NAME/" 2>/dev/null || echo "No GUI wallet found"
+cp start_wallet.sh "$PACKAGE_NAME/" 2>/dev/null || echo "No wallet startup script found"
+
 # Create Windows-specific README
 cat > "$PACKAGE_NAME/README_WINDOWS.txt" << 'EOF'
 ╔══════════════════════════════════════════════════════╗
@@ -76,24 +87,30 @@ Or from PowerShell/CMD:
   wsl retardio-status
   wsl retardio-mine 10
 
+GUI TOOLS (run from WSL terminal):
+  ./start_wallet.sh     - Start GUI wallet (http://localhost:8080)
+  ./start_explorer.sh   - Start block explorer (http://localhost:3002)
+
 FEATURES:
 ✓ Pre-built binaries (no compilation needed)
 ✓ One-click installer
 ✓ Automatic node configuration
 ✓ Built-in mining commands
 ✓ Easy peer connection
+✓ GUI wallet interface
+✓ Local block explorer
 
 SUPPORT:
 For help, see WINDOWS_COMMANDS.md
 
 EOF
 
-# Create the zip package
-echo "Creating zip package..."
-zip -r "${PACKAGE_NAME}.zip" "$PACKAGE_NAME/" > /dev/null 2>&1
+# Create the tar.gz package (zip not available on Git Bash)
+echo "Creating package archive..."
+tar -czf "${PACKAGE_NAME}.tar.gz" "$PACKAGE_NAME/"
 
 # Get package size
-SIZE=$(du -h "${PACKAGE_NAME}.zip" | cut -f1)
+SIZE=$(du -h "${PACKAGE_NAME}.tar.gz" | cut -f1)
 
 # Clean up directory
 rm -rf "$PACKAGE_NAME"
@@ -103,12 +120,12 @@ echo "╔═══════════════════════�
 echo "║       ✓ WINDOWS PACKAGE CREATED! ✓                  ║"
 echo "╚══════════════════════════════════════════════════════╝"
 echo ""
-echo "Package: ${PACKAGE_NAME}.zip"
+echo "Package: ${PACKAGE_NAME}.tar.gz"
 echo "Size: $SIZE"
 echo ""
 echo "Windows users can:"
-echo "1. Download ${PACKAGE_NAME}.zip"
-echo "2. Extract it"
+echo "1. Download ${PACKAGE_NAME}.tar.gz"
+echo "2. Extract it (WSL: tar -xzf ${PACKAGE_NAME}.tar.gz)"
 echo "3. Run INSTALL_WINDOWS.bat"
 echo ""
 echo "Done!"

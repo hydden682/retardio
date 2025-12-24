@@ -192,7 +192,7 @@ Visit https://whatismyipaddress.com/
 Once your friend's node starts:
 
 ```bash
-wsl bash -c "cd /mnt/c/Users/15187/retardio-coin/build/bin && ./retardio-cli -datadir=/mnt/c/Users/15187/.retardio getpeerinfo"
+wsl bash -c "cd /mnt/c/Users/YourUsername/retardio-coin/build/bin && ./retardio-cli -datadir=/mnt/c/Users/YourUsername/.retardio getpeerinfo"
 ```
 
 Should show their node connected!
@@ -202,7 +202,7 @@ Should show their node connected!
 Once you have 1+ peers:
 
 ```bash
-wsl bash -c "cd /mnt/c/Users/15187/ckpool && src/ckpool -B -c retardio.conf"
+wsl bash -c "cd /mnt/c/Users/YourUsername/ckpool && src/ckpool -B -c retardio.conf"
 ```
 
 Should now work! ckpool will start accepting mining connections on port 3333.

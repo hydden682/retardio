@@ -45,6 +45,20 @@ cp README.md "$PACKAGE_NAME/" 2>/dev/null || echo "No README.md found"
 cp SIMPLE_WORKFLOW.md "$PACKAGE_NAME/" 2>/dev/null || true
 cp TEST_BEFORE_SHARING.md "$PACKAGE_NAME/" 2>/dev/null || true
 
+# Copy block explorer
+echo "Copying block explorer..."
+cp block_explorer.html "$PACKAGE_NAME/" 2>/dev/null || echo "No block explorer found"
+cp block_explorer_server.py "$PACKAGE_NAME/" 2>/dev/null || echo "No block explorer server found"
+cp start_explorer.sh "$PACKAGE_NAME/" 2>/dev/null || echo "No start explorer script found"
+chmod +x "$PACKAGE_NAME/start_explorer.sh" 2>/dev/null || true
+chmod +x "$PACKAGE_NAME/block_explorer_server.py" 2>/dev/null || true
+
+# Copy GUI wallet
+echo "Copying GUI wallet..."
+cp wallet_gui.html "$PACKAGE_NAME/" 2>/dev/null || echo "No GUI wallet found"
+cp start_wallet.sh "$PACKAGE_NAME/" 2>/dev/null || echo "No wallet startup script found"
+chmod +x "$PACKAGE_NAME/start_wallet.sh" 2>/dev/null || true
+
 # Create Linux-specific README
 cat > "$PACKAGE_NAME/README_LINUX.txt" << 'EOF'
 ╔══════════════════════════════════════════════════════╗
@@ -73,12 +87,18 @@ After installation, run these commands:
   retardio help      - Show all commands
   retardio stop      - Stop the node
 
+GUI TOOLS:
+  ./start_wallet.sh     - Start GUI wallet (http://localhost:8080)
+  ./start_explorer.sh   - Start block explorer (http://localhost:3002)
+
 FEATURES:
 ✓ Pre-built binaries (no compilation needed)
 ✓ One-command installer
 ✓ Automatic node configuration
 ✓ Built-in mining commands
 ✓ Easy peer connection
+✓ GUI wallet interface
+✓ Local block explorer
 
 SUPPORT:
 For help, see SIMPLE_WORKFLOW.md or TEST_BEFORE_SHARING.md

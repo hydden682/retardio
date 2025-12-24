@@ -21,7 +21,7 @@
 ### 1. Fix GitHub Email Spam (30 seconds)
 
 ```bash
-cd c:/Users/15187/retardio-coin
+cd c:/Users/YourUsername/retardio-coin
 rm -rf .github
 git add .github
 git commit -m "Remove CI/CD - not needed"
@@ -35,7 +35,7 @@ git push
 ### 2. Build the Release Package (5 minutes)
 
 ```bash
-wsl bash -c "cd /mnt/c/Users/15187/retardio-coin && ./build_release_package.sh"
+wsl bash -c "cd /mnt/c/Users/YourUsername/retardio-coin && ./build_release_package.sh"
 ```
 
 **Creates:** `retardio_v1.0.0_ready_to_use.tar.gz` (~15MB)
@@ -53,7 +53,7 @@ This contains:
 ```bash
 # Test like a user would
 cd /tmp
-tar -xzf /mnt/c/Users/15187/retardio-coin/retardio_v1.0.0_ready_to_use.tar.gz
+tar -xzf /mnt/c/Users/YourUsername/retardio-coin/retardio_v1.0.0_ready_to_use.tar.gz
 cd retardio_release
 ./INSTALL.sh
 ```
@@ -211,7 +211,7 @@ rm -rf .github && git add .github && git commit -m "Remove CI" && git push
 ./build_release_package.sh
 
 # Test package
-cd /tmp && tar -xzf /mnt/c/Users/15187/retardio-coin/retardio_v1.0.0_ready_to_use.tar.gz && cd retardio_release && ./INSTALL.sh
+cd /tmp && tar -xzf /mnt/c/Users/YourUsername/retardio-coin/retardio_v1.0.0_ready_to_use.tar.gz && cd retardio_release && ./INSTALL.sh
 ```
 
 **For Them (Using):**
@@ -239,7 +239,7 @@ retardio-mine 10
 
 ### 1. Stop email spam:
 ```bash
-cd c:/Users/15187/retardio-coin
+cd c:/Users/YourUsername/retardio-coin
 rm -rf .github
 git add .github
 git commit -m "Remove CI/CD"

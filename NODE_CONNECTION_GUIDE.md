@@ -79,7 +79,7 @@ build\bin\retardio-cli.exe -datadir=%USERPROFILE%\.retardio addnode "192.168.1.1
 
 **Windows (WSL):**
 ```bash
-wsl bash -c "cd /mnt/c/Users/15187/retardio-coin/build/bin && ./retardio-cli -datadir=/mnt/c/Users/15187/.retardio addnode '192.168.1.100:18333' 'add'"
+wsl bash -c "cd /mnt/c/Users/YourUsername/retardio-coin/build/bin && ./retardio-cli -datadir=/mnt/c/Users/YourUsername/.retardio addnode '192.168.1.100:18333' 'add'"
 ```
 
 ---
@@ -117,7 +117,7 @@ The script will guide you through:
 
 **Windows (WSL):**
 ```bash
-wsl bash -c "cd /mnt/c/Users/15187/retardio-coin/build/bin && ./retardio-cli -datadir=/mnt/c/Users/15187/.retardio getconnectioncount"
+wsl bash -c "cd /mnt/c/Users/YourUsername/retardio-coin/build/bin && ./retardio-cli -datadir=/mnt/c/Users/YourUsername/.retardio getconnectioncount"
 ```
 
 Expected output: A number > 0 (e.g., `2` means 2 peers connected)
@@ -131,7 +131,7 @@ Expected output: A number > 0 (e.g., `2` means 2 peers connected)
 
 **Windows (WSL):**
 ```bash
-wsl bash -c "cd /mnt/c/Users/15187/retardio-coin/build/bin && ./retardio-cli -datadir=/mnt/c/Users/15187/.retardio getpeerinfo"
+wsl bash -c "cd /mnt/c/Users/YourUsername/retardio-coin/build/bin && ./retardio-cli -datadir=/mnt/c/Users/YourUsername/.retardio getpeerinfo"
 ```
 
 This shows detailed information about each connected peer including:

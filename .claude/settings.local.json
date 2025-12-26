@@ -12,7 +12,8 @@
       "Bash(ls:*)",
       "Bash(bash create_linux_package.sh:*)",
       "Bash(bash:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(mkdir:*)"
     ]
   }
 }

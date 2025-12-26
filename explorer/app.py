@@ -238,11 +238,10 @@ def register_node():
     node_id = f"{node['host']}:{node['port']}"
     with node_lock:
         registered_nodes[node_id] = node
-    with app.app_context():
-        db = get_db()
-        db.execute('INSERT OR REPLACE INTO nodes (host,port,rpc_user,rpc_pass,is_active,block_height) VALUES (?,?,?,?,?,?)',
-                   (node['host'], node['port'], node['rpc_user'], node['rpc_pass'], 1 if node['is_active'] else 0, node['block_height']))
-        db.commit()
+    db = get_db()
+    db.execute('INSERT OR REPLACE INTO nodes (host,port,rpc_user,rpc_pass,is_active,block_height) VALUES (?,?,?,?,?,?)',
+               (node['host'], node['port'], node['rpc_user'], node['rpc_pass'], 1 if node['is_active'] else 0, node['block_height']))
+    db.commit()
     return jsonify({'success': True, 'active': node['is_active'], 'height': node['block_height']})
 
 def load_nodes():
@@ -251,9 +250,11 @@ def load_nodes():
         for row in db.execute('SELECT * FROM nodes').fetchall():
             registered_nodes[f"{row['host']}:{row['port']}"] = dict(row)
 
+# Initialize on import (for gunicorn)
+init_db()
+load_nodes()
+threading.Thread(target=sync_blocks, daemon=True).start()
+threading.Thread(target=health_check, daemon=True).start()
+
 if __name__ == '__main__':
-    init_db()
-    load_nodes()
-    threading.Thread(target=sync_blocks, daemon=True).start()
-    threading.Thread(target=health_check, daemon=True).start()
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))

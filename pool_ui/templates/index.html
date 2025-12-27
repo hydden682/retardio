@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retardio Pool Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #00d4ff, #0099ff);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .nav-section {
+            margin-bottom: 20px;
+        }
+
+        .nav-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 5px;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(0, 212, 255, 0.2);
+        }
+
+        .nav-item.active {
+            border-left: 3px solid #00d4ff;
+        }
+
+        /* Main Content */
+        .main {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #00d4ff;
+        }
+
+        /* Blocks Table */
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        input[type="date"], input[type="text"] {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #00d4ff;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #00d4ff, #0099ff);
+            border: none;
+            border-radius: 6px;
+            padding: 10px 20px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.3);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        td {
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .hash-link {
+            color: #00d4ff;
+            text-decoration: none;
+        }
+
+        .hash-link:hover {
+            text-decoration: underline;
+        }
+
+        .worker-tag {
+            background: rgba(0, 212, 255, 0.2);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Animated background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .dot {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(0, 212, 255, 0.3);
+            border-radius: 50%;
+            animation: float 15s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) translateX(50px); opacity: 0; }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #00d4ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation" id="bgAnimation"></div>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">R</div>
+                <div class="logo-text">Retardio Pool</div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-title">Dashboard</div>
+                <div class="nav-item active" onclick="showSection('dashboard')">
+                    📊 Dashboard
+                </div>
+                <div class="nav-item" onclick="showSection('blocks')">
+                    📦 Blocks
+                </div>
+                <div class="nav-item" onclick="showSection('workers')">
+                    👷 Workers
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main">
+            <div class="header">
+                <h1 class="page-title">Pool Dashboard</h1>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Blocks Found</div>
+                    <div class="stat-value" id="totalBlocks">-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Blocks (24h)</div>
+                    <div class="stat-value" id="blocks24h">-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Active Workers</div>
+                    <div class="stat-value" id="activeWorkers">-</div>
+                </div>
+            </div>
+
+            <!-- Blocks Table -->
+            <div class="card">
+                <div class="card-title">Found Blocks</div>
+
+                <div class="filters">
+                    <div class="filter-group">
+                        <span class="filter-label">Start Date:</span>
+                        <input type="date" id="startDate" value="2025-01-01">
+                    </div>
+                    <div class="filter-group">
+                        <span class="filter-label">End Date:</span>
+                        <input type="date" id="endDate">
+                    </div>
+                    <div class="filter-group">
+                        <span class="filter-label">Worker:</span>
+                        <input type="text" id="workerFilter" placeholder="Filter by worker...">
+                    </div>
+                    <button class="btn" onclick="loadBlocks()">Search</button>
+                </div>
+
+                <div id="blocksTableContainer">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <div>Loading blocks...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set default end date to today
+        document.getElementById('endDate').value = new Date().toISOString().split('T')[0];
+
+        // Create background animation dots
+        const bgAnimation = document.getElementById('bgAnimation');
+        for (let i = 0; i < 50; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'dot';
+            dot.style.left = Math.random() * 100 + '%';
+            dot.style.top = Math.random() * 100 + '%';
+            dot.style.animationDelay = Math.random() * 15 + 's';
+            dot.style.animationDuration = (10 + Math.random() * 10) + 's';
+            bgAnimation.appendChild(dot);
+        }
+
+        // Load stats
+        async function loadStats() {
+            try {
+                const res = await fetch('/api/stats');
+                const data = await res.json();
+                document.getElementById('totalBlocks').textContent = data.total_blocks;
+                document.getElementById('blocks24h').textContent = data.blocks_24h;
+                document.getElementById('activeWorkers').textContent = data.top_workers.length;
+            } catch (err) {
+                console.error('Error loading stats:', err);
+            }
+        }
+
+        // Load blocks
+        async function loadBlocks() {
+            const container = document.getElementById('blocksTableContainer');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><div>Loading blocks...</div></div>';
+
+            try {
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+                const worker = document.getElementById('workerFilter').value;
+
+                let url = `/api/blocks?start=${startDate}&end=${endDate}`;
+                if (worker) url += `&worker=${encodeURIComponent(worker)}`;
+
+                const res = await fetch(url);
+                const blocks = await res.json();
+
+                if (blocks.length === 0) {
+                    container.innerHTML = '<div class="no-data">No blocks found for this period</div>';
+                    return;
+                }
+
+                let html = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Height</th>
+                                <th>Hash</th>
+                                <th>Worker</th>
+                                <th>Reward</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                for (const block of blocks) {
+                    const date = new Date(block.timestamp);
+                    const formattedDate = date.toLocaleDateString() + ', ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    const shortHash = block.hash ? block.hash.substring(0, 16) + '...' : 'N/A';
+
+                    html += `
+                        <tr>
+                            <td>${formattedDate}</td>
+                            <td>${block.height}</td>
+                            <td><a class="hash-link" href="/explorer/block/${block.hash}" target="_blank">${shortHash}</a></td>
+                            <td><span class="worker-tag">${block.worker || 'Unknown'}</span></td>
+                            <td>${block.reward ? block.reward.toFixed(2) + ' RTD' : '-'}</td>
+                        </tr>
+                    `;
+                }
+
+                html += '</tbody></table>';
+                container.innerHTML = html;
+            } catch (err) {
+                console.error('Error loading blocks:', err);
+                container.innerHTML = '<div class="no-data">Error loading blocks</div>';
+            }
+        }
+
+        // Initial load
+        loadStats();
+        loadBlocks();
+
+        // Refresh every 30 seconds
+        setInterval(() => {
+            loadStats();
+            loadBlocks();
+        }, 30000);
+    </script>
+</body>
+</html>

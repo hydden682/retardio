@@ -10,10 +10,33 @@ import hashlib
 import struct
 import time
 import subprocess
+import urllib.request
+from datetime import datetime
 
 RPC_CLI = "/home/hydden682/retardio-coin/build/bin/retardio-cli"
 DATA_DIR = "/home/hydden682/.retardio/data"
 POOL_PORT = 3333
+POOL_UI_URL = "http://localhost:5555"  # Pool dashboard URL
+
+def report_block_to_ui(height, block_hash, worker, reward):
+    """Report found block to the pool dashboard"""
+    try:
+        data = json.dumps({
+            "height": height,
+            "hash": block_hash,
+            "worker": worker,
+            "reward": reward / 100000000,  # Convert satoshis to RTD
+            "timestamp": datetime.now().isoformat()
+        }).encode()
+        req = urllib.request.Request(
+            f"{POOL_UI_URL}/api/blocks/add",
+            data=data,
+            headers={"Content-Type": "application/json"}
+        )
+        urllib.request.urlopen(req, timeout=5)
+        print(f"    [Block reported to UI]")
+    except Exception as e:
+        print(f"    [UI report failed: {e}]")
 
 miners = {}
 extranonce_counter = 0
@@ -202,6 +225,8 @@ class StratumMiner:
             result = rpc("submitblock", block_hex)
             if result is None or result == "":
                 print(f"[***] BLOCK ACCEPTED! Height {template['height']}")
+                # Report to pool UI dashboard
+                report_block_to_ui(template['height'], hash_display, self.worker_name, template['coinbasevalue'])
                 # Notify miner it found a block (some miners display this)
                 try:
                     await self.send({"id": None, "method": "client.show_message", "params": [f"BLOCK FOUND! Height {template['height']}"]})

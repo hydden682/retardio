@@ -95,8 +95,12 @@ class StratumMiner:
 
         job_id = f"{int(time.time()) & 0xFFFFFFFF:08x}"
 
-        # Get network difficulty and send it to miner
-        network_diff = template["difficulty"]
+        # Calculate difficulty from target
+        # Bitcoin difficulty 1 target = 0x00000000FFFF0000000000000000000000000000000000000000000000000000
+        # difficulty = diff1_target / current_target
+        target_int = int(template["target"], 16)
+        diff1_target = 0x00000000FFFF0000000000000000000000000000000000000000000000000000
+        network_diff = diff1_target / target_int if target_int > 0 else 1
 
         # Send difficulty BEFORE the job so miner uses correct target
         if abs(network_diff - self.difficulty) > 0.0001:

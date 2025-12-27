@@ -202,6 +202,11 @@ class StratumMiner:
             result = rpc("submitblock", block_hex)
             if result is None or result == "":
                 print(f"[***] BLOCK ACCEPTED! Height {template['height']}")
+                # Notify miner it found a block (some miners display this)
+                try:
+                    await self.send({"id": None, "method": "client.show_message", "params": [f"BLOCK FOUND! Height {template['height']}"]})
+                except:
+                    pass
                 # Send new job immediately for next block
                 await self.send({"id": msg_id, "result": True, "error": None})
                 await self.send_job(clean=True)

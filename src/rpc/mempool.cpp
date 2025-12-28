@@ -20,7 +20,6 @@
 #include <primitives/transaction.h>
 #include <rpc/mempool.h>
 #include <rpc/rawtransaction.h>
-#include <rpc/mempool.h>
 #include <rpc/server.h>
 #include <rpc/server_util.h>
 #include <rpc/util.h>
@@ -33,6 +32,7 @@
 #include <util/time.h>
 #include <util/vector.h>
 #include <validation.h>
+
 
 #include <optional>
 #include <utility>
@@ -48,7 +48,8 @@ using util::ToString;
 
 static RPCHelpMan sendrawtransaction()
 {
-    return RPCHelpMan{"sendrawtransaction",
+    return RPCHelpMan{
+        "sendrawtransaction",
         "\nSubmit a raw transaction (serialized, hex-encoded) to local node and network.\n"
         "\nThe transaction will be sent unconditionally to all peers, so using sendrawtransaction\n"
         "for manual rebroadcast may degrade privacy by leaking the transaction's origin, as\n"
@@ -57,51 +58,50 @@ static RPCHelpMan sendrawtransaction()
         "\nRelated RPCs: createrawtransaction, signrawtransactionwithkey\n",
         {
             {"hexstring", RPCArg::Type::STR_HEX, RPCArg::Optional::NO, "The hex string of the raw transaction"},
-            {"maxfeerate", RPCArg::Type::AMOUNT, RPCArg::Default{FormatMoney(DEFAULT_MAX_RAW_TX_FEE_RATE.GetFeePerK())},
-             "Reject transactions whose fee rate is higher than the specified value, expressed in " + CURRENCY_UNIT +
-                 "/kvB.\nFee rates larger than 1BTC/kvB are rejected.\nSet to 0 to accept any fee rate.",
-                RPCArgOptions{.skip_type_check = true}  // for ignore_rejects compatibility
+            {
+                "maxfeerate", RPCArg::Type::AMOUNT, RPCArg::Default{FormatMoney(DEFAULT_MAX_RAW_TX_FEE_RATE.GetFeePerK())},
+                "Reject transactions whose fee rate is higher than the specified value, expressed in " + CURRENCY_UNIT +
+                    "/kvB.\nFee rates larger than 1BTC/kvB are rejected.\nSet to 0 to accept any fee rate.",
+                RPCArgOptions{.skip_type_check = true} // for ignore_rejects compatibility
             },
-            {"maxburnamount", RPCArg::Type::AMOUNT, RPCArg::Default{FormatMoney(DEFAULT_MAX_BURN_AMOUNT)},
-             "Reject transactions with provably unspendable outputs (e.g. 'datacarrier' outputs that use the OP_RETURN opcode) greater than the specified value, expressed in " + CURRENCY_UNIT + ".\n"
-             "If burning funds through unspendable outputs is desired, increase this value.\n"
-             "This check is based on heuristics and does not guarantee spendability of outputs.\n",
-                RPCArgOptions{.skip_type_check = true}  // for ignore_rejects compatibility
+            {
+                "maxburnamount", RPCArg::Type::AMOUNT, RPCArg::Default{FormatMoney(DEFAULT_MAX_BURN_AMOUNT)},
+                "Reject transactions with provably unspendable outputs (e.g. 'datacarrier' outputs that use the OP_RETURN opcode) greater than the specified value, expressed in " + CURRENCY_UNIT + ".\n"
+                                                                                                                                                                                                     "If burning funds through unspendable outputs is desired, increase this value.\n"
+                                                                                                                                                                                                     "This check is based on heuristics and does not guarantee spendability of outputs.\n",
+                RPCArgOptions{.skip_type_check = true} // for ignore_rejects compatibility
             },
-            {"ignore_rejects", RPCArg::Type::ARR, RPCArg::Default{UniValue::VARR}, "Rejection conditions to ignore, eg 'txn-mempool-conflict'",
+            {
+                "ignore_rejects",
+                RPCArg::Type::ARR,
+                RPCArg::Default{UniValue::VARR},
+                "Rejection conditions to ignore, eg 'txn-mempool-conflict'",
                 {
                     {"reject_reason", RPCArg::Type::STR, RPCArg::Optional::OMITTED, ""},
                 },
             },
         },
         RPCResult{
-            RPCResult::Type::STR_HEX, "", "The transaction hash in hex"
-        },
+            RPCResult::Type::STR_HEX, "", "The transaction hash in hex"},
         RPCExamples{
-            "\nCreate a transaction\n"
-            + HelpExampleCli("createrawtransaction", "\"[{\\\"txid\\\" : \\\"mytxid\\\",\\\"vout\\\":0}]\" \"{\\\"myaddress\\\":0.01}\"") +
-            "Sign the transaction, and get back the hex\n"
-            + HelpExampleCli("signrawtransactionwithwallet", "\"myhex\"") +
-            "\nSend the transaction (signed hex)\n"
-            + HelpExampleCli("sendrawtransaction", "\"signedhex\"") +
-            "\nAs a JSON-RPC call\n"
-            + HelpExampleRpc("sendrawtransaction", "\"signedhex\"")
-                },
-        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
-        {
+            "\nCreate a transaction\n" + HelpExampleCli("createrawtransaction", "\"[{\\\"txid\\\" : \\\"mytxid\\\",\\\"vout\\\":0}]\" \"{\\\"myaddress\\\":0.01}\"") +
+            "Sign the transaction, and get back the hex\n" + HelpExampleCli("signrawtransactionwithwallet", "\"myhex\"") +
+            "\nSend the transaction (signed hex)\n" + HelpExampleCli("sendrawtransaction", "\"signedhex\"") +
+            "\nAs a JSON-RPC call\n" + HelpExampleRpc("sendrawtransaction", "\"signedhex\"")},
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue {
             CFeeRate max_raw_tx_fee_rate{DEFAULT_MAX_RAW_TX_FEE_RATE};
             CAmount max_burn_amount{0};
             const UniValue* json_ign_rejs = &request.params[3];
 
             if (request.params[1].isArray() && request.params[2].isNull() && request.params[3].isNull()) {
-                // ignore_rejects used to occupy this position (v0.12.0.retardio20160226.rc1-v0.17.1.retardio20181229)
+                // Legacy parameter position compatibility
                 json_ign_rejs = &request.params[1];
             } else {
                 if (!request.params[1].isNull()) {
                     max_raw_tx_fee_rate = ParseFeeRate(self.Arg<UniValue>("maxfeerate"));
                 }
                 if (request.params[2].isArray() && request.params[3].isNull()) {
-                    // ignore_rejects used to occupy this position (v0.18.0.retardio20190502-v23.0.retardio20220529)
+                    // Legacy parameter position compatibility
                     json_ign_rejs = &request.params[2];
                 } else if (!request.params[2].isNull()) {
                     max_burn_amount = AmountFromValue(request.params[2]);
@@ -114,7 +114,7 @@ static RPCHelpMan sendrawtransaction()
             }
 
             for (const auto& out : mtx.vout) {
-                if((out.scriptPubKey.IsUnspendable() || !out.scriptPubKey.HasValidOps()) && out.nValue > max_burn_amount) {
+                if ((out.scriptPubKey.IsUnspendable() || !out.scriptPubKey.HasValidOps()) && out.nValue > max_burn_amount) {
                     throw JSONRPCTransactionError(TransactionError::MAX_BURN_EXCEEDED);
                 }
             }
@@ -144,15 +144,21 @@ static RPCHelpMan sendrawtransaction()
 
 static RPCHelpMan testmempoolaccept()
 {
-    return RPCHelpMan{"testmempoolaccept",
+    return RPCHelpMan{
+        "testmempoolaccept",
         "\nReturns result of mempool acceptance tests indicating if raw transaction(s) (serialized, hex-encoded) would be accepted by mempool.\n"
         "\nIf multiple transactions are passed in, parents must come before children and package policies apply: the transactions cannot conflict with any mempool transactions or each other.\n"
         "\nIf one transaction fails, other transactions may not be fully validated (the 'allowed' key will be blank).\n"
-        "\nThe maximum number of transactions allowed is " + ToString(MAX_PACKAGE_COUNT) + ".\n"
-        "\nThis checks if transactions violate the consensus or policy rules.\n"
-        "\nSee sendrawtransaction call.\n",
+        "\nThe maximum number of transactions allowed is " +
+            ToString(MAX_PACKAGE_COUNT) + ".\n"
+                                          "\nThis checks if transactions violate the consensus or policy rules.\n"
+                                          "\nSee sendrawtransaction call.\n",
         {
-            {"rawtxs", RPCArg::Type::ARR, RPCArg::Optional::NO, "An array of hex strings of raw transactions.",
+            {
+                "rawtxs",
+                RPCArg::Type::ARR,
+                RPCArg::Optional::NO,
+                "An array of hex strings of raw transactions.",
                 {
                     {"rawtx", RPCArg::Type::STR_HEX, RPCArg::Optional::OMITTED, ""},
                 },
@@ -160,7 +166,11 @@ static RPCHelpMan testmempoolaccept()
             {"maxfeerate", RPCArg::Type::AMOUNT, RPCArg::Default{FormatMoney(DEFAULT_MAX_RAW_TX_FEE_RATE.GetFeePerK())},
              "Reject transactions whose fee rate is higher than the specified value, expressed in " + CURRENCY_UNIT +
                  "/kvB.\nFee rates larger than 1BTC/kvB are rejected.\nSet to 0 to accept any fee rate."},
-            {"ignore_rejects", RPCArg::Type::ARR, RPCArg::Default{UniValue::VARR}, "Rejection conditions to ignore, eg 'txn-mempool-conflict'",
+            {
+                "ignore_rejects",
+                RPCArg::Type::ARR,
+                RPCArg::Default{UniValue::VARR},
+                "Rejection conditions to ignore, eg 'txn-mempool-conflict'",
                 {
                     {"reject_reason", RPCArg::Type::STR, RPCArg::Optional::OMITTED, ""},
                 },
@@ -171,39 +181,26 @@ static RPCHelpMan testmempoolaccept()
                                       "Returns results for each transaction in the same order they were passed in.\n"
                                       "Transactions that cannot be fully validated due to failures in other transactions will not contain an 'allowed' result.\n",
             {
-                {RPCResult::Type::OBJ, "", "",
-                {
-                    {RPCResult::Type::STR_HEX, "txid", "The transaction id"},
-                    {RPCResult::Type::STR_HEX, "wtxid", "The transaction witness hash in hex"},
-                    {RPCResult::Type::STR, "package-error", /*optional=*/true, "Package validation error, if any (only possible if rawtxs had more than 1 transaction)."},
-                    {RPCResult::Type::BOOL, "allowed", /*optional=*/true, "Whether this tx would be accepted to the mempool and pass client-specified maxfeerate. "
-                                                       "If not present, the tx was not fully validated due to a failure in another tx in the list."},
-                    {RPCResult::Type::NUM, "vsize", /*optional=*/true, "Virtual transaction size as defined in BIP 141. This is different from actual serialized size for witness transactions as witness data is discounted (only present when 'allowed' is true)"},
-                    {RPCResult::Type::OBJ, "fees", /*optional=*/true, "Transaction fees (only present if 'allowed' is true)",
-                    {
-                        {RPCResult::Type::STR_AMOUNT, "base", "transaction fee in " + CURRENCY_UNIT},
-                        {RPCResult::Type::STR_AMOUNT, "effective-feerate", /*optional=*/false, "the effective feerate in " + CURRENCY_UNIT + " per KvB. May differ from the base feerate if, for example, there are modified fees from prioritisetransaction or a package feerate was used."},
-                        {RPCResult::Type::ARR, "effective-includes", /*optional=*/false, "transactions whose fees and vsizes are included in effective-feerate.",
-                            {RPCResult{RPCResult::Type::STR_HEX, "", "transaction wtxid in hex"},
-                        }},
-                    }},
-                    {RPCResult::Type::STR, "reject-reason", /*optional=*/true, "Rejection reason (only present when 'allowed' is false)"},
-                    {RPCResult::Type::STR, "reject-details", /*optional=*/true, "Rejection details (only present when 'allowed' is false and rejection details exist)"},
-                }},
-            }
-        },
-        RPCExamples{
-            "\nCreate a transaction\n"
-            + HelpExampleCli("createrawtransaction", "\"[{\\\"txid\\\" : \\\"mytxid\\\",\\\"vout\\\":0}]\" \"{\\\"myaddress\\\":0.01}\"") +
-            "Sign the transaction, and get back the hex\n"
-            + HelpExampleCli("signrawtransactionwithwallet", "\"myhex\"") +
-            "\nTest acceptance of the transaction (signed hex)\n"
-            + HelpExampleCli("testmempoolaccept", R"('["signedhex"]')") +
-            "\nAs a JSON-RPC call\n"
-            + HelpExampleRpc("testmempoolaccept", "[\"signedhex\"]")
-                },
-        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
-        {
+                {RPCResult::Type::OBJ, "", "", {
+                                                   {RPCResult::Type::STR_HEX, "txid", "The transaction id"},
+                                                   {RPCResult::Type::STR_HEX, "wtxid", "The transaction witness hash in hex"},
+                                                   {RPCResult::Type::STR, "package-error", /*optional=*/true, "Package validation error, if any (only possible if rawtxs had more than 1 transaction)."},
+                                                   {RPCResult::Type::BOOL, "allowed", /*optional=*/true, "Whether this tx would be accepted to the mempool and pass client-specified maxfeerate. "
+                                                                                                         "If not present, the tx was not fully validated due to a failure in another tx in the list."},
+                                                   {RPCResult::Type::NUM, "vsize", /*optional=*/true, "Virtual transaction size as defined in BIP 141. This is different from actual serialized size for witness transactions as witness data is discounted (only present when 'allowed' is true)"},
+                                                   {RPCResult::Type::OBJ, "fees", /*optional=*/true, "Transaction fees (only present if 'allowed' is true)", {
+                                                                                                                                                                 {RPCResult::Type::STR_AMOUNT, "base", "transaction fee in " + CURRENCY_UNIT},
+                                                                                                                                                                 {RPCResult::Type::STR_AMOUNT, "effective-feerate", /*optional=*/false, "the effective feerate in " + CURRENCY_UNIT + " per KvB. May differ from the base feerate if, for example, there are modified fees from prioritisetransaction or a package feerate was used."},
+                                                                                                                                                                 {RPCResult::Type::ARR, "effective-includes", /*optional=*/false, "transactions whose fees and vsizes are included in effective-feerate.", {
+                                                                                                                                                                                                                                                                                                               RPCResult{RPCResult::Type::STR_HEX, "", "transaction wtxid in hex"},
+                                                                                                                                                                                                                                                                                                           }},
+                                                                                                                                                             }},
+                                                   {RPCResult::Type::STR, "reject-reason", /*optional=*/true, "Rejection reason (only present when 'allowed' is false)"},
+                                                   {RPCResult::Type::STR, "reject-details", /*optional=*/true, "Rejection details (only present when 'allowed' is false and rejection details exist)"},
+                                               }},
+            }},
+        RPCExamples{"\nCreate a transaction\n" + HelpExampleCli("createrawtransaction", "\"[{\\\"txid\\\" : \\\"mytxid\\\",\\\"vout\\\":0}]\" \"{\\\"myaddress\\\":0.01}\"") + "Sign the transaction, and get back the hex\n" + HelpExampleCli("signrawtransactionwithwallet", "\"myhex\"") + "\nTest acceptance of the transaction (signed hex)\n" + HelpExampleCli("testmempoolaccept", R"('["signedhex"]')") + "\nAs a JSON-RPC call\n" + HelpExampleRpc("testmempoolaccept", "[\"signedhex\"]")},
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue {
             const UniValue raw_transactions = request.params[0].get_array();
             if (raw_transactions.size() < 1 || raw_transactions.size() > MAX_PACKAGE_COUNT) {
                 throw JSONRPCError(RPC_INVALID_PARAMETER,
@@ -323,17 +320,14 @@ static std::vector<RPCResult> MempoolEntryDescription()
         RPCResult{RPCResult::Type::NUM, "ancestorsize", "virtual transaction size of in-mempool ancestors (including this one)"},
         RPCResult{RPCResult::Type::STR_HEX, "hash", "hash of entire serialized transaction"},
         RPCResult{RPCResult::Type::STR_HEX, "wtxid", "hash of serialized transaction, including witness data"},
-        RPCResult{RPCResult::Type::OBJ, "fees", "",
-            {
-                RPCResult{RPCResult::Type::STR_AMOUNT, "base", "transaction fee, denominated in " + CURRENCY_UNIT},
-                RPCResult{RPCResult::Type::STR_AMOUNT, "modified", "transaction fee with fee deltas used for mining priority, denominated in " + CURRENCY_UNIT},
-                RPCResult{RPCResult::Type::STR_AMOUNT, "ancestor", "transaction fees of in-mempool ancestors (including this one) with fee deltas used for mining priority, denominated in " + CURRENCY_UNIT},
-                RPCResult{RPCResult::Type::STR_AMOUNT, "descendant", "transaction fees of in-mempool descendants (including this one) with fee deltas used for mining priority, denominated in " + CURRENCY_UNIT},
-            }},
-        RPCResult{RPCResult::Type::ARR, "depends", "unconfirmed transactions used as inputs for this transaction",
-            {RPCResult{RPCResult::Type::STR_HEX, "transactionid", "parent transaction id"}}},
-        RPCResult{RPCResult::Type::ARR, "spentby", "unconfirmed transactions spending outputs from this transaction",
-            {RPCResult{RPCResult::Type::STR_HEX, "transactionid", "child transaction id"}}},
+        RPCResult{RPCResult::Type::OBJ, "fees", "", {
+                                                        RPCResult{RPCResult::Type::STR_AMOUNT, "base", "transaction fee, denominated in " + CURRENCY_UNIT},
+                                                        RPCResult{RPCResult::Type::STR_AMOUNT, "modified", "transaction fee with fee deltas used for mining priority, denominated in " + CURRENCY_UNIT},
+                                                        RPCResult{RPCResult::Type::STR_AMOUNT, "ancestor", "transaction fees of in-mempool ancestors (including this one) with fee deltas used for mining priority, denominated in " + CURRENCY_UNIT},
+                                                        RPCResult{RPCResult::Type::STR_AMOUNT, "descendant", "transaction fees of in-mempool descendants (including this one) with fee deltas used for mining priority, denominated in " + CURRENCY_UNIT},
+                                                    }},
+        RPCResult{RPCResult::Type::ARR, "depends", "unconfirmed transactions used as inputs for this transaction", {RPCResult{RPCResult::Type::STR_HEX, "transactionid", "parent transaction id"}}},
+        RPCResult{RPCResult::Type::ARR, "spentby", "unconfirmed transactions spending outputs from this transaction", {RPCResult{RPCResult::Type::STR_HEX, "transactionid", "child transaction id"}}},
         RPCResult{RPCResult::Type::BOOL, "bip125-replaceable", "Whether this transaction signals BIP125 replaceability or has an unconfirmed ancestor signaling BIP125 replaceability.\n"},
         RPCResult{RPCResult::Type::BOOL, "unbroadcast", "Whether this transaction is currently unbroadcast (initial broadcast not yet acknowledged by any peers)"},
     };
@@ -365,15 +359,13 @@ static void entryToJSON(const CTxMemPool& pool, UniValue& info, const CTxMemPool
 
     const CTransaction& tx = e.GetTx();
     std::set<std::string> setDepends;
-    for (const CTxIn& txin : tx.vin)
-    {
+    for (const CTxIn& txin : tx.vin) {
         if (pool.exists(GenTxid::Txid(txin.prevout.hash)))
             setDepends.insert(txin.prevout.hash.ToString());
     }
 
     UniValue depends(UniValue::VARR);
-    for (const std::string& dep : setDepends)
-    {
+    for (const std::string& dep : setDepends) {
         depends.push_back(dep);
     }
 
@@ -399,7 +391,7 @@ static void entryToJSON(const CTxMemPool& pool, UniValue& info, const CTxMemPool
     info.pushKV("unbroadcast", pool.IsUnbroadcastTx(tx.GetHash()));
 }
 
-UniValue MempoolToJSON(ChainstateManager &chainman, const CTxMemPool& pool, bool verbose, bool include_mempool_sequence)
+UniValue MempoolToJSON(ChainstateManager& chainman, const CTxMemPool& pool, bool verbose, bool include_mempool_sequence)
 {
     if (verbose) {
         if (include_mempool_sequence) {
@@ -445,42 +437,40 @@ UniValue MempoolToJSON(ChainstateManager &chainman, const CTxMemPool& pool, bool
 static RPCHelpMan maxmempool()
 {
     return RPCHelpMan{"maxmempool",
-                "\nSets the allocated memory for the memory pool.\n",
-                {
-                    {"megabytes", RPCArg::Type::NUM, RPCArg::Optional::NO, "The memory allocated in MB"},
-                },
-                RPCResult{
-                    RPCResult::Type::NONE, "", ""},
-                RPCExamples{
-                    HelpExampleCli("maxmempool", "150") + HelpExampleRpc("maxmempool", "150")
-                },
-        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
-{
-    int64_t nSize = request.params[0].getInt<int32_t>();
-    int64_t nMempoolSizeMax = nSize * 1000000;
+                      "\nSets the allocated memory for the memory pool.\n",
+                      {
+                          {"megabytes", RPCArg::Type::NUM, RPCArg::Optional::NO, "The memory allocated in MB"},
+                      },
+                      RPCResult{
+                          RPCResult::Type::NONE, "", ""},
+                      RPCExamples{
+                          HelpExampleCli("maxmempool", "150") + HelpExampleRpc("maxmempool", "150")},
+                      [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue {
+                          int64_t nSize = request.params[0].getInt<int32_t>();
+                          int64_t nMempoolSizeMax = nSize * 1000000;
 
-    CTxMemPool& mempool = EnsureAnyMemPool(request.context);
-    LOCK2(cs_main, mempool.cs);
+                          CTxMemPool& mempool = EnsureAnyMemPool(request.context);
+                          LOCK2(cs_main, mempool.cs);
 
-    int64_t nMempoolSizeMin = maxmempoolMinimumBytes(mempool.m_opts.limits.descendant_size_vbytes);
-    if (nMempoolSizeMax < 0 || nMempoolSizeMax < nMempoolSizeMin)
-        throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("MaxMempool size %d is too small", nSize));
-    mempool.m_opts.max_size_bytes = nMempoolSizeMax;
+                          int64_t nMempoolSizeMin = maxmempoolMinimumBytes(mempool.m_opts.limits.descendant_size_vbytes);
+                          if (nMempoolSizeMax < 0 || nMempoolSizeMax < nMempoolSizeMin)
+                              throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("MaxMempool size %d is too small", nSize));
+                          mempool.m_opts.max_size_bytes = nMempoolSizeMax;
 
-    auto node_context = util::AnyPtr<NodeContext>(request.context);
-    if (node_context && node_context->chainman) {
-        Chainstate& active_chainstate = node_context->chainman->ActiveChainstate();
-        LimitMempoolSize(mempool, active_chainstate.CoinsTip());
-    }
+                          auto node_context = util::AnyPtr<NodeContext>(request.context);
+                          if (node_context && node_context->chainman) {
+                              Chainstate& active_chainstate = node_context->chainman->ActiveChainstate();
+                              LimitMempoolSize(mempool, active_chainstate.CoinsTip());
+                          }
 
-    return NullUniValue;
-}
-    };
+                          return NullUniValue;
+                      }};
 }
 
 static RPCHelpMan listmempooltransactions()
 {
-    return RPCHelpMan{"listmempooltransactions",
+    return RPCHelpMan{
+        "listmempooltransactions",
         "\nReturns all transactions in the mempool. Can be filtered by mempool_sequence\n"
         "\nAllows for syncing with current mempool entries via polling (not zmq).",
         {
@@ -489,41 +479,32 @@ static RPCHelpMan listmempooltransactions()
         },
         {
             RPCResult{"for verbose = false",
-                RPCResult::Type::OBJ, "", "",
-                {
-                    {RPCResult::Type::NUM, "mempool_sequence", "The current max mempool sequence value."},
-                    {RPCResult::Type::ARR, "txs", "",
-                    {
-                        {RPCResult::Type::OBJ, "", "",
-                        {
-                            {RPCResult::Type::NUM, "entry_sequence", "The mempool sequence value for this transaction entry."},
-                            {RPCResult::Type::STR_HEX, "txid", "The transaction id"},
-                        }},
-                    }},
-                }},
-            RPCResult{"for verbose = true",
-                RPCResult::Type::OBJ, "", "",
-                {
-                    {RPCResult::Type::NUM, "mempool_sequence", "The current max mempool sequence value."},
-                    {RPCResult::Type::ARR, "txs", "",
-                    {
-                        {RPCResult::Type::OBJ, "", "",
-                        {
-                         Cat<std::vector<RPCResult>>(
-                            {
-                                {RPCResult::Type::NUM, "entry_sequence", "The mempool sequence value for this transaction entry."},
-                            },
-                            DecodeTxDoc(/*txid_field_doc=*/"The transaction id of the mempool transaction")),
-                        }},
-                    }},
-                }},
+                      RPCResult::Type::OBJ,
+                      "",
+                      "",
+                      {
+                          {RPCResult::Type::NUM, "mempool_sequence", "The current max mempool sequence value."},
+                          {RPCResult::Type::ARR, "txs", "", {
+                                                                {RPCResult::Type::OBJ, "", "", {
+                                                                                                   {RPCResult::Type::NUM, "entry_sequence", "The mempool sequence value for this transaction entry."},
+                                                                                                   {RPCResult::Type::STR_HEX, "txid", "The transaction id"},
+                                                                                               }},
+                                                            }},
+                      }},
+            RPCResult{"for verbose = true", RPCResult::Type::OBJ, "", "", {
+                                                                              {RPCResult::Type::NUM, "mempool_sequence", "The current max mempool sequence value."},
+                                                                              {RPCResult::Type::ARR, "txs", "", {
+                                                                                                                    {RPCResult::Type::OBJ, "", "", {
+                                                                                                                                                       Cat<std::vector<RPCResult>>({
+                                                                                                                                                                                       {RPCResult::Type::NUM, "entry_sequence", "The mempool sequence value for this transaction entry."},
+                                                                                                                                                                                   },
+                                                                                                                                                                                   DecodeTxDoc(/*txid_field_doc=*/"The transaction id of the mempool transaction")),
+                                                                                                                                                   }},
+                                                                                                                }},
+                                                                          }},
         },
-        RPCExamples{
-            HelpExampleCli("listmempooltransactions", "true")
-            + HelpExampleRpc("listmempooltransactions", "true")
-        },
-        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
-        {
+        RPCExamples{HelpExampleCli("listmempooltransactions", "true") + HelpExampleRpc("listmempooltransactions", "true")},
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue {
             uint64_t start_mempool_sequence = 0;
             if (!request.params[0].isNull()) {
                 start_mempool_sequence = request.params[0].getInt<uint64_t>();
@@ -574,7 +555,8 @@ UniValue MempoolTxsToJSON(const CTxMemPool& pool, bool verbose, uint64_t sequenc
 
 static RPCHelpMan getrawmempool()
 {
-    return RPCHelpMan{"getrawmempool",
+    return RPCHelpMan{
+        "getrawmempool",
         "\nReturns all transaction ids in memory pool as a json array of string transaction ids.\n"
         "\nHint: use getmempoolentry to fetch a specific transaction from the mempool.\n",
         {
@@ -583,50 +565,52 @@ static RPCHelpMan getrawmempool()
         },
         {
             RPCResult{"for verbose = false",
-                RPCResult::Type::ARR, "", "",
-                {
-                    {RPCResult::Type::STR_HEX, "", "The transaction id"},
-                }},
+                      RPCResult::Type::ARR,
+                      "",
+                      "",
+                      {
+                          {RPCResult::Type::STR_HEX, "", "The transaction id"},
+                      }},
             RPCResult{"for verbose = true",
-                RPCResult::Type::OBJ_DYN, "", "",
-                {
-                    {RPCResult::Type::OBJ, "transactionid", "", MempoolEntryDescription()},
-                }},
+                      RPCResult::Type::OBJ_DYN,
+                      "",
+                      "",
+                      {
+                          {RPCResult::Type::OBJ, "transactionid", "", MempoolEntryDescription()},
+                      }},
             RPCResult{"for verbose = false and mempool_sequence = true",
-                RPCResult::Type::OBJ, "", "",
-                {
-                    {RPCResult::Type::ARR, "txids", "",
-                    {
-                        {RPCResult::Type::STR_HEX, "", "The transaction id"},
-                    }},
-                    {RPCResult::Type::NUM, "mempool_sequence", "The mempool sequence value."},
-                }},
+                      RPCResult::Type::OBJ,
+                      "",
+                      "",
+                      {
+                          {RPCResult::Type::ARR, "txids", "", {
+                                                                  {RPCResult::Type::STR_HEX, "", "The transaction id"},
+                                                              }},
+                          {RPCResult::Type::NUM, "mempool_sequence", "The mempool sequence value."},
+                      }},
         },
-        RPCExamples{
-            HelpExampleCli("getrawmempool", "true")
-            + HelpExampleRpc("getrawmempool", "true")
+        RPCExamples{HelpExampleCli("getrawmempool", "true") + HelpExampleRpc("getrawmempool", "true")},
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue {
+            bool fVerbose = false;
+            if (!request.params[0].isNull())
+                fVerbose = request.params[0].get_bool();
+
+            bool include_mempool_sequence = false;
+            if (!request.params[1].isNull()) {
+                include_mempool_sequence = request.params[1].get_bool();
+            }
+
+            NodeContext& node = EnsureAnyNodeContext(request.context);
+            ChainstateManager& chainman = EnsureChainman(node);
+            return MempoolToJSON(chainman, EnsureAnyMemPool(request.context), fVerbose, include_mempool_sequence);
         },
-        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
-{
-    bool fVerbose = false;
-    if (!request.params[0].isNull())
-        fVerbose = request.params[0].get_bool();
-
-    bool include_mempool_sequence = false;
-    if (!request.params[1].isNull()) {
-        include_mempool_sequence = request.params[1].get_bool();
-    }
-
-    NodeContext& node = EnsureAnyNodeContext(request.context);
-    ChainstateManager& chainman = EnsureChainman(node);
-    return MempoolToJSON(chainman, EnsureAnyMemPool(request.context), fVerbose, include_mempool_sequence);
-},
     };
 }
 
 static RPCHelpMan getmempoolancestors()
 {
-    return RPCHelpMan{"getmempoolancestors",
+    return RPCHelpMan{
+        "getmempoolancestors",
         "\nIf txid is in the mempool, returns all in-mempool ancestors.\n",
         {
             {"txid", RPCArg::Type::STR_HEX, RPCArg::Optional::NO, "The transaction id (must be in mempool)"},
@@ -634,65 +618,67 @@ static RPCHelpMan getmempoolancestors()
         },
         {
             RPCResult{"for verbose = false",
-                RPCResult::Type::ARR, "", "",
-                {{RPCResult::Type::STR_HEX, "", "The transaction id of an in-mempool ancestor transaction"}}},
+                      RPCResult::Type::ARR,
+                      "",
+                      "",
+                      {{RPCResult::Type::STR_HEX, "", "The transaction id of an in-mempool ancestor transaction"}}},
             RPCResult{"for verbose = true",
-                RPCResult::Type::OBJ_DYN, "", "",
-                {
-                    {RPCResult::Type::OBJ, "transactionid", "", MempoolEntryDescription()},
-                }},
+                      RPCResult::Type::OBJ_DYN,
+                      "",
+                      "",
+                      {
+                          {RPCResult::Type::OBJ, "transactionid", "", MempoolEntryDescription()},
+                      }},
         },
         RPCExamples{
-            HelpExampleCli("getmempoolancestors", "\"mytxid\"")
-            + HelpExampleRpc("getmempoolancestors", "\"mytxid\"")
+            HelpExampleCli("getmempoolancestors", "\"mytxid\"") + HelpExampleRpc("getmempoolancestors", "\"mytxid\"")},
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue {
+            bool fVerbose = false;
+            if (!request.params[1].isNull())
+                fVerbose = request.params[1].get_bool();
+
+            uint256 hash = ParseHashV(request.params[0], "parameter 1");
+
+            const CTxMemPool& mempool = EnsureAnyMemPool(request.context);
+            ChainstateManager& chainman = EnsureAnyChainman(request.context);
+            LOCK(::cs_main);
+            const CChain& active_chain = chainman.ActiveChain();
+            const int next_block_height = active_chain.Height() + 1;
+            LOCK(mempool.cs);
+            // TODO: Release cs_main after mempool.cs acquired
+
+            const auto entry{mempool.GetEntry(Txid::FromUint256(hash))};
+            if (entry == nullptr) {
+                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Transaction not in mempool");
+            }
+
+            auto ancestors{mempool.AssumeCalculateMemPoolAncestors(self.m_name, *entry, CTxMemPool::Limits::NoLimits(), /*fSearchForParents=*/false)};
+
+            if (!fVerbose) {
+                UniValue o(UniValue::VARR);
+                for (CTxMemPool::txiter ancestorIt : ancestors) {
+                    o.push_back(ancestorIt->GetTx().GetHash().ToString());
+                }
+                return o;
+            } else {
+                UniValue o(UniValue::VOBJ);
+                for (CTxMemPool::txiter ancestorIt : ancestors) {
+                    const CTxMemPoolEntry& e = *ancestorIt;
+                    const uint256& _hash = e.GetTx().GetHash();
+                    UniValue info(UniValue::VOBJ);
+                    entryToJSON(mempool, info, e, next_block_height);
+                    o.pushKV(_hash.ToString(), std::move(info));
+                }
+                return o;
+            }
         },
-        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
-{
-    bool fVerbose = false;
-    if (!request.params[1].isNull())
-        fVerbose = request.params[1].get_bool();
-
-    uint256 hash = ParseHashV(request.params[0], "parameter 1");
-
-    const CTxMemPool& mempool = EnsureAnyMemPool(request.context);
-    ChainstateManager& chainman = EnsureAnyChainman(request.context);
-    LOCK(::cs_main);
-    const CChain& active_chain = chainman.ActiveChain();
-    const int next_block_height = active_chain.Height() + 1;
-    LOCK(mempool.cs);
-    // TODO: Release cs_main after mempool.cs acquired
-
-    const auto entry{mempool.GetEntry(Txid::FromUint256(hash))};
-    if (entry == nullptr) {
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Transaction not in mempool");
-    }
-
-    auto ancestors{mempool.AssumeCalculateMemPoolAncestors(self.m_name, *entry, CTxMemPool::Limits::NoLimits(), /*fSearchForParents=*/false)};
-
-    if (!fVerbose) {
-        UniValue o(UniValue::VARR);
-        for (CTxMemPool::txiter ancestorIt : ancestors) {
-            o.push_back(ancestorIt->GetTx().GetHash().ToString());
-        }
-        return o;
-    } else {
-        UniValue o(UniValue::VOBJ);
-        for (CTxMemPool::txiter ancestorIt : ancestors) {
-            const CTxMemPoolEntry &e = *ancestorIt;
-            const uint256& _hash = e.GetTx().GetHash();
-            UniValue info(UniValue::VOBJ);
-            entryToJSON(mempool, info, e, next_block_height);
-            o.pushKV(_hash.ToString(), std::move(info));
-        }
-        return o;
-    }
-},
     };
 }
 
 static RPCHelpMan getmempooldescendants()
 {
-    return RPCHelpMan{"getmempooldescendants",
+    return RPCHelpMan{
+        "getmempooldescendants",
         "\nIf txid is in the mempool, returns all in-mempool descendants.\n",
         {
             {"txid", RPCArg::Type::STR_HEX, RPCArg::Optional::NO, "The transaction id (must be in mempool)"},
@@ -700,69 +686,71 @@ static RPCHelpMan getmempooldescendants()
         },
         {
             RPCResult{"for verbose = false",
-                RPCResult::Type::ARR, "", "",
-                {{RPCResult::Type::STR_HEX, "", "The transaction id of an in-mempool descendant transaction"}}},
+                      RPCResult::Type::ARR,
+                      "",
+                      "",
+                      {{RPCResult::Type::STR_HEX, "", "The transaction id of an in-mempool descendant transaction"}}},
             RPCResult{"for verbose = true",
-                RPCResult::Type::OBJ_DYN, "", "",
-                {
-                    {RPCResult::Type::OBJ, "transactionid", "", MempoolEntryDescription()},
-                }},
+                      RPCResult::Type::OBJ_DYN,
+                      "",
+                      "",
+                      {
+                          {RPCResult::Type::OBJ, "transactionid", "", MempoolEntryDescription()},
+                      }},
         },
         RPCExamples{
-            HelpExampleCli("getmempooldescendants", "\"mytxid\"")
-            + HelpExampleRpc("getmempooldescendants", "\"mytxid\"")
+            HelpExampleCli("getmempooldescendants", "\"mytxid\"") + HelpExampleRpc("getmempooldescendants", "\"mytxid\"")},
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue {
+            bool fVerbose = false;
+            if (!request.params[1].isNull())
+                fVerbose = request.params[1].get_bool();
+
+            uint256 hash = ParseHashV(request.params[0], "parameter 1");
+
+            const CTxMemPool& mempool = EnsureAnyMemPool(request.context);
+            ChainstateManager& chainman = EnsureAnyChainman(request.context);
+            LOCK(::cs_main);
+            const CChain& active_chain = chainman.ActiveChain();
+            const int next_block_height = active_chain.Height() + 1;
+            LOCK(mempool.cs);
+            // TODO: Release cs_main after mempool.cs acquired
+
+            const auto it{mempool.GetIter(hash)};
+            if (!it) {
+                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Transaction not in mempool");
+            }
+
+            CTxMemPool::setEntries setDescendants;
+            mempool.CalculateDescendants(*it, setDescendants);
+            // CTxMemPool::CalculateDescendants will include the given tx
+            setDescendants.erase(*it);
+
+            if (!fVerbose) {
+                UniValue o(UniValue::VARR);
+                for (CTxMemPool::txiter descendantIt : setDescendants) {
+                    o.push_back(descendantIt->GetTx().GetHash().ToString());
+                }
+
+                return o;
+            } else {
+                UniValue o(UniValue::VOBJ);
+                for (CTxMemPool::txiter descendantIt : setDescendants) {
+                    const CTxMemPoolEntry& e = *descendantIt;
+                    const uint256& _hash = e.GetTx().GetHash();
+                    UniValue info(UniValue::VOBJ);
+                    entryToJSON(mempool, info, e, next_block_height);
+                    o.pushKV(_hash.ToString(), std::move(info));
+                }
+                return o;
+            }
         },
-        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
-{
-    bool fVerbose = false;
-    if (!request.params[1].isNull())
-        fVerbose = request.params[1].get_bool();
-
-    uint256 hash = ParseHashV(request.params[0], "parameter 1");
-
-    const CTxMemPool& mempool = EnsureAnyMemPool(request.context);
-    ChainstateManager& chainman = EnsureAnyChainman(request.context);
-    LOCK(::cs_main);
-    const CChain& active_chain = chainman.ActiveChain();
-    const int next_block_height = active_chain.Height() + 1;
-    LOCK(mempool.cs);
-    // TODO: Release cs_main after mempool.cs acquired
-
-    const auto it{mempool.GetIter(hash)};
-    if (!it) {
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Transaction not in mempool");
-    }
-
-    CTxMemPool::setEntries setDescendants;
-    mempool.CalculateDescendants(*it, setDescendants);
-    // CTxMemPool::CalculateDescendants will include the given tx
-    setDescendants.erase(*it);
-
-    if (!fVerbose) {
-        UniValue o(UniValue::VARR);
-        for (CTxMemPool::txiter descendantIt : setDescendants) {
-            o.push_back(descendantIt->GetTx().GetHash().ToString());
-        }
-
-        return o;
-    } else {
-        UniValue o(UniValue::VOBJ);
-        for (CTxMemPool::txiter descendantIt : setDescendants) {
-            const CTxMemPoolEntry &e = *descendantIt;
-            const uint256& _hash = e.GetTx().GetHash();
-            UniValue info(UniValue::VOBJ);
-            entryToJSON(mempool, info, e, next_block_height);
-            o.pushKV(_hash.ToString(), std::move(info));
-        }
-        return o;
-    }
-},
     };
 }
 
 static RPCHelpMan getmempoolentry()
 {
-    return RPCHelpMan{"getmempoolentry",
+    return RPCHelpMan{
+        "getmempoolentry",
         "\nReturns mempool data for given transaction\n",
         {
             {"txid", RPCArg::Type::STR_HEX, RPCArg::Optional::NO, "The transaction id (must be in mempool)"},
@@ -770,41 +758,47 @@ static RPCHelpMan getmempoolentry()
         RPCResult{
             RPCResult::Type::OBJ, "", "", MempoolEntryDescription()},
         RPCExamples{
-            HelpExampleCli("getmempoolentry", "\"mytxid\"")
-            + HelpExampleRpc("getmempoolentry", "\"mytxid\"")
+            HelpExampleCli("getmempoolentry", "\"mytxid\"") + HelpExampleRpc("getmempoolentry", "\"mytxid\"")},
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue {
+            uint256 hash = ParseHashV(request.params[0], "parameter 1");
+
+            const CTxMemPool& mempool = EnsureAnyMemPool(request.context);
+            ChainstateManager& chainman = EnsureAnyChainman(request.context);
+            LOCK(::cs_main);
+            const CChain& active_chain = chainman.ActiveChain();
+            const int next_block_height = active_chain.Height() + 1;
+            LOCK(mempool.cs);
+            // TODO: Release cs_main after mempool.cs acquired
+
+            const auto entry{mempool.GetEntry(Txid::FromUint256(hash))};
+            if (entry == nullptr) {
+                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Transaction not in mempool");
+            }
+
+            UniValue info(UniValue::VOBJ);
+            entryToJSON(mempool, info, *entry, next_block_height);
+            return info;
         },
-        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
-{
-    uint256 hash = ParseHashV(request.params[0], "parameter 1");
-
-    const CTxMemPool& mempool = EnsureAnyMemPool(request.context);
-    ChainstateManager& chainman = EnsureAnyChainman(request.context);
-    LOCK(::cs_main);
-    const CChain& active_chain = chainman.ActiveChain();
-    const int next_block_height = active_chain.Height() + 1;
-    LOCK(mempool.cs);
-    // TODO: Release cs_main after mempool.cs acquired
-
-    const auto entry{mempool.GetEntry(Txid::FromUint256(hash))};
-    if (entry == nullptr) {
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Transaction not in mempool");
-    }
-
-    UniValue info(UniValue::VOBJ);
-    entryToJSON(mempool, info, *entry, next_block_height);
-    return info;
-},
     };
 }
 
 static RPCHelpMan gettxspendingprevout()
 {
-    return RPCHelpMan{"gettxspendingprevout",
+    return RPCHelpMan{
+        "gettxspendingprevout",
         "Scans the mempool to find transactions spending any of the given outputs",
         {
-            {"outputs", RPCArg::Type::ARR, RPCArg::Optional::NO, "The transaction outputs that we want to check, and within each, the txid (string) vout (numeric).",
+            {
+                "outputs",
+                RPCArg::Type::ARR,
+                RPCArg::Optional::NO,
+                "The transaction outputs that we want to check, and within each, the txid (string) vout (numeric).",
                 {
-                    {"", RPCArg::Type::OBJ, RPCArg::Optional::OMITTED, "",
+                    {
+                        "",
+                        RPCArg::Type::OBJ,
+                        RPCArg::Optional::OMITTED,
+                        "",
                         {
                             {"txid", RPCArg::Type::STR_HEX, RPCArg::Optional::NO, "The transaction id"},
                             {"vout", RPCArg::Type::NUM, RPCArg::Optional::NO, "The output number"},
@@ -814,22 +808,15 @@ static RPCHelpMan gettxspendingprevout()
             },
         },
         RPCResult{
-            RPCResult::Type::ARR, "", "",
-            {
-                {RPCResult::Type::OBJ, "", "",
-                {
-                    {RPCResult::Type::STR_HEX, "txid", "the transaction id of the checked output"},
-                    {RPCResult::Type::NUM, "vout", "the vout value of the checked output"},
-                    {RPCResult::Type::STR_HEX, "spendingtxid", /*optional=*/true, "the transaction id of the mempool transaction spending this output (omitted if unspent)"},
-                }},
-            }
-        },
-        RPCExamples{
-            HelpExampleCli("gettxspendingprevout", "\"[{\\\"txid\\\":\\\"a08e6907dbbd3d809776dbfc5d82e371b764ed838b5655e72f463568df1aadf0\\\",\\\"vout\\\":3}]\"")
-            + HelpExampleRpc("gettxspendingprevout", "[{\"txid\":\"a08e6907dbbd3d809776dbfc5d82e371b764ed838b5655e72f463568df1aadf0\",\"vout\":3}]")
-        },
-        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
-        {
+            RPCResult::Type::ARR, "", "", {
+                                              {RPCResult::Type::OBJ, "", "", {
+                                                                                 {RPCResult::Type::STR_HEX, "txid", "the transaction id of the checked output"},
+                                                                                 {RPCResult::Type::NUM, "vout", "the vout value of the checked output"},
+                                                                                 {RPCResult::Type::STR_HEX, "spendingtxid", /*optional=*/true, "the transaction id of the mempool transaction spending this output (omitted if unspent)"},
+                                                                             }},
+                                          }},
+        RPCExamples{HelpExampleCli("gettxspendingprevout", "\"[{\\\"txid\\\":\\\"a08e6907dbbd3d809776dbfc5d82e371b764ed838b5655e72f463568df1aadf0\\\",\\\"vout\\\":3}]\"") + HelpExampleRpc("gettxspendingprevout", "[{\"txid\":\"a08e6907dbbd3d809776dbfc5d82e371b764ed838b5655e72f463568df1aadf0\",\"vout\":3}]")},
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue {
             const UniValue& output_params = request.params[0].get_array();
             if (output_params.empty()) {
                 throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, outputs are missing");
@@ -845,7 +832,8 @@ static RPCHelpMan gettxspendingprevout()
                                 {
                                     {"txid", UniValueType(UniValue::VSTR)},
                                     {"vout", UniValueType(UniValue::VNUM)},
-                                }, /*fAllowNull=*/false, /*fStrict=*/true);
+                                },
+                                /*fAllowNull=*/false, /*fStrict=*/true);
 
                 const Txid txid = Txid::FromUint256(ParseHashO(o, "txid"));
                 const int nOutput{o.find_value("vout").getInt<int>()};
@@ -901,7 +889,8 @@ UniValue MempoolInfoToJSON(const CTxMemPool& pool, const std::optional<MempoolHi
         std::string multiplier_str = strprintf("%u", pool.m_opts.dust_relay_multiplier / 1000);
         if (pool.m_opts.dust_relay_multiplier % 1000) {
             multiplier_str += strprintf(".%03u", pool.m_opts.dust_relay_multiplier % 1000);
-            while (multiplier_str.back() == '0') multiplier_str.pop_back();
+            while (multiplier_str.back() == '0')
+                multiplier_str.pop_back();
         }
         if (pool.m_opts.dust_relay_target < 0) {
             ret.pushKV("dustdynamic", strprintf("%s*target:%u", multiplier_str, -pool.m_opts.dust_relay_target));
@@ -912,13 +901,13 @@ UniValue MempoolInfoToJSON(const CTxMemPool& pool, const std::optional<MempoolHi
     ret.pushKV("unbroadcastcount", uint64_t{pool.GetUnbroadcastTxs().size()});
     ret.pushKV("fullrbf", (pool.m_opts.rbf_policy == RBFPolicy::Always));
     switch (pool.m_opts.rbf_policy) {
-    case RBFPolicy::Never : ret.pushKV("rbf_policy", "never"); break;
-    case RBFPolicy::OptIn : ret.pushKV("rbf_policy", "optin"); break;
+    case RBFPolicy::Never: ret.pushKV("rbf_policy", "never"); break;
+    case RBFPolicy::OptIn: ret.pushKV("rbf_policy", "optin"); break;
     case RBFPolicy::Always: ret.pushKV("rbf_policy", "always"); break;
     }
     switch (pool.m_opts.truc_policy) {
-    case TRUCPolicy::Reject : ret.pushKV("truc_policy", "reject"); break;
-    case TRUCPolicy::Accept : ret.pushKV("truc_policy", "accept"); break;
+    case TRUCPolicy::Reject: ret.pushKV("truc_policy", "reject"); break;
+    case TRUCPolicy::Accept: ret.pushKV("truc_policy", "accept"); break;
     case TRUCPolicy::Enforce: ret.pushKV("truc_policy", "enforce"); break;
     }
 
@@ -981,86 +970,83 @@ UniValue MempoolInfoToJSON(const CTxMemPool& pool, const std::optional<MempoolHi
 
 static RPCHelpMan getmempoolinfo()
 {
-    return RPCHelpMan{"getmempoolinfo",
+    return RPCHelpMan{
+        "getmempoolinfo",
         "Returns details on the active state of the TX memory pool.\n",
         {
-            {"fee_histogram|with_fee_histogram", {RPCArg::Type::ARR, RPCArg::Type::BOOL}, RPCArg::Optional::OMITTED, "Fee statistics grouped by fee rate ranges",
+            {
+                "fee_histogram|with_fee_histogram",
+                {RPCArg::Type::ARR, RPCArg::Type::BOOL},
+                RPCArg::Optional::OMITTED,
+                "Fee statistics grouped by fee rate ranges",
                 {
                     {"fee_rate", RPCArg::Type::NUM, RPCArg::Optional::NO, "Fee rate (in " + CURRENCY_ATOM + "/vB) to group the fees by"},
                 },
             },
         },
         RPCResult{
-            RPCResult::Type::OBJ, "", "",
-            {
-                {RPCResult::Type::BOOL, "loaded", "True if the initial load attempt of the persisted mempool finished"},
-                {RPCResult::Type::NUM, "size", "Current tx count"},
-                {RPCResult::Type::NUM, "bytes", "Sum of all virtual transaction sizes as defined in BIP 141. Differs from actual serialized size because witness data is discounted"},
-                {RPCResult::Type::NUM, "usage", "Total memory usage for the mempool"},
-                {RPCResult::Type::STR_AMOUNT, "total_fee", "Total fees for the mempool in " + CURRENCY_UNIT + ", ignoring modified fees through prioritisetransaction"},
-                {RPCResult::Type::NUM, "maxmempool", "Maximum memory usage for the mempool"},
-                {RPCResult::Type::STR_AMOUNT, "mempoolminfee", "Minimum fee rate in " + CURRENCY_UNIT + "/kvB for tx to be accepted. Is the maximum of minrelaytxfee and minimum mempool fee"},
-                {RPCResult::Type::STR_AMOUNT, "minrelaytxfee", "Current minimum relay fee for transactions"},
-                {RPCResult::Type::NUM, "incrementalrelayfee", "minimum fee rate increment for mempool limiting or replacement in " + CURRENCY_UNIT + "/kvB"},
-                {RPCResult::Type::NUM, "dustrelayfee", "Current fee rate used to define dust, the value of an output so small it will cost more to spend than its value, in " + CURRENCY_UNIT + "/kvB"},
-                {RPCResult::Type::NUM, "dustrelayfeefloor", "Minimum fee rate used to define dust in " + CURRENCY_UNIT + "/kvB"},
-                {RPCResult::Type::STR, "dustdynamic", "Method for automatic adjustments to dustrelayfee (one of: off, target:<blocks>, or mempool:<kB>)"},
-                {RPCResult::Type::NUM, "unbroadcastcount", "Current number of transactions that haven't passed initial broadcast yet"},
-                {RPCResult::Type::BOOL, "fullrbf", "True if the mempool accepts RBF without replaceability signaling inspection"},
-                {RPCResult::Type::STR, "rbf_policy", "Policy used for replacing conflicting transactions by fee (one of: never, optin, always)"},
-                {RPCResult::Type::STR, "truc_policy", "Behaviour for transactions requesting limits (one of: reject, accept, enforce)"},
-                {RPCResult::Type::OBJ_DYN, "fee_histogram", /*optional=*/true, "",
-                    {
-                        {RPCResult::Type::OBJ, "<fee_rate_group>", "Fee rate group named by its lower bound (in " + CURRENCY_ATOM + "/vB), identical to the \"from_feerate\" field below",
-                            {
-                                {RPCResult::Type::NUM, "sizes", "Cumulative size of all transactions in the fee rate group (in vBytes)"},
-                                {RPCResult::Type::NUM, "count", "Number of transactions in the fee rate group"},
-                                {RPCResult::Type::NUM, "fees", "Cumulative fees of all transactions in the fee rate group (in " + CURRENCY_ATOM + ")"},
-                                {RPCResult::Type::NUM, "from_feerate", "Group contains transactions with fee rates equal or greater than this value (in " + CURRENCY_ATOM + "/vB)"},
-                                {RPCResult::Type::NUM, "to_feerate", /*optional=*/true, "Group contains transactions with fee rates equal or less than this value (in " + CURRENCY_ATOM + "/vB)"},
-                            }},
-                        {RPCResult::Type::ELISION, "", ""},
-                        {RPCResult::Type::NUM, "total_fees", "Total available fees in mempool (in " + CURRENCY_ATOM + ")"},
-                    }, /*skip_type_check=*/ true},
-            }},
-        RPCExamples{
-            HelpExampleCli("getmempoolinfo", "") +
-            HelpExampleCli("getmempoolinfo", R"("[0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 17, 20, 25, 30, 40, 50, 60, 70, 80, 100, 120, 140, 170, 200]")") +
-            HelpExampleRpc("getmempoolinfo", "") +
-            HelpExampleRpc("getmempoolinfo", R"([0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 17, 20, 25, 30, 40, 50, 60, 70, 80, 100, 120, 140, 170, 200])")
-        },
-        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
-{
-    MempoolHistogramFeeRates histogram_floors;
-    std::optional<MempoolHistogramFeeRates> histogram_floors_opt = std::nullopt;
+            RPCResult::Type::OBJ, "", "", {
+                                              {RPCResult::Type::BOOL, "loaded", "True if the initial load attempt of the persisted mempool finished"},
+                                              {RPCResult::Type::NUM, "size", "Current tx count"},
+                                              {RPCResult::Type::NUM, "bytes", "Sum of all virtual transaction sizes as defined in BIP 141. Differs from actual serialized size because witness data is discounted"},
+                                              {RPCResult::Type::NUM, "usage", "Total memory usage for the mempool"},
+                                              {RPCResult::Type::STR_AMOUNT, "total_fee", "Total fees for the mempool in " + CURRENCY_UNIT + ", ignoring modified fees through prioritisetransaction"},
+                                              {RPCResult::Type::NUM, "maxmempool", "Maximum memory usage for the mempool"},
+                                              {RPCResult::Type::STR_AMOUNT, "mempoolminfee", "Minimum fee rate in " + CURRENCY_UNIT + "/kvB for tx to be accepted. Is the maximum of minrelaytxfee and minimum mempool fee"},
+                                              {RPCResult::Type::STR_AMOUNT, "minrelaytxfee", "Current minimum relay fee for transactions"},
+                                              {RPCResult::Type::NUM, "incrementalrelayfee", "minimum fee rate increment for mempool limiting or replacement in " + CURRENCY_UNIT + "/kvB"},
+                                              {RPCResult::Type::NUM, "dustrelayfee", "Current fee rate used to define dust, the value of an output so small it will cost more to spend than its value, in " + CURRENCY_UNIT + "/kvB"},
+                                              {RPCResult::Type::NUM, "dustrelayfeefloor", "Minimum fee rate used to define dust in " + CURRENCY_UNIT + "/kvB"},
+                                              {RPCResult::Type::STR, "dustdynamic", "Method for automatic adjustments to dustrelayfee (one of: off, target:<blocks>, or mempool:<kB>)"},
+                                              {RPCResult::Type::NUM, "unbroadcastcount", "Current number of transactions that haven't passed initial broadcast yet"},
+                                              {RPCResult::Type::BOOL, "fullrbf", "True if the mempool accepts RBF without replaceability signaling inspection"},
+                                              {RPCResult::Type::STR, "rbf_policy", "Policy used for replacing conflicting transactions by fee (one of: never, optin, always)"},
+                                              {RPCResult::Type::STR, "truc_policy", "Behaviour for transactions requesting limits (one of: reject, accept, enforce)"},
+                                              {RPCResult::Type::OBJ_DYN, "fee_histogram", /*optional=*/true, "", {
+                                                                                                                     {RPCResult::Type::OBJ, "<fee_rate_group>", "Fee rate group named by its lower bound (in " + CURRENCY_ATOM + "/vB), identical to the \"from_feerate\" field below", {
+                                                                                                                                                                                                                                                                                            {RPCResult::Type::NUM, "sizes", "Cumulative size of all transactions in the fee rate group (in vBytes)"},
+                                                                                                                                                                                                                                                                                            {RPCResult::Type::NUM, "count", "Number of transactions in the fee rate group"},
+                                                                                                                                                                                                                                                                                            {RPCResult::Type::NUM, "fees", "Cumulative fees of all transactions in the fee rate group (in " + CURRENCY_ATOM + ")"},
+                                                                                                                                                                                                                                                                                            {RPCResult::Type::NUM, "from_feerate", "Group contains transactions with fee rates equal or greater than this value (in " + CURRENCY_ATOM + "/vB)"},
+                                                                                                                                                                                                                                                                                            {RPCResult::Type::NUM, "to_feerate", /*optional=*/true, "Group contains transactions with fee rates equal or less than this value (in " + CURRENCY_ATOM + "/vB)"},
+                                                                                                                                                                                                                                                                                        }},
+                                                                                                                     {RPCResult::Type::ELISION, "", ""},
+                                                                                                                     {RPCResult::Type::NUM, "total_fees", "Total available fees in mempool (in " + CURRENCY_ATOM + ")"},
+                                                                                                                 },
+                                               /*skip_type_check=*/true},
+                                          }},
+        RPCExamples{HelpExampleCli("getmempoolinfo", "") + HelpExampleCli("getmempoolinfo", R"("[0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 17, 20, 25, 30, 40, 50, 60, 70, 80, 100, 120, 140, 170, 200]")") + HelpExampleRpc("getmempoolinfo", "") + HelpExampleRpc("getmempoolinfo", R"([0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 17, 20, 25, 30, 40, 50, 60, 70, 80, 100, 120, 140, 170, 200])")},
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue {
+            MempoolHistogramFeeRates histogram_floors;
+            std::optional<MempoolHistogramFeeRates> histogram_floors_opt = std::nullopt;
 
-    if (request.params[0].isBool()) {
-        if (request.params[0].isTrue()) {
-            histogram_floors_opt = MempoolInfoToJSON_const_histogram_floors;
-        }
-    } else if (!request.params[0].isNull()) {
-        const UniValue histogram_floors_univalue = request.params[0].get_array();
+            if (request.params[0].isBool()) {
+                if (request.params[0].isTrue()) {
+                    histogram_floors_opt = MempoolInfoToJSON_const_histogram_floors;
+                }
+            } else if (!request.params[0].isNull()) {
+                const UniValue histogram_floors_univalue = request.params[0].get_array();
 
-        if (histogram_floors_univalue.empty()) {
-            throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid number of parameters");
-        }
+                if (histogram_floors_univalue.empty()) {
+                    throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid number of parameters");
+                }
 
-        for (size_t i = 0; i < histogram_floors_univalue.size(); ++i) {
-            int64_t value = histogram_floors_univalue[i].getInt<int64_t>();
+                for (size_t i = 0; i < histogram_floors_univalue.size(); ++i) {
+                    int64_t value = histogram_floors_univalue[i].getInt<int64_t>();
 
-            if (value < 0) {
-                throw JSONRPCError(RPC_INVALID_PARAMETER, "Non-negative values are expected");
-            } else if (i > 0 && histogram_floors.back() >= value) {
-                throw JSONRPCError(RPC_INVALID_PARAMETER, "Strictly increasing values are expected");
+                    if (value < 0) {
+                        throw JSONRPCError(RPC_INVALID_PARAMETER, "Non-negative values are expected");
+                    } else if (i > 0 && histogram_floors.back() >= value) {
+                        throw JSONRPCError(RPC_INVALID_PARAMETER, "Strictly increasing values are expected");
+                    }
+
+                    histogram_floors.push_back(value);
+                }
+                histogram_floors_opt = std::optional<MempoolHistogramFeeRates>(std::move(histogram_floors));
             }
 
-            histogram_floors.push_back(value);
-        }
-        histogram_floors_opt = std::optional<MempoolHistogramFeeRates>(std::move(histogram_floors));
-    }
-
-    return MempoolInfoToJSON(EnsureAnyMemPool(request.context), histogram_floors_opt);
-},
+            return MempoolInfoToJSON(EnsureAnyMemPool(request.context), histogram_floors_opt);
+        },
     };
 }
 
@@ -1129,38 +1115,34 @@ static RPCHelpMan importmempool()
 
 static RPCHelpMan savemempool()
 {
-    return RPCHelpMan{"savemempool",
+    return RPCHelpMan{
+        "savemempool",
         "\nDumps the mempool to disk. It will fail until the previous dump is fully loaded.\n",
         {},
         RPCResult{
-            RPCResult::Type::OBJ, "", "",
-            {
-                {RPCResult::Type::STR, "filename", "the directory and file where the mempool was saved"},
-            }},
-        RPCExamples{
-            HelpExampleCli("savemempool", "")
-            + HelpExampleRpc("savemempool", "")
+            RPCResult::Type::OBJ, "", "", {
+                                              {RPCResult::Type::STR, "filename", "the directory and file where the mempool was saved"},
+                                          }},
+        RPCExamples{HelpExampleCli("savemempool", "") + HelpExampleRpc("savemempool", "")},
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue {
+            const ArgsManager& args{EnsureAnyArgsman(request.context)};
+            const CTxMemPool& mempool = EnsureAnyMemPool(request.context);
+
+            if (!mempool.GetLoadTried()) {
+                throw JSONRPCError(RPC_MISC_ERROR, "The mempool was not loaded yet");
+            }
+
+            const fs::path& dump_path = MempoolPath(args);
+
+            if (!DumpMempool(mempool, dump_path)) {
+                throw JSONRPCError(RPC_MISC_ERROR, "Unable to dump mempool to disk");
+            }
+
+            UniValue ret(UniValue::VOBJ);
+            ret.pushKV("filename", dump_path.utf8string());
+
+            return ret;
         },
-        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
-{
-    const ArgsManager& args{EnsureAnyArgsman(request.context)};
-    const CTxMemPool& mempool = EnsureAnyMemPool(request.context);
-
-    if (!mempool.GetLoadTried()) {
-        throw JSONRPCError(RPC_MISC_ERROR, "The mempool was not loaded yet");
-    }
-
-    const fs::path& dump_path = MempoolPath(args);
-
-    if (!DumpMempool(mempool, dump_path)) {
-        throw JSONRPCError(RPC_MISC_ERROR, "Unable to dump mempool to disk");
-    }
-
-    UniValue ret(UniValue::VOBJ);
-    ret.pushKV("filename", dump_path.utf8string());
-
-    return ret;
-},
     };
 }
 
@@ -1174,10 +1156,9 @@ static std::vector<RPCResult> OrphanDescription()
         RPCResult{RPCResult::Type::NUM, "weight", "The transaction weight as defined in BIP 141."},
         RPCResult{RPCResult::Type::NUM_TIME, "entry", "The entry time into the orphanage expressed in " + UNIX_EPOCH_TIME},
         RPCResult{RPCResult::Type::NUM_TIME, "expiration", "The orphan expiration time expressed in " + UNIX_EPOCH_TIME},
-        RPCResult{RPCResult::Type::ARR, "from", "",
-        {
-            RPCResult{RPCResult::Type::NUM, "peer_id", "Peer ID"},
-        }},
+        RPCResult{RPCResult::Type::ARR, "from", "", {
+                                                        RPCResult{RPCResult::Type::NUM, "peer_id", "Peer ID"},
+                                                    }},
     };
 }
 
@@ -1192,7 +1173,7 @@ static UniValue OrphanToJSON(const TxOrphanage::OrphanTxBase& orphan)
     o.pushKV("entry", int64_t{TicksSinceEpoch<std::chrono::seconds>(orphan.nTimeExpire - ORPHAN_TX_EXPIRE_TIME)});
     o.pushKV("expiration", int64_t{TicksSinceEpoch<std::chrono::seconds>(orphan.nTimeExpire)});
     UniValue from(UniValue::VARR);
-    for (const auto fromPeer: orphan.announcers) {
+    for (const auto fromPeer : orphan.announcers) {
         from.push_back(fromPeer);
     }
     o.pushKV("from", from);
@@ -1201,7 +1182,8 @@ static UniValue OrphanToJSON(const TxOrphanage::OrphanTxBase& orphan)
 
 static RPCHelpMan getorphantxs()
 {
-    return RPCHelpMan{"getorphantxs",
+    return RPCHelpMan{
+        "getorphantxs",
         "\nShows transactions in the tx orphanage.\n"
         "\nEXPERIMENTAL warning: this call may be changed in future releases.\n",
         {
@@ -1210,37 +1192,38 @@ static RPCHelpMan getorphantxs()
         },
         {
             RPCResult{"for verbose = 0",
-                RPCResult::Type::ARR, "", "",
-                {
-                    {RPCResult::Type::STR_HEX, "txid", "The transaction hash in hex"},
-                }},
+                      RPCResult::Type::ARR,
+                      "",
+                      "",
+                      {
+                          {RPCResult::Type::STR_HEX, "txid", "The transaction hash in hex"},
+                      }},
             RPCResult{"for verbose = 1",
-                RPCResult::Type::ARR, "", "",
-                {
-                    {RPCResult::Type::OBJ, "", "", OrphanDescription()},
-                }},
+                      RPCResult::Type::ARR,
+                      "",
+                      "",
+                      {
+                          {RPCResult::Type::OBJ, "", "", OrphanDescription()},
+                      }},
             RPCResult{"for verbose = 2",
-                RPCResult::Type::ARR, "", "",
-                {
-                    {RPCResult::Type::OBJ, "", "",
-                        Cat<std::vector<RPCResult>>(
-                            OrphanDescription(),
-                            {{RPCResult::Type::STR_HEX, "hex", "The serialized, hex-encoded transaction data"}}
-                        )
-                    },
-                }},
+                      RPCResult::Type::ARR,
+                      "",
+                      "",
+                      {
+                          {RPCResult::Type::OBJ, "", "",
+                           Cat<std::vector<RPCResult>>(
+                               OrphanDescription(),
+                               {{RPCResult::Type::STR_HEX, "hex", "The serialized, hex-encoded transaction data"}})},
+                      }},
         },
         RPCExamples{
-            HelpExampleCli("getorphantxs", "2")
-            + HelpExampleRpc("getorphantxs", "2")
-        },
-        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
-        {
+            HelpExampleCli("getorphantxs", "2") + HelpExampleRpc("getorphantxs", "2")},
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue {
             const NodeContext& node = EnsureAnyNodeContext(request.context);
             PeerManager& peerman = EnsurePeerman(node);
             std::vector<TxOrphanage::OrphanTxBase> orphanage = peerman.GetOrphanTransactions();
 
-            int verbosity{ParseVerbosity(request.params[0], /*default_verbosity=*/0, /*allow_bool*/false)};
+            int verbosity{ParseVerbosity(request.params[0], /*default_verbosity=*/0, /*allow_bool*/ false)};
 
             UniValue ret(UniValue::VARR);
 
@@ -1269,14 +1252,18 @@ static RPCHelpMan getorphantxs()
 
 static RPCHelpMan submitpackage()
 {
-    return RPCHelpMan{"submitpackage",
+    return RPCHelpMan{
+        "submitpackage",
         "Submit a package of raw transactions (serialized, hex-encoded) to local node.\n"
         "The package will be validated according to consensus and mempool policy rules. If any transaction passes, it will be accepted to mempool.\n"
         "This RPC is experimental and the interface may be unstable. Refer to doc/policy/packages.md for documentation on package policies.\n"
-        "Warning: successful submission does not mean the transactions will propagate throughout the network.\n"
-        ,
+        "Warning: successful submission does not mean the transactions will propagate throughout the network.\n",
         {
-            {"package", RPCArg::Type::ARR, RPCArg::Optional::NO, "An array of raw transactions.\n"
+            {
+                "package",
+                RPCArg::Type::ARR,
+                RPCArg::Optional::NO,
+                "An array of raw transactions.\n"
                 "The package must solely consist of a child transaction and all of its unconfirmed parents, if any. None of the parents may depend on each other.\n"
                 "The package must be topologically sorted, with the child being the last element in the array.",
                 {
@@ -1288,42 +1275,35 @@ static RPCHelpMan submitpackage()
                  "/kvB.\nFee rates larger than 1BTC/kvB are rejected.\nSet to 0 to accept any fee rate."},
             {"maxburnamount", RPCArg::Type::AMOUNT, RPCArg::Default{FormatMoney(DEFAULT_MAX_BURN_AMOUNT)},
              "Reject transactions with provably unspendable outputs (e.g. 'datacarrier' outputs that use the OP_RETURN opcode) greater than the specified value, expressed in " + CURRENCY_UNIT + ".\n"
-             "If burning funds through unspendable outputs is desired, increase this value.\n"
-             "This check is based on heuristics and does not guarantee spendability of outputs.\n"
-            },
+                                                                                                                                                                                                  "If burning funds through unspendable outputs is desired, increase this value.\n"
+                                                                                                                                                                                                  "This check is based on heuristics and does not guarantee spendability of outputs.\n"},
         },
         RPCResult{
-            RPCResult::Type::OBJ, "", "",
+            RPCResult::Type::OBJ,
+            "",
+            "",
             {
                 {RPCResult::Type::STR, "package_msg", "The transaction package result message. \"success\" indicates all transactions were accepted into or are already in the mempool."},
-                {RPCResult::Type::OBJ_DYN, "tx-results", "transaction results keyed by wtxid",
-                {
-                    {RPCResult::Type::OBJ, "wtxid", "transaction wtxid", {
-                        {RPCResult::Type::STR_HEX, "txid", "The transaction id"},
-                        {RPCResult::Type::STR_HEX, "other-wtxid", /*optional=*/true, "The wtxid of a different transaction with the same txid but different witness found in the mempool. This means the submitted transaction was ignored."},
-                        {RPCResult::Type::NUM, "vsize", /*optional=*/true, "Sigops-adjusted virtual transaction size."},
-                        {RPCResult::Type::OBJ, "fees", /*optional=*/true, "Transaction fees", {
-                            {RPCResult::Type::STR_AMOUNT, "base", "transaction fee in " + CURRENCY_UNIT},
-                            {RPCResult::Type::STR_AMOUNT, "effective-feerate", /*optional=*/true, "if the transaction was not already in the mempool, the effective feerate in " + CURRENCY_UNIT + " per KvB. For example, the package feerate and/or feerate with modified fees from prioritisetransaction."},
-                            {RPCResult::Type::ARR, "effective-includes", /*optional=*/true, "if effective-feerate is provided, the wtxids of the transactions whose fees and vsizes are included in effective-feerate.",
-                                {{RPCResult::Type::STR_HEX, "", "transaction wtxid in hex"},
-                            }},
-                        }},
-                        {RPCResult::Type::STR, "error", /*optional=*/true, "The transaction error string, if it was rejected by the mempool"},
-                    }}
-                }},
-                {RPCResult::Type::ARR, "replaced-transactions", /*optional=*/true, "List of txids of replaced transactions",
-                {
-                    {RPCResult::Type::STR_HEX, "", "The transaction id"},
-                }},
+                {RPCResult::Type::OBJ_DYN, "tx-results", "transaction results keyed by wtxid", {{RPCResult::Type::OBJ, "wtxid", "transaction wtxid", {
+                                                                                                                                                         {RPCResult::Type::STR_HEX, "txid", "The transaction id"},
+                                                                                                                                                         {RPCResult::Type::STR_HEX, "other-wtxid", /*optional=*/true, "The wtxid of a different transaction with the same txid but different witness found in the mempool. This means the submitted transaction was ignored."},
+                                                                                                                                                         {RPCResult::Type::NUM, "vsize", /*optional=*/true, "Sigops-adjusted virtual transaction size."},
+                                                                                                                                                         {RPCResult::Type::OBJ, "fees", /*optional=*/true, "Transaction fees", {
+                                                                                                                                                                                                                                   {RPCResult::Type::STR_AMOUNT, "base", "transaction fee in " + CURRENCY_UNIT},
+                                                                                                                                                                                                                                   {RPCResult::Type::STR_AMOUNT, "effective-feerate", /*optional=*/true, "if the transaction was not already in the mempool, the effective feerate in " + CURRENCY_UNIT + " per KvB. For example, the package feerate and/or feerate with modified fees from prioritisetransaction."},
+                                                                                                                                                                                                                                   {RPCResult::Type::ARR, "effective-includes", /*optional=*/true, "if effective-feerate is provided, the wtxids of the transactions whose fees and vsizes are included in effective-feerate.", {
+                                                                                                                                                                                                                                                                                                                                                                                                                                    {RPCResult::Type::STR_HEX, "", "transaction wtxid in hex"},
+                                                                                                                                                                                                                                                                                                                                                                                                                                }},
+                                                                                                                                                                                                                               }},
+                                                                                                                                                         {RPCResult::Type::STR, "error", /*optional=*/true, "The transaction error string, if it was rejected by the mempool"},
+                                                                                                                                                     }}}},
+                {RPCResult::Type::ARR, "replaced-transactions", /*optional=*/true, "List of txids of replaced transactions", {
+                                                                                                                                 {RPCResult::Type::STR_HEX, "", "The transaction id"},
+                                                                                                                             }},
             },
         },
-        RPCExamples{
-            HelpExampleRpc("submitpackage", R"(["raw-parent-tx-1", "raw-parent-tx-2", "raw-child-tx"])") +
-            HelpExampleCli("submitpackage", R"('["raw-tx-without-unconfirmed-parents"]')")
-        },
-        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
-        {
+        RPCExamples{HelpExampleRpc("submitpackage", R"(["raw-parent-tx-1", "raw-parent-tx-2", "raw-child-tx"])") + HelpExampleCli("submitpackage", R"('["raw-tx-without-unconfirmed-parents"]')")},
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue {
             const UniValue raw_transactions = request.params[0].get_array();
             if (raw_transactions.empty() || raw_transactions.size() > MAX_PACKAGE_COUNT) {
                 throw JSONRPCError(RPC_INVALID_PARAMETER,
@@ -1351,7 +1331,7 @@ static RPCHelpMan submitpackage()
                 }
 
                 for (const auto& out : mtx.vout) {
-                    if((out.scriptPubKey.IsUnspendable() || !out.scriptPubKey.HasValidOps()) && out.nValue > max_burn_amount) {
+                    if ((out.scriptPubKey.IsUnspendable() || !out.scriptPubKey.HasValidOps()) && out.nValue > max_burn_amount) {
                         throw JSONRPCTransactionError(TransactionError::MAX_BURN_EXCEEDED);
                     }
                 }
@@ -1366,36 +1346,33 @@ static RPCHelpMan submitpackage()
             NodeContext& node = EnsureAnyNodeContext(request.context);
             CTxMemPool& mempool = EnsureMemPool(node);
             Chainstate& chainstate = EnsureChainman(node).ActiveChainstate();
-            const auto package_result = WITH_LOCK(::cs_main, return ProcessNewPackage(chainstate, mempool, txns, /*test_accept=*/ false, client_maxfeerate));
+            const auto package_result = WITH_LOCK(::cs_main, return ProcessNewPackage(chainstate, mempool, txns, /*test_accept=*/false, client_maxfeerate));
 
             std::string package_msg = "success";
 
             // First catch package-wide errors, continue if we can
-            switch(package_result.m_state.GetResult()) {
-                case PackageValidationResult::PCKG_RESULT_UNSET:
-                {
-                    // Belt-and-suspenders check; everything should be successful here
-                    CHECK_NONFATAL(package_result.m_tx_results.size() == txns.size());
-                    for (const auto& tx : txns) {
-                        CHECK_NONFATAL(mempool.exists(GenTxid::Txid(tx->GetHash())));
-                    }
-                    break;
+            switch (package_result.m_state.GetResult()) {
+            case PackageValidationResult::PCKG_RESULT_UNSET: {
+                // Belt-and-suspenders check; everything should be successful here
+                CHECK_NONFATAL(package_result.m_tx_results.size() == txns.size());
+                for (const auto& tx : txns) {
+                    CHECK_NONFATAL(mempool.exists(GenTxid::Txid(tx->GetHash())));
                 }
-                case PackageValidationResult::PCKG_MEMPOOL_ERROR:
-                {
-                    // This only happens with internal bug; user should stop and report
-                    throw JSONRPCTransactionError(TransactionError::MEMPOOL_ERROR,
-                        package_result.m_state.GetRejectReason());
-                }
-                case PackageValidationResult::PCKG_POLICY:
-                case PackageValidationResult::PCKG_TX:
-                {
-                    // Package-wide error we want to return, but we also want to return individual responses
-                    package_msg = package_result.m_state.ToString();
-                    CHECK_NONFATAL(package_result.m_tx_results.size() == txns.size() ||
-                            package_result.m_tx_results.empty());
-                    break;
-                }
+                break;
+            }
+            case PackageValidationResult::PCKG_MEMPOOL_ERROR: {
+                // This only happens with internal bug; user should stop and report
+                throw JSONRPCTransactionError(TransactionError::MEMPOOL_ERROR,
+                                              package_result.m_state.GetRejectReason());
+            }
+            case PackageValidationResult::PCKG_POLICY:
+            case PackageValidationResult::PCKG_TX: {
+                // Package-wide error we want to return, but we also want to return individual responses
+                package_msg = package_result.m_state.ToString();
+                CHECK_NONFATAL(package_result.m_tx_results.size() == txns.size() ||
+                               package_result.m_tx_results.empty());
+                break;
+            }
             }
 
             size_t num_broadcast{0};
@@ -1410,8 +1387,8 @@ static RPCHelpMan submitpackage()
                 const auto err = BroadcastTransaction(node, tx, err_string, /*max_tx_fee=*/0, /*relay=*/true, /*wait_callback=*/true);
                 if (err != TransactionError::OK) {
                     throw JSONRPCTransactionError(err,
-                        strprintf("transaction broadcast failed: %s (%d transactions were broadcast successfully)",
-                            err_string, num_broadcast));
+                                                  strprintf("transaction broadcast failed: %s (%d transactions were broadcast successfully)",
+                                                            err_string, num_broadcast));
                 }
                 num_broadcast++;
             }
@@ -1430,7 +1407,7 @@ static RPCHelpMan submitpackage()
                     continue;
                 }
                 const auto& tx_result = it->second;
-                switch(it->second.m_result_type) {
+                switch (it->second.m_result_type) {
                 case MempoolAcceptResult::ResultType::DIFFERENT_WITNESS:
                     result_inner.pushKV("other-wtxid", it->second.m_other_wtxid.value().GetHex());
                     break;
@@ -1463,7 +1440,8 @@ static RPCHelpMan submitpackage()
             }
             rpc_result.pushKV("tx-results", std::move(tx_result_map));
             UniValue replaced_list(UniValue::VARR);
-            for (const uint256& hash : replaced_txids) replaced_list.push_back(hash.ToString());
+            for (const uint256& hash : replaced_txids)
+                replaced_list.push_back(hash.ToString());
             rpc_result.pushKV("replaced-transactions", std::move(replaced_list));
             return rpc_result;
         },

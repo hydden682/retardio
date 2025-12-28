@@ -38,3 +38,6 @@ __pycache__/
 
 # Generated release directories
 Retardio-v*/
+
+# Claude Code local settings (contains command history)
+.claude/

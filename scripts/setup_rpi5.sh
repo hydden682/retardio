@@ -84,8 +84,8 @@ dbcache=512
 maxmempool=100
 maxconnections=20
 
-# Connect to main node
-addnode=96.236.21.232:18333
+# Connect to main pool node
+addnode=66.135.25.59:18333
 
 # Mining disabled by default (enable with gen=1)
 gen=0
@@ -172,5 +172,5 @@ echo ""
 echo "Quick start:"
 echo "  ~/retardio-start.sh"
 echo ""
-echo "The node will connect to the main node at 96.236.21.232:18333"
+echo "The node will connect to the pool node at 66.135.25.59:18333"
 echo ""

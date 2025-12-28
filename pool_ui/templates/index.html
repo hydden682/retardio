@@ -341,6 +341,17 @@
                 </div>
             </div>
 
+            <!-- Active Workers List -->
+            <div class="card" style="margin-bottom: 30px;">
+                <div class="card-title">Connected Workers</div>
+                <div id="workersListContainer">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <div>Loading workers...</div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Blocks Table -->
             <div class="card">
                 <div class="card-title">Found Blocks</div>
@@ -394,7 +405,33 @@
                 const data = await res.json();
                 document.getElementById('totalBlocks').textContent = data.total_blocks;
                 document.getElementById('blocks24h').textContent = data.blocks_24h;
-                document.getElementById('activeWorkers').textContent = data.top_workers.length;
+                document.getElementById('activeWorkers').textContent = data.active_miners || 0;
+
+                // Update workers list
+                const workersContainer = document.getElementById('workersListContainer');
+                const workers = data.active_workers || [];
+
+                if (workers.length === 0) {
+                    workersContainer.innerHTML = '<div class="no-data">No workers currently connected</div>';
+                } else {
+                    let html = '<div style="display: flex; flex-wrap: wrap; gap: 10px;">';
+                    for (const worker of workers) {
+                        // Parse worker name (format: address.workername)
+                        const parts = worker.split('.');
+                        const workerName = parts.length > 1 ? parts.slice(1).join('.') : worker;
+                        const address = parts[0] || '';
+                        const shortAddr = address.length > 12 ? address.substring(0, 8) + '...' + address.substring(address.length - 4) : address;
+
+                        html += `
+                            <div style="background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 8px; padding: 12px 16px; min-width: 200px;">
+                                <div style="font-weight: 600; color: #00d4ff; margin-bottom: 4px;">${workerName}</div>
+                                <div style="font-size: 12px; color: rgba(255,255,255,0.5);" title="${address}">${shortAddr}</div>
+                            </div>
+                        `;
+                    }
+                    html += '</div>';
+                    workersContainer.innerHTML = html;
+                }
             } catch (err) {
                 console.error('Error loading stats:', err);
             }

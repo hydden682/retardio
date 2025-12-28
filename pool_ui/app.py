@@ -79,18 +79,19 @@ def get_blocks():
     worker = request.args.get('worker', None)
 
     conn = get_db()
+    # Use T separator to match ISO timestamp format (e.g., 2025-12-28T15:44:18)
     if worker:
         rows = conn.execute('''
             SELECT * FROM blocks
             WHERE timestamp BETWEEN ? AND ? AND worker LIKE ?
             ORDER BY timestamp DESC
-        ''', (start_date, end_date + ' 23:59:59', f'%{worker}%')).fetchall()
+        ''', (start_date + 'T00:00:00', end_date + 'T23:59:59', f'%{worker}%')).fetchall()
     else:
         rows = conn.execute('''
             SELECT * FROM blocks
             WHERE timestamp BETWEEN ? AND ?
             ORDER BY timestamp DESC
-        ''', (start_date, end_date + ' 23:59:59')).fetchall()
+        ''', (start_date + 'T00:00:00', end_date + 'T23:59:59')).fetchall()
     conn.close()
 
     blocks = []

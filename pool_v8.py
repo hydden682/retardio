@@ -80,11 +80,10 @@ class StatsHandler(BaseHTTPRequestHandler):
         pass  # Suppress logging
 
     def do_GET(self):
-        self.send_header('Access-Control-Allow-Origin', '*')
-
         if self.path == '/miners' or self.path == '/api/miners':
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
 
             # Build detailed worker info
@@ -114,6 +113,7 @@ class StatsHandler(BaseHTTPRequestHandler):
         elif self.path == '/stats' or self.path == '/api/stats':
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
 
             # Get network info from node
@@ -135,6 +135,7 @@ class StatsHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(data).encode())
         else:
             self.send_response(404)
+            self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
 
 def start_stats_server():

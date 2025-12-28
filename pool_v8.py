@@ -40,6 +40,9 @@ POOL_ADDRESS = os.environ.get("POOL_ADDRESS", "")
 miners = {}
 extranonce_counter = 0
 
+# Session ID - unique per pool restart, used to identify stale jobs
+SESSION_ID = f"{int(time.time()) & 0xFFFF:04x}"
+
 # Worker statistics tracking
 worker_stats = {}  # {worker_name: {best_diff, shares, connect_time, last_seen, hashrate}}
 
@@ -324,7 +327,7 @@ class StratumMiner:
             return
 
         self.job_counter += 1
-        job_id = f"{self.job_counter:08x}"
+        job_id = f"{SESSION_ID}{self.job_counter:04x}"
 
         # Calculate network difficulty (for block submission)
         target_int = int(template["target"], 16)
@@ -405,7 +408,16 @@ class StratumMiner:
         print(f"[*] SHARE from {worker}")
 
         if job_id not in self.jobs:
-            print(f"[-] Job {job_id} not found")
+            # Check if this is a stale job from before pool restart
+            if not job_id.startswith(SESSION_ID):
+                print(f"[-] Stale job {job_id} from previous session (current: {SESSION_ID})")
+                # Tell miner to reconnect for fresh jobs
+                try:
+                    await self.send({"id": None, "method": "client.reconnect", "params": []})
+                except Exception:
+                    pass
+            else:
+                print(f"[-] Job {job_id} not found")
             await self.send({"id": msg_id, "result": False, "error": [21, "Job not found", None]})
             return
 
@@ -631,6 +643,7 @@ async def main():
     print(f"Pool Port: {POOL_PORT}")
     print(f"UI URL: {POOL_UI_URL}")
     print(f"UI API Key: {'configured' if POOL_UI_API_KEY else 'NOT SET - block reports will fail!'}")
+    print(f"Session ID: {SESSION_ID}")
 
     # Start stats server in background thread
     stats_thread = threading.Thread(target=start_stats_server, daemon=True)

@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_TEST_UTIL_TRANSACTION_UTILS_H
-#define BITCOIN_TEST_UTIL_TRANSACTION_UTILS_H
+#ifndef RETARDIO_TEST_UTIL_TRANSACTION_UTILS_H
+#define RETARDIO_TEST_UTIL_TRANSACTION_UTILS_H
 
 #include <kernel/mempool_options.h>
 #include <policy/policy.h>
@@ -57,4 +57,4 @@ inline bool AreInputsStandard(const CTransaction& tx, const CCoinsViewCache& map
     return AreInputsStandard(tx, mapInputs, opts, reason, reason);
 }
 
-#endif // BITCOIN_TEST_UTIL_TRANSACTION_UTILS_H
+#endif // RETARDIO_TEST_UTIL_TRANSACTION_UTILS_H

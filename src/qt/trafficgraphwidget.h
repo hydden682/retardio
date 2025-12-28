@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_QT_TRAFFICGRAPHWIDGET_H
-#define BITCOIN_QT_TRAFFICGRAPHWIDGET_H
+#ifndef RETARDIO_QT_TRAFFICGRAPHWIDGET_H
+#define RETARDIO_QT_TRAFFICGRAPHWIDGET_H
 
 #include <QWidget>
 #include <QQueue>
@@ -58,4 +58,4 @@ private:
     ClientModel* clientModel{nullptr};
 };
 
-#endif // BITCOIN_QT_TRAFFICGRAPHWIDGET_H
+#endif // RETARDIO_QT_TRAFFICGRAPHWIDGET_H

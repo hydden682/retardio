@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_HTTPRPC_H
-#define BITCOIN_HTTPRPC_H
+#ifndef RETARDIO_HTTPRPC_H
+#define RETARDIO_HTTPRPC_H
 
 #include <any>
 #include <set>
@@ -37,4 +37,4 @@ void StopREST();
  */
 std::set<std::string> GetWhitelistedRpcs(const std::string& user_name);
 
-#endif // BITCOIN_HTTPRPC_H
+#endif // RETARDIO_HTTPRPC_H

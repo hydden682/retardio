@@ -6,7 +6,7 @@
 
 #include <qt/netwatch.h>
 
-#include <qt/bitcoinunits.h>
+#include <qt/RetardioUnits.h>
 #include <qt/clientmodel.h>
 #include <qt/guiconstants.h>
 #include <qt/guiutil.h>
@@ -377,7 +377,7 @@ QVariant NetWatchLogModel::data(const CTransactionRef& tx, int txout_index, cons
                 ptxout = &tx->vout[0];
             }
             if (m_client_model) {
-                return BitcoinUnits::format(m_client_model->getOptionsModel()->getDisplayUnit(), ptxout->nValue);
+                return RetardioUnits::format(m_client_model->getOptionsModel()->getDisplayUnit(), ptxout->nValue);
             } else {
                 return qlonglong(ptxout->nValue);
             }
@@ -508,16 +508,16 @@ QVariant NetWatchLogModel::headerData(int section, Qt::Orientation orientation, 
         case Header::Address:  return tr("Address", "NetWatch: Address header");
         case Header::Value:
             if (m_client_model) {
-                return BitcoinUnits::getAmountColumnTitle(m_client_model->getOptionsModel()->getDisplayUnit());
+                return RetardioUnits::getAmountColumnTitle(m_client_model->getOptionsModel()->getDisplayUnit());
             } else {
                 // Used only for sizing of the column
-                return BitcoinUnits::getAmountColumnTitle(BitcoinUnits::Unit::mBTC);
+                return RetardioUnits::getAmountColumnTitle(RetardioUnits::Unit::mBTC);
             }
     }
     return QVariant();
 }
 
-NetWatchLogSearch::NetWatchLogSearch(const QString& query, BitcoinUnit display_unit) :
+NetWatchLogSearch::NetWatchLogSearch(const QString& query, RetardioUnit display_unit) :
     m_query(query)
 {
     const QRegularExpression reHex("^[\\da-f]+$", QRegularExpression::CaseInsensitiveOption);
@@ -527,7 +527,7 @@ NetWatchLogSearch::NetWatchLogSearch(const QString& query, BitcoinUnit display_u
     m_check_id = m_query.length() <= 64 && reHex.match(m_query).hasMatch();
     m_check_addr = m_query.length() <= LONGEST_BECH32_ADDRESS;
     CAmount val;
-    m_check_value = BitcoinUnits::parse(display_unit, m_query, &val) && val >= 0 && val <= BitcoinUnits::maxMoney();
+    m_check_value = RetardioUnits::parse(display_unit, m_query, &val) && val >= 0 && val <= RetardioUnits::maxMoney();
 }
 
 bool NetWatchLogSearch::match(const NetWatchLogModel& model, int row) const

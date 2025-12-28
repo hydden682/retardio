@@ -9,8 +9,8 @@
 //
 // For more information, see BIP 93.
 
-#ifndef BITCOIN_CODEX32_H
-#define BITCOIN_CODEX32_H
+#ifndef RETARDIO_CODEX32_H
+#define RETARDIO_CODEX32_H
 
 #include <assert.h>
 #include <stdint.h>
@@ -115,4 +115,4 @@ private:
 
 } // namespace codex32
 
-#endif // BITCOIN_CODEX32_H
+#endif // RETARDIO_CODEX32_H

@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_CLUSTER_LINEARIZE_H
-#define BITCOIN_CLUSTER_LINEARIZE_H
+#ifndef RETARDIO_CLUSTER_LINEARIZE_H
+#define RETARDIO_CLUSTER_LINEARIZE_H
 
 #include <algorithm>
 #include <numeric>
@@ -1338,4 +1338,4 @@ std::vector<ClusterIndex> MergeLinearizations(const DepGraph<SetType>& depgraph,
 
 } // namespace cluster_linearize
 
-#endif // BITCOIN_CLUSTER_LINEARIZE_H
+#endif // RETARDIO_CLUSTER_LINEARIZE_H

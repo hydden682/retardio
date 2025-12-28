@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_TEST_UTIL_TXMEMPOOL_H
-#define BITCOIN_TEST_UTIL_TXMEMPOOL_H
+#ifndef RETARDIO_TEST_UTIL_TXMEMPOOL_H
+#define RETARDIO_TEST_UTIL_TXMEMPOOL_H
 
 #include <policy/coin_age_priority.h>
 #include <policy/packages.h>
@@ -68,4 +68,4 @@ void CheckMempoolTRUCInvariants(const CTxMemPool& tx_pool);
  *  and applying it. */
 void AddToMempool(CTxMemPool& tx_pool, const CTxMemPoolEntry& entry);
 
-#endif // BITCOIN_TEST_UTIL_TXMEMPOOL_H
+#endif // RETARDIO_TEST_UTIL_TXMEMPOOL_H

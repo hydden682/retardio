@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_NODE_MEMPOOL_ARGS_H
-#define BITCOIN_NODE_MEMPOOL_ARGS_H
+#ifndef RETARDIO_NODE_MEMPOOL_ARGS_H
+#define RETARDIO_NODE_MEMPOOL_ARGS_H
 
 #include <common/settings.h>
 #include <util/result.h>
@@ -32,4 +32,4 @@ void ApplyPermitEphemeralOption(const common::SettingsValue& value, kernel::MemP
 [[nodiscard]] util::Result<void> ApplyArgsManOptions(const ArgsManager& argsman, const CChainParams& chainparams, kernel::MemPoolOptions& mempool_opts);
 
 
-#endif // BITCOIN_NODE_MEMPOOL_ARGS_H
+#endif // RETARDIO_NODE_MEMPOOL_ARGS_H

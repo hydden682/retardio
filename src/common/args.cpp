@@ -38,9 +38,9 @@
 #include <utility>
 #include <variant>
 
-const char * const BITCOIN_CONF_FILENAME = "retardio.conf";
-const char * const BITCOIN_SETTINGS_FILENAME = "settings.json";
-const char * const BITCOIN_RW_CONF_FILENAME = "bitcoin_rw.conf";
+const char* const BITCOIN_CONF_FILENAME = "retardio.conf";
+const char* const BITCOIN_SETTINGS_FILENAME = "settings.json";
+const char* const BITCOIN_RW_CONF_FILENAME = "bitcoin_rw.conf";
 
 ArgsManager gArgs;
 
@@ -108,7 +108,7 @@ KeyInfo InterpretKey(std::string key)
  * by a descriptive error string
  */
 std::optional<common::SettingsValue> InterpretValue(const KeyInfo& key, const std::string* value,
-                                                  unsigned int flags, std::string& error)
+                                                    unsigned int flags, std::string& error)
 {
     // Return negated settings as false values.
     if (key.negated) {
@@ -143,10 +143,10 @@ std::set<std::string> ArgsManager::GetUnsuitableSectionOnlyArgs() const
     LOCK(cs_args);
 
     // if there's no section selected, don't worry
-    if (m_network.empty()) return std::set<std::string> {};
+    if (m_network.empty()) return std::set<std::string>{};
 
     // if it's okay to use the default section for this network, don't worry
-    if (m_network == ChainTypeToString(ChainType::MAIN)) return std::set<std::string> {};
+    if (m_network == ChainTypeToString(ChainType::MAIN)) return std::set<std::string>{};
 
     for (const auto& arg : m_network_only_args) {
         if (OnlyHasDefaultSectionSetting(m_settings, m_network, SettingName(arg))) {
@@ -169,7 +169,7 @@ std::list<SectionInfo> ArgsManager::GetUnrecognizedSections() const
 
     LOCK(cs_args);
     std::list<SectionInfo> unrecognized = m_config_sections;
-    unrecognized.remove_if([](const SectionInfo& appeared){ return available_sections.find(appeared.m_name) != available_sections.end(); });
+    unrecognized.remove_if([](const SectionInfo& appeared) { return available_sections.find(appeared.m_name) != available_sections.end(); });
     return unrecognized;
 }
 
@@ -195,7 +195,7 @@ bool ArgsManager::ParseParameters(int argc, const char* const argv[], std::strin
         if (key.substr(0, 5) == "-psn_") continue;
 #endif
 
-        if (key == "-") break; //retardio-tx using stdin
+        if (key == "-") break; // retardio-tx using stdin
         std::optional<std::string> val;
         size_t is_index = key.find('=');
         if (is_index != std::string::npos) {
@@ -366,7 +366,8 @@ std::vector<std::string> ArgsManager::GetArgs(const std::string& strArg) const
 {
     std::vector<std::string> result;
     for (const common::SettingsValue& value : GetSettingsList(strArg)) {
-        result.push_back(value.isFalse() ? "0" : value.isTrue() ? "1" : value.get_str());
+        result.push_back(value.isFalse() ? "0" : value.isTrue() ? "1" :
+                                                                  value.get_str());
     }
     return result;
 }
@@ -449,7 +450,7 @@ common::SettingsValue ArgsManager::GetPersistentSetting(const std::string& name)
 {
     LOCK(cs_args);
     return common::GetSetting(m_settings, m_network, name, !UseDefaultSection("-" + name),
-        /*ignore_nonpersistent=*/true, /*get_chain_type=*/false);
+                              /*ignore_nonpersistent=*/true, /*get_chain_type=*/false);
 }
 
 bool ArgsManager::IsArgNegated(const std::string& strArg) const
@@ -518,7 +519,7 @@ std::optional<int64_t> SettingToFixedPoint(const common::SettingsValue& value, i
     if (value.isNull()) return std::nullopt;
     if (value.isFalse()) return 0;
     if (value.isTrue()) return 1;
-    if (!value.isNum()) value.get_str();  // throws an exception if type is wrong
+    if (!value.isNum()) value.get_str(); // throws an exception if type is wrong
     int64_t v;
     if (!ParseFixedPoint(value.getValStr(), decimals, &v)) {
         throw std::runtime_error(strprintf("Parse error ('%s')", value.getValStr()));
@@ -540,18 +541,18 @@ std::optional<bool> ArgsManager::GetBoolArg(const std::string& strArg) const
 std::optional<bool> SettingToBool(const common::SettingsValue& value)
 {
     switch (value.getType()) {
-        case UniValue::VNULL:
-            return std::nullopt;
-        case UniValue::VBOOL:
-            return value.get_bool();
-        case UniValue::VOBJ:
-        case UniValue::VARR:
-            // Throws an exception
-            value.get_str();
-            assert(false);
-        case UniValue::VSTR:
-        case UniValue::VNUM:
-            return InterpretBool(value.getValStr());
+    case UniValue::VNULL:
+        return std::nullopt;
+    case UniValue::VBOOL:
+        return value.get_bool();
+    case UniValue::VOBJ:
+    case UniValue::VARR:
+        // Throws an exception
+        value.get_str();
+        assert(false);
+    case UniValue::VSTR:
+    case UniValue::VNUM:
+        return InterpretBool(value.getValStr());
     }
     assert(false);
 }
@@ -657,57 +658,57 @@ std::string ArgsManager::GetHelpMessage() const
     std::string usage;
     LOCK(cs_args);
     for (const auto& arg_map : m_available_args) {
-        switch(arg_map.first) {
-            case OptionsCategory::OPTIONS:
-                usage += HelpMessageGroup("Options:");
-                break;
-            case OptionsCategory::CONNECTION:
-                usage += HelpMessageGroup("Connection options:");
-                break;
-            case OptionsCategory::ZMQ:
-                usage += HelpMessageGroup("ZeroMQ notification options:");
-                break;
-            case OptionsCategory::DEBUG_TEST:
-                usage += HelpMessageGroup("Debugging/Testing options:");
-                break;
-            case OptionsCategory::NODE_RELAY:
-                usage += HelpMessageGroup("Node relay options:");
-                break;
-            case OptionsCategory::BLOCK_CREATION:
-                usage += HelpMessageGroup("Block creation options:");
-                break;
-            case OptionsCategory::RPC:
-                usage += HelpMessageGroup("RPC server options:");
-                break;
-            case OptionsCategory::IPC:
-                usage += HelpMessageGroup("IPC interprocess connection options:");
-                break;
-            case OptionsCategory::WALLET:
-                usage += HelpMessageGroup("Wallet options:");
-                break;
-            case OptionsCategory::WALLET_DEBUG_TEST:
-                if (show_debug) usage += HelpMessageGroup("Wallet debugging/testing options:");
-                break;
-            case OptionsCategory::CHAINPARAMS:
-                usage += HelpMessageGroup("Chain selection options:");
-                break;
-            case OptionsCategory::GUI:
-                usage += HelpMessageGroup("UI Options:");
-                break;
-            case OptionsCategory::COMMANDS:
-                usage += HelpMessageGroup("Commands:");
-                break;
-            case OptionsCategory::REGISTER_COMMANDS:
-                usage += HelpMessageGroup("Register Commands:");
-                break;
-            case OptionsCategory::CLI_COMMANDS:
-                usage += HelpMessageGroup("CLI Commands:");
-                break;
-            case OptionsCategory::STATS:
-                usage += HelpMessageGroup("Statistic options:");
-                break;
-            default:
-                break;
+        switch (arg_map.first) {
+        case OptionsCategory::OPTIONS:
+            usage += HelpMessageGroup("Options:");
+            break;
+        case OptionsCategory::CONNECTION:
+            usage += HelpMessageGroup("Connection options:");
+            break;
+        case OptionsCategory::ZMQ:
+            usage += HelpMessageGroup("ZeroMQ notification options:");
+            break;
+        case OptionsCategory::DEBUG_TEST:
+            usage += HelpMessageGroup("Debugging/Testing options:");
+            break;
+        case OptionsCategory::NODE_RELAY:
+            usage += HelpMessageGroup("Node relay options:");
+            break;
+        case OptionsCategory::BLOCK_CREATION:
+            usage += HelpMessageGroup("Block creation options:");
+            break;
+        case OptionsCategory::RPC:
+            usage += HelpMessageGroup("RPC server options:");
+            break;
+        case OptionsCategory::IPC:
+            usage += HelpMessageGroup("IPC interprocess connection options:");
+            break;
+        case OptionsCategory::WALLET:
+            usage += HelpMessageGroup("Wallet options:");
+            break;
+        case OptionsCategory::WALLET_DEBUG_TEST:
+            if (show_debug) usage += HelpMessageGroup("Wallet debugging/testing options:");
+            break;
+        case OptionsCategory::CHAINPARAMS:
+            usage += HelpMessageGroup("Chain selection options:");
+            break;
+        case OptionsCategory::GUI:
+            usage += HelpMessageGroup("UI Options:");
+            break;
+        case OptionsCategory::COMMANDS:
+            usage += HelpMessageGroup("Commands:");
+            break;
+        case OptionsCategory::REGISTER_COMMANDS:
+            usage += HelpMessageGroup("Register Commands:");
+            break;
+        case OptionsCategory::CLI_COMMANDS:
+            usage += HelpMessageGroup("CLI Commands:");
+            break;
+        case OptionsCategory::STATS:
+            usage += HelpMessageGroup("Statistic options:");
+            break;
+        default:
+            break;
         }
 
         // When we get to the hidden options, stop
@@ -743,13 +744,15 @@ static const int screenWidth = 79;
 static const int optIndent = 2;
 static const int msgIndent = 7;
 
-std::string HelpMessageGroup(const std::string &message) {
+std::string HelpMessageGroup(const std::string& message)
+{
     return std::string(message) + std::string("\n\n");
 }
 
-std::string HelpMessageOpt(const std::string &option, const std::string &message) {
-    return std::string(optIndent,' ') + std::string(option) +
-           std::string("\n") + std::string(msgIndent,' ') +
+std::string HelpMessageOpt(const std::string& option, const std::string& message)
+{
+    return std::string(optIndent, ' ') + std::string(option) +
+           std::string("\n") + std::string(msgIndent, ' ') +
            FormatParagraph(message, screenWidth - msgIndent, msgIndent) +
            std::string("\n\n");
 }
@@ -757,7 +760,7 @@ std::string HelpMessageOpt(const std::string &option, const std::string &message
 const std::vector<std::string> TEST_OPTIONS_DOC{
     "addrman (use deterministic addrman)",
     "reindex_after_failure_noninteractive_yes (When asked for a reindex after failure interactively, simulate as-if answered with 'yes')",
-    "bip94 (enforce BIP94 consensus rules)",
+    "rip94 (enforce RIP94 consensus rules)",
 };
 
 bool HasTestOption(const ArgsManager& args, const std::string& test_option)
@@ -844,14 +847,15 @@ std::variant<ChainType, std::string> ArgsManager::GetChainArg() const
     auto get_net = [&](const std::string& arg) {
         LOCK(cs_args);
         common::SettingsValue value = common::GetSetting(m_settings, /* section= */ "", SettingName(arg),
-            /* ignore_default_section_config= */ false,
-            /*ignore_nonpersistent=*/false,
-            /* get_chain_type= */ true);
-        return value.isNull() ? false : value.isBool() ? value.get_bool() : InterpretBool(value.get_str());
+                                                         /* ignore_default_section_config= */ false,
+                                                         /*ignore_nonpersistent=*/false,
+                                                         /* get_chain_type= */ true);
+        return value.isNull() ? false : value.isBool() ? value.get_bool() :
+                                                         InterpretBool(value.get_str());
     };
 
     const bool fRegTest = get_net("-regtest");
-    const bool fSigNet  = get_net("-signet");
+    const bool fSigNet = get_net("-signet");
     const bool fTestNet = get_net("-testnet");
     const bool fTestNet4 = get_net("-testnet4");
     const auto chain_arg = GetArg("-chain");
@@ -922,64 +926,64 @@ void ArgsManager::LogArgs() const
 
 namespace {
 
-    // Like std::getline, but includes the EOL character in the result
-    bool getline_with_eol(std::istream& stream, std::string& result)
-    {
-        int current_char;
+// Like std::getline, but includes the EOL character in the result
+bool getline_with_eol(std::istream& stream, std::string& result)
+{
+    int current_char;
+    current_char = stream.get();
+    if (current_char == std::char_traits<char>::eof()) {
+        return false;
+    }
+    result.clear();
+    result.push_back(char(current_char));
+    while (current_char != '\n') {
         current_char = stream.get();
         if (current_char == std::char_traits<char>::eof()) {
-            return false;
+            break;
         }
-        result.clear();
         result.push_back(char(current_char));
-        while (current_char != '\n') {
-            current_char = stream.get();
-            if (current_char == std::char_traits<char>::eof()) {
-                break;
-            }
-            result.push_back(char(current_char));
-        }
-        return true;
+    }
+    return true;
+}
+
+const char* const ModifyRWConfigFile_ws_chars = " \t\r\n";
+
+void ModifyRWConfigFile_SanityCheck(const std::string& s)
+{
+    if (s.empty()) {
+        // Dereferencing .begin or .rbegin below is invalid unless the string has at least one character.
+        return;
     }
 
-    const char * const ModifyRWConfigFile_ws_chars = " \t\r\n";
-
-    void ModifyRWConfigFile_SanityCheck(const std::string& s)
-    {
-        if (s.empty()) {
-            // Dereferencing .begin or .rbegin below is invalid unless the string has at least one character.
-            return;
-        }
-
-        static const char * const newline_chars = "\r\n";
-        static std::string ws_chars(ModifyRWConfigFile_ws_chars);
-        if (s.find_first_of(newline_chars) != std::string::npos) {
-            throw std::invalid_argument("New-line in config name/value");
-        }
-        if (ws_chars.find(*s.begin()) != std::string::npos || ws_chars.find(*s.rbegin()) != std::string::npos) {
-            throw std::invalid_argument("Config name/value has leading/trailing whitespace");
-        }
+    static const char* const newline_chars = "\r\n";
+    static std::string ws_chars(ModifyRWConfigFile_ws_chars);
+    if (s.find_first_of(newline_chars) != std::string::npos) {
+        throw std::invalid_argument("New-line in config name/value");
     }
-
-    void ModifyRWConfigFile_WriteRemaining(std::ostream& stream_out, const std::map<std::string, std::string>& settings_to_change, std::set<std::string>& setFound)
-    {
-        for (const auto& setting_pair : settings_to_change) {
-            const std::string& key = setting_pair.first;
-            const std::string& val = setting_pair.second;
-            if (setFound.find(key) != setFound.end()) {
-                continue;
-            }
-            setFound.insert(key);
-            ModifyRWConfigFile_SanityCheck(key);
-            ModifyRWConfigFile_SanityCheck(val);
-            stream_out << key << "=" << val << "\n";
-        }
+    if (ws_chars.find(*s.begin()) != std::string::npos || ws_chars.find(*s.rbegin()) != std::string::npos) {
+        throw std::invalid_argument("Config name/value has leading/trailing whitespace");
     }
+}
+
+void ModifyRWConfigFile_WriteRemaining(std::ostream& stream_out, const std::map<std::string, std::string>& settings_to_change, std::set<std::string>& setFound)
+{
+    for (const auto& setting_pair : settings_to_change) {
+        const std::string& key = setting_pair.first;
+        const std::string& val = setting_pair.second;
+        if (setFound.find(key) != setFound.end()) {
+            continue;
+        }
+        setFound.insert(key);
+        ModifyRWConfigFile_SanityCheck(key);
+        ModifyRWConfigFile_SanityCheck(val);
+        stream_out << key << "=" << val << "\n";
+    }
+}
 } // namespace
 
 void ModifyRWConfigStream(std::istream& stream_in, std::ostream& stream_out, const std::map<std::string, std::string>& settings_to_change)
 {
-    static const char * const ws_chars = ModifyRWConfigFile_ws_chars;
+    static const char* const ws_chars = ModifyRWConfigFile_ws_chars;
     std::set<std::string> setFound;
     std::string s, lineend, linebegin, key;
     std::string::size_type n, n2;

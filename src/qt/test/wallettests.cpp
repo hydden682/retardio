@@ -9,8 +9,8 @@
 #include <interfaces/chain.h>
 #include <interfaces/node.h>
 #include <key_io.h>
-#include <qt/bitcoinamountfield.h>
-#include <qt/bitcoinunits.h>
+#include <qt/RetardioAmountField.h>
+#include <qt/RetardioUnits.h>
 #include <qt/clientmodel.h>
 #include <qt/optionsmodel.h>
 #include <qt/overviewpage.h>
@@ -109,7 +109,7 @@ uint256 SendCoins(CWallet& wallet, SendCoinsDialog& sendCoinsDialog, const CTxDe
     QVBoxLayout* entries = sendCoinsDialog.findChild<QVBoxLayout*>("entries");
     SendCoinsEntry* entry = qobject_cast<SendCoinsEntry*>(entries->itemAt(0)->widget());
     entry->findChild<QValidatedLineEdit*>("payTo")->setText(QString::fromStdString(EncodeDestination(address)));
-    entry->findChild<BitcoinAmountField*>("payAmount")->setValue(amount);
+    entry->findChild<RetardioAmountField*>("payAmount")->setValue(amount);
     sendCoinsDialog.findChild<QFrame*>("frameFee")
         ->findChild<QFrame*>("frameFeeSelection")
         ->findChild<QCheckBox*>("optInRBF")
@@ -166,13 +166,13 @@ void BumpFee(TransactionView& view, const uint256& txid, bool expectDisabled, st
 
 void CompareBalance(WalletModel& walletModel, CAmount expected_balance, QLabel* balance_label_to_check, bool privacy = false)
 {
-    BitcoinUnit unit = walletModel.getOptionsModel()->getDisplayUnit();
+    RetardioUnit unit = walletModel.getOptionsModel()->getDisplayUnit();
     QString balanceComparison;
     if (privacy) {
-        balanceComparison = BitcoinUnits::formatWithPrivacy(unit, expected_balance, BitcoinUnits::SeparatorStyle::ALWAYS, false);
+        balanceComparison = RetardioUnits::formatWithPrivacy(unit, expected_balance, RetardioUnits::SeparatorStyle::ALWAYS, false);
     } else {
         const QFont font_for_money = walletModel.getOptionsModel()->getFontForMoney(unit);
-        balanceComparison = BitcoinUnits::formatHtmlWithUnit(font_for_money, unit, expected_balance, false, BitcoinUnits::SeparatorStyle::ALWAYS);
+        balanceComparison = RetardioUnits::formatHtmlWithUnit(font_for_money, unit, expected_balance, false, RetardioUnits::SeparatorStyle::ALWAYS);
     }
     QCOMPARE(balance_label_to_check->text().trimmed(), balanceComparison);
 }
@@ -357,7 +357,7 @@ void TestGUI(interfaces::Node& node, const std::shared_ptr<CWallet>& wallet)
     labelInput->setText("TEST_LABEL_1");
 
     // Amount input
-    BitcoinAmountField* amountInput = receiveCoinsDialog.findChild<BitcoinAmountField*>("reqAmount");
+    RetardioAmountField* amountInput = receiveCoinsDialog.findChild<RetardioAmountField*>("reqAmount");
     amountInput->setValue(1);
 
     // Message input

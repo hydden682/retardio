@@ -1,5 +1,5 @@
-#ifndef BITCOIN_CHAINPARAMSSEEDS_H
-#define BITCOIN_CHAINPARAMSSEEDS_H
+#ifndef RETARDIO_CHAINPARAMSSEEDS_H
+#define RETARDIO_CHAINPARAMSSEEDS_H
 /**
  * List of fixed seed nodes for the Retardio network
  *
@@ -18,4 +18,4 @@ static const uint8_t chainparams_seed_main[] = {
     // - addnode=<ip>:18333 in retardio.conf
     // - retardio-cli addnode <ip>:18333 add
 };
-#endif // BITCOIN_CHAINPARAMSSEEDS_H
+#endif // RETARDIO_CHAINPARAMSSEEDS_H

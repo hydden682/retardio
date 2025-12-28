@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_TEST_UTIL_SETUP_COMMON_H
-#define BITCOIN_TEST_UTIL_SETUP_COMMON_H
+#ifndef RETARDIO_TEST_UTIL_SETUP_COMMON_H
+#define RETARDIO_TEST_UTIL_SETUP_COMMON_H
 
 #include <common/args.h> // IWYU pragma: export
 #include <common/pcp.h>
@@ -314,4 +314,4 @@ static inline std::variant<MappingResult, MappingError> PCPRequestPortMap(const 
     return PCPRequestPortMap(nonce, gateway, bind, port, lifetime, interrupt, num_tries, timeout_per_try);
 }
 
-#endif // BITCOIN_TEST_UTIL_SETUP_COMMON_H
+#endif // RETARDIO_TEST_UTIL_SETUP_COMMON_H

@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_NODE_MEMPOOL_PERSIST_H
-#define BITCOIN_NODE_MEMPOOL_PERSIST_H
+#ifndef RETARDIO_NODE_MEMPOOL_PERSIST_H
+#define RETARDIO_NODE_MEMPOOL_PERSIST_H
 
 #include <util/fs.h>
 
@@ -32,4 +32,4 @@ bool LoadMempool(CTxMemPool& pool, const fs::path& load_path,
 } // namespace node
 
 
-#endif // BITCOIN_NODE_MEMPOOL_PERSIST_H
+#endif // RETARDIO_NODE_MEMPOOL_PERSIST_H

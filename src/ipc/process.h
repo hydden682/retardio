@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_IPC_PROCESS_H
-#define BITCOIN_IPC_PROCESS_H
+#ifndef RETARDIO_IPC_PROCESS_H
+#define RETARDIO_IPC_PROCESS_H
 
 #include <util/fs.h>
 
@@ -51,4 +51,4 @@ public:
 std::unique_ptr<Process> MakeProcess();
 } // namespace ipc
 
-#endif // BITCOIN_IPC_PROCESS_H
+#endif // RETARDIO_IPC_PROCESS_H

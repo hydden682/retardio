@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_NODE_TXDOWNLOADMAN_H
-#define BITCOIN_NODE_TXDOWNLOADMAN_H
+#ifndef RETARDIO_NODE_TXDOWNLOADMAN_H
+#define RETARDIO_NODE_TXDOWNLOADMAN_H
 
 #include <net.h>
 #include <policy/packages.h>
@@ -177,4 +177,4 @@ public:
     void SetMaxOrphanTxs(uint32_t max_orphan_txs);
 };
 } // namespace node
-#endif // BITCOIN_NODE_TXDOWNLOADMAN_H
+#endif // RETARDIO_NODE_TXDOWNLOADMAN_H

@@ -1,8 +1,8 @@
 // Copyright (c) 2022 The Retardio developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-#ifndef BITCOIN_KERNEL_MEMPOOL_LIMITS_H
-#define BITCOIN_KERNEL_MEMPOOL_LIMITS_H
+#ifndef RETARDIO_KERNEL_MEMPOOL_LIMITS_H
+#define RETARDIO_KERNEL_MEMPOOL_LIMITS_H
 
 #include <policy/policy.h>
 
@@ -36,4 +36,4 @@ struct MemPoolLimits {
 };
 } // namespace kernel
 
-#endif // BITCOIN_KERNEL_MEMPOOL_LIMITS_H
+#endif // RETARDIO_KERNEL_MEMPOOL_LIMITS_H

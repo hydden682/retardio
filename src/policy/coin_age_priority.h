@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_POLICY_COIN_AGE_PRIORITY_H
-#define BITCOIN_POLICY_COIN_AGE_PRIORITY_H
+#ifndef RETARDIO_POLICY_COIN_AGE_PRIORITY_H
+#define RETARDIO_POLICY_COIN_AGE_PRIORITY_H
 
 #include <consensus/amount.h>
 
@@ -37,4 +37,4 @@ double ReversePriority2(double coin_age_priority, unsigned int mod_vsize);
  */
 CoinAgeCache GetCoinAge(const CTransaction &tx, const CCoinsViewCache& view, int nHeight);
 
-#endif // BITCOIN_POLICY_COIN_AGE_PRIORITY_H
+#endif // RETARDIO_POLICY_COIN_AGE_PRIORITY_H

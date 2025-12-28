@@ -6,7 +6,7 @@
 #include <qt/forms/ui_coincontroldialog.h>
 
 #include <qt/addresstablemodel.h>
-#include <qt/bitcoinunits.h>
+#include <qt/RetardioUnits.h>
 #include <qt/guiutil.h>
 #include <qt/optionsmodel.h>
 #include <qt/platformstyle.h>
@@ -200,7 +200,7 @@ void CoinControlDialog::showMenu(const QPoint &point)
 // context menu action: copy amount
 void CoinControlDialog::copyAmount()
 {
-    GUIUtil::setClipboard(BitcoinUnits::removeSpaces(contextMenuItem->text(COLUMN_AMOUNT)));
+    GUIUtil::setClipboard(RetardioUnits::removeSpaces(contextMenuItem->text(COLUMN_AMOUNT)));
 }
 
 // context menu action: copy label
@@ -494,7 +494,7 @@ void CoinControlDialog::updateLabels(CCoinControl& m_coin_control, WalletModel *
     }
 
     // actually update labels
-    BitcoinUnit nDisplayUnit = BitcoinUnit::BTC;
+    RetardioUnit nDisplayUnit = RetardioUnit::BTC;
     QFont font_for_money;
     if (model && model->getOptionsModel())
     {
@@ -515,11 +515,11 @@ void CoinControlDialog::updateLabels(CCoinControl& m_coin_control, WalletModel *
 
     // stats
     l1->setText(QString::number(nQuantity));                                 // Quantity
-    l2->setText(BitcoinUnits::formatHtmlWithUnit(font_for_money, nDisplayUnit, nAmount));        // Amount
-    l3->setText(BitcoinUnits::formatHtmlWithUnit(font_for_money, nDisplayUnit, nPayFee));        // Fee
-    l4->setText(BitcoinUnits::formatHtmlWithUnit(font_for_money, nDisplayUnit, nAfterFee));      // After Fee
+    l2->setText(RetardioUnits::formatHtmlWithUnit(font_for_money, nDisplayUnit, nAmount));        // Amount
+    l3->setText(RetardioUnits::formatHtmlWithUnit(font_for_money, nDisplayUnit, nPayFee));        // Fee
+    l4->setText(RetardioUnits::formatHtmlWithUnit(font_for_money, nDisplayUnit, nAfterFee));      // After Fee
     l5->setText(((nBytes > 0) ? ASYMP_UTF8 : "") + QString::number(nBytes));        // Bytes
-    l8->setText(BitcoinUnits::formatHtmlWithUnit(font_for_money, nDisplayUnit, nChange));        // Change
+    l8->setText(RetardioUnits::formatHtmlWithUnit(font_for_money, nDisplayUnit, nChange));        // Change
     if (nPayFee > 0)
     {
         l3->setText(ASYMP_UTF8 + l3->text());
@@ -553,7 +553,7 @@ void CoinControlDialog::updateFontForMoney()
 
     updateLabels(m_coin_control, model, this);
 
-    const BitcoinUnit display_unit = model->getOptionsModel()->getDisplayUnit();
+    const RetardioUnit display_unit = model->getOptionsModel()->getDisplayUnit();
     const QFont font_for_money = model->getOptionsModel()->getFontForMoney(display_unit);
     for (QTreeWidgetItemIterator it(ui->treeWidget); *it; ++it) {
         (*it)->setFont(COLUMN_AMOUNT, font_for_money);
@@ -582,7 +582,7 @@ void CoinControlDialog::updateView()
     QFlags<Qt::ItemFlag> flgCheckbox = Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable;
     QFlags<Qt::ItemFlag> flgTristate = Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable | Qt::ItemIsAutoTristate;
 
-    BitcoinUnit nDisplayUnit = model->getOptionsModel()->getDisplayUnit();
+    RetardioUnit nDisplayUnit = model->getOptionsModel()->getDisplayUnit();
 
     for (const auto& coins : model->wallet().listCoins()) {
         CCoinControlWidgetItem* itemWalletAddress{nullptr};
@@ -648,7 +648,7 @@ void CoinControlDialog::updateView()
             }
 
             // amount
-            itemOutput->setText(COLUMN_AMOUNT, BitcoinUnits::format(nDisplayUnit, out.txout.nValue));
+            itemOutput->setText(COLUMN_AMOUNT, RetardioUnits::format(nDisplayUnit, out.txout.nValue));
             itemOutput->setData(COLUMN_AMOUNT, Qt::UserRole, QVariant((qlonglong)out.txout.nValue)); // padding so that sorting works correctly
 
             // date
@@ -682,7 +682,7 @@ void CoinControlDialog::updateView()
         if (treeMode)
         {
             itemWalletAddress->setText(COLUMN_CHECKBOX, "(" + QString::number(nChildren) + ")");
-            itemWalletAddress->setText(COLUMN_AMOUNT, BitcoinUnits::format(nDisplayUnit, nSum));
+            itemWalletAddress->setText(COLUMN_AMOUNT, RetardioUnits::format(nDisplayUnit, nSum));
             itemWalletAddress->setData(COLUMN_AMOUNT, Qt::UserRole, QVariant((qlonglong)nSum));
         }
     }

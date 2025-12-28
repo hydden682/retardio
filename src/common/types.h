@@ -10,8 +10,8 @@
 //! dependencies. More complicated types should be defined in dedicated header
 //! files.
 
-#ifndef BITCOIN_COMMON_TYPES_H
-#define BITCOIN_COMMON_TYPES_H
+#ifndef RETARDIO_COMMON_TYPES_H
+#define RETARDIO_COMMON_TYPES_H
 
 namespace common {
 enum class PSBTError {
@@ -23,4 +23,4 @@ enum class PSBTError {
 };
 } // namespace common
 
-#endif // BITCOIN_COMMON_TYPES_H
+#endif // RETARDIO_COMMON_TYPES_H

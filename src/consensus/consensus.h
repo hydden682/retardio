@@ -3,8 +3,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_CONSENSUS_CONSENSUS_H
-#define BITCOIN_CONSENSUS_CONSENSUS_H
+#ifndef RETARDIO_CONSENSUS_CONSENSUS_H
+#define RETARDIO_CONSENSUS_CONSENSUS_H
 
 #include <cstdlib>
 #include <stdint.h>
@@ -34,4 +34,4 @@ static constexpr unsigned int LOCKTIME_VERIFY_SEQUENCE = (1 << 0);
  */
 static constexpr int64_t MAX_TIMEWARP = 600;
 
-#endif // BITCOIN_CONSENSUS_CONSENSUS_H
+#endif // RETARDIO_CONSENSUS_CONSENSUS_H

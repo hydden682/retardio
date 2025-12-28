@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_RPC_UTIL_H
-#define BITCOIN_RPC_UTIL_H
+#ifndef RETARDIO_RPC_UTIL_H
+#define RETARDIO_RPC_UTIL_H
 
 #include <addresstype.h>
 #include <consensus/amount.h>
@@ -558,4 +558,4 @@ std::vector<RPCResult> ScriptPubKeyDoc();
  */
 uint256 GetTarget(const CBlockIndex& blockindex, const uint256 pow_limit);
 
-#endif // BITCOIN_RPC_UTIL_H
+#endif // RETARDIO_RPC_UTIL_H

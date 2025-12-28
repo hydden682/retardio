@@ -10,8 +10,8 @@
 //! dependencies. More complicated types should be defined in dedicated header
 //! files.
 
-#ifndef BITCOIN_NODE_TYPES_H
-#define BITCOIN_NODE_TYPES_H
+#ifndef RETARDIO_NODE_TYPES_H
+#define RETARDIO_NODE_TYPES_H
 
 #include <policy/feerate.h>
 #include <policy/policy.h>
@@ -85,4 +85,4 @@ struct BlockCreateOptions {
 };
 } // namespace node
 
-#endif // BITCOIN_NODE_TYPES_H
+#endif // RETARDIO_NODE_TYPES_H

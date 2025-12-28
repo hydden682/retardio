@@ -3,8 +3,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_NET_PROCESSING_H
-#define BITCOIN_NET_PROCESSING_H
+#ifndef RETARDIO_NET_PROCESSING_H
+#define RETARDIO_NET_PROCESSING_H
 
 #include <net.h>
 #include <threadsafety.h>
@@ -165,4 +165,4 @@ public:
     virtual int GetNumberOfPeersWithValidatedDownloads() const EXCLUSIVE_LOCKS_REQUIRED(::cs_main) = 0;
 };
 
-#endif // BITCOIN_NET_PROCESSING_H
+#endif // RETARDIO_NET_PROCESSING_H

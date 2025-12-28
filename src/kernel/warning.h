@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_KERNEL_WARNING_H
-#define BITCOIN_KERNEL_WARNING_H
+#ifndef RETARDIO_KERNEL_WARNING_H
+#define RETARDIO_KERNEL_WARNING_H
 
 namespace kernel {
 enum class Warning {
@@ -14,4 +14,4 @@ enum class Warning {
     SOFTWARE_EXPIRY,
 };
 } // namespace kernel
-#endif // BITCOIN_KERNEL_WARNING_H
+#endif // RETARDIO_KERNEL_WARNING_H

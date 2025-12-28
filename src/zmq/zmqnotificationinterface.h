@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_ZMQ_ZMQNOTIFICATIONINTERFACE_H
-#define BITCOIN_ZMQ_ZMQNOTIFICATIONINTERFACE_H
+#ifndef RETARDIO_ZMQ_ZMQNOTIFICATIONINTERFACE_H
+#define RETARDIO_ZMQ_ZMQNOTIFICATIONINTERFACE_H
 
 #include <primitives/transaction.h>
 #include <validationinterface.h>
@@ -53,4 +53,4 @@ private:
 
 extern std::unique_ptr<CZMQNotificationInterface> g_zmq_notification_interface;
 
-#endif // BITCOIN_ZMQ_ZMQNOTIFICATIONINTERFACE_H
+#endif // RETARDIO_ZMQ_ZMQNOTIFICATIONINTERFACE_H

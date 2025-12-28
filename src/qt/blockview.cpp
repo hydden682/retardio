@@ -17,7 +17,7 @@
 #include <validation.h>
 #include <validationinterface.h>
 
-#include <qt/bitcoinunits.h>
+#include <qt/RetardioUnits.h>
 #include <qt/clientmodel.h>
 #include <qt/guiutil.h>
 #include <qt/networkstyle.h>
@@ -59,13 +59,13 @@ void ScalingGraphicsView::mouseMoveEvent(QMouseEvent * const event)
     tx_info_str += "<br>" + tr("Size: %1 bytes").arg(tx->GetTotalSize());
     tx_info_str += "<br>Outputs:<div style=\"margin-left:4ex;margin-top:0;padding-top:0\">";
 
-    BitcoinUnit unit;
+    RetardioUnit unit;
     QFont font_for_money;
     if (auto* options_model = (m_bv && m_bv->m_client_model) ? m_bv->m_client_model->getOptionsModel() : nullptr; options_model) {
         unit = options_model->getDisplayUnit();
         font_for_money = options_model->getFontForMoney(unit);
     } else {
-        unit = BitcoinUnit::BTC;
+        unit = RetardioUnit::BTC;
     }
     int i = 0;
     for (const auto& txout : tx->vout) {
@@ -77,7 +77,7 @@ void ScalingGraphicsView::mouseMoveEvent(QMouseEvent * const event)
         } else {
             address = tr("(unknown)");
         }
-        auto amount_str = BitcoinUnits::formatHtmlWithUnit(font_for_money, unit, txout.nValue);
+        auto amount_str = RetardioUnits::formatHtmlWithUnit(font_for_money, unit, txout.nValue);
         if (i > 1) tx_info_str += "<br>";
         tx_info_str += tr("#%1: %2 to %3").arg(i).arg(amount_str).arg(address);
     }
@@ -402,16 +402,16 @@ void GuiBlockView::updateBlockFees(CAmount block_fees)
         m_lbl_tx_fees->setText("");
         return;
     }
-    BitcoinUnit unit;
+    RetardioUnit unit;
     QFont font_for_money;
     if (auto* options_model = m_client_model ? m_client_model->getOptionsModel() : nullptr; options_model) {
         unit = options_model->getDisplayUnit();
         font_for_money = options_model->getFontForMoney(unit);
     } else {
-        unit = BitcoinUnit::BTC;
+        unit = RetardioUnit::BTC;
     }
     m_lbl_tx_fees->setFont(font_for_money);
-    m_lbl_tx_fees->setText(BitcoinUnits::formatWithUnit(unit, block_fees));
+    m_lbl_tx_fees->setText(RetardioUnits::formatWithUnit(unit, block_fees));
 }
 
 void GuiBlockView::updateDisplayUnit()

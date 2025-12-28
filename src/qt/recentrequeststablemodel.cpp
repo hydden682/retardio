@@ -4,7 +4,7 @@
 
 #include <qt/recentrequeststablemodel.h>
 
-#include <qt/bitcoinunits.h>
+#include <qt/RetardioUnits.h>
 #include <qt/guiutil.h>
 #include <qt/optionsmodel.h>
 #include <qt/walletmodel.h>
@@ -91,15 +91,15 @@ QVariant RecentRequestsTableModel::data(const QModelIndex &index, int role) cons
             else if (rec->recipient.amount == 0 && role == Qt::EditRole)
                 return "";
             else if (role == Qt::EditRole)
-                return BitcoinUnits::format(walletModel->getOptionsModel()->getDisplayUnit(), rec->recipient.amount, false, BitcoinUnits::SeparatorStyle::NEVER);
+                return RetardioUnits::format(walletModel->getOptionsModel()->getDisplayUnit(), rec->recipient.amount, false, RetardioUnits::SeparatorStyle::NEVER);
             else
-                return BitcoinUnits::format(walletModel->getOptionsModel()->getDisplayUnit(), rec->recipient.amount);
+                return RetardioUnits::format(walletModel->getOptionsModel()->getDisplayUnit(), rec->recipient.amount);
         }
     }
     else if (role == Qt::FontRole) {
         const RecentRequestEntry * const rec = &list[index.row()];
         if (index.column() == Amount && rec->recipient.amount) {
-            const BitcoinUnit display_unit = walletModel->getOptionsModel()->getDisplayUnit();
+            const RetardioUnit display_unit = walletModel->getOptionsModel()->getDisplayUnit();
             return walletModel->getOptionsModel()->getFontForMoney(display_unit);
         }
     }
@@ -155,7 +155,7 @@ QString RecentRequestsTableModel::getAmountTitle()
     if (!walletModel->getOptionsModel()) return {};
     return tr("Requested") +
            QLatin1String(" (") +
-           BitcoinUnits::shortName(this->walletModel->getOptionsModel()->getDisplayUnit()) +
+           RetardioUnits::shortName(this->walletModel->getOptionsModel()->getDisplayUnit()) +
            QLatin1Char(')');
 }
 

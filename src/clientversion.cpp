@@ -33,19 +33,19 @@ const std::string UA_NAME("Satoshi");
 //! git will put "#define GIT_COMMIT_ID ..." on the next line inside archives. $Format:%n#define GIT_COMMIT_ID "%H"$
 
 #ifdef BUILD_GIT_TAG
-    #define BUILD_DESC BUILD_GIT_TAG
-    #define BUILD_SUFFIX ""
+#define BUILD_DESC BUILD_GIT_TAG
+#define BUILD_SUFFIX ""
 #else
-    #define BUILD_DESC "v" CLIENT_VERSION_STRING
-    #if CLIENT_VERSION_IS_RELEASE
-        #define BUILD_SUFFIX ""
-    #elif defined(BUILD_GIT_COMMIT)
-        #define BUILD_SUFFIX "-" BUILD_GIT_COMMIT
-    #elif defined(GIT_COMMIT_ID)
-        #define BUILD_SUFFIX "-g" GIT_COMMIT_ID
-    #else
-        #define BUILD_SUFFIX "-unk"
-    #endif
+#define BUILD_DESC "v" CLIENT_VERSION_STRING
+#if CLIENT_VERSION_IS_RELEASE
+#define BUILD_SUFFIX ""
+#elif defined(BUILD_GIT_COMMIT)
+#define BUILD_SUFFIX "-" BUILD_GIT_COMMIT
+#elif defined(GIT_COMMIT_ID)
+#define BUILD_SUFFIX "-g" GIT_COMMIT_ID
+#else
+#define BUILD_SUFFIX "-unk"
+#endif
 #endif
 
 static const std::string CLIENT_BUILD(BUILD_DESC BUILD_SUFFIX);
@@ -61,7 +61,7 @@ std::string FormatFullVersion()
 }
 
 /**
- * Format the subversion field according to BIP 14 spec (https://github.com/retardio/bips/blob/master/bip-0014.mediawiki)
+ * Format the subversion field according to RIP 14 spec (https://github.com/retardio/rips/blob/master/rip-0014.mediawiki)
  */
 std::string FormatSubVersion(const std::string& name, int nClientVersion, const std::vector<std::string>& comments, const bool base_name_only)
 {

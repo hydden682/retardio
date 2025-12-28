@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_WALLET_CRYPTER_H
-#define BITCOIN_WALLET_CRYPTER_H
+#ifndef RETARDIO_WALLET_CRYPTER_H
+#define RETARDIO_WALLET_CRYPTER_H
 
 #include <serialize.h>
 #include <support/allocators/secure.h>
@@ -108,4 +108,4 @@ bool DecryptSecret(const CKeyingMaterial& master_key, std::span<const unsigned c
 bool DecryptKey(const CKeyingMaterial& master_key, std::span<const unsigned char> crypted_secret, const CPubKey& pub_key, CKey& key);
 } // namespace wallet
 
-#endif // BITCOIN_WALLET_CRYPTER_H
+#endif // RETARDIO_WALLET_CRYPTER_H

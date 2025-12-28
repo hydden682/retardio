@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_QT_QRIMAGEWIDGET_H
-#define BITCOIN_QT_QRIMAGEWIDGET_H
+#ifndef RETARDIO_QT_QRIMAGEWIDGET_H
+#define RETARDIO_QT_QRIMAGEWIDGET_H
 
 #include <qt/optionsmodel.h>
 
@@ -47,4 +47,4 @@ private:
     QMenu* contextMenu{nullptr};
 };
 
-#endif // BITCOIN_QT_QRIMAGEWIDGET_H
+#endif // RETARDIO_QT_QRIMAGEWIDGET_H

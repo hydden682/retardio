@@ -3,8 +3,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_MERKLEBLOCK_H
-#define BITCOIN_MERKLEBLOCK_H
+#ifndef RETARDIO_MERKLEBLOCK_H
+#define RETARDIO_MERKLEBLOCK_H
 
 #include <common/bloom.h>
 #include <primitives/block.h>
@@ -188,4 +188,4 @@ private:
     CMerkleBlock(const CBlock& block, CBloomFilter* filter, const std::set<Txid>* txids, bool prove_witness=false);
 };
 
-#endif // BITCOIN_MERKLEBLOCK_H
+#endif // RETARDIO_MERKLEBLOCK_H

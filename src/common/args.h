@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_COMMON_ARGS_H
-#define BITCOIN_COMMON_ARGS_H
+#ifndef RETARDIO_COMMON_ARGS_H
+#define RETARDIO_COMMON_ARGS_H
 
 #include <common/settings.h>
 #include <compat/compat.h>
@@ -520,4 +520,4 @@ private:
 #endif
 } // namespace common
 
-#endif // BITCOIN_COMMON_ARGS_H
+#endif // RETARDIO_COMMON_ARGS_H

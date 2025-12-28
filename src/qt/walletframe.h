@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_QT_WALLETFRAME_H
-#define BITCOIN_QT_WALLETFRAME_H
+#ifndef RETARDIO_QT_WALLETFRAME_H
+#define RETARDIO_QT_WALLETFRAME_H
 
 #include <QFrame>
 #include <QMap>
@@ -110,4 +110,4 @@ private Q_SLOTS:
     void updateAlerts(const QString &warnings);
 };
 
-#endif // BITCOIN_QT_WALLETFRAME_H
+#endif // RETARDIO_QT_WALLETFRAME_H

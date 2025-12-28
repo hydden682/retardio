@@ -9,8 +9,8 @@
 #include <type_traits>
 #include <vector>
 
-#ifndef BITCOIN_NET_PERMISSIONS_H
-#define BITCOIN_NET_PERMISSIONS_H
+#ifndef RETARDIO_NET_PERMISSIONS_H
+#define RETARDIO_NET_PERMISSIONS_H
 
 struct bilingual_str;
 
@@ -101,4 +101,4 @@ public:
     CSubNet m_subnet;
 };
 
-#endif // BITCOIN_NET_PERMISSIONS_H
+#endif // RETARDIO_NET_PERMISSIONS_H

@@ -2,7 +2,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <qt/bitcoinunits.h>
+#include <qt/RetardioUnits.h>
 #include <qt/guiutil.h>
 #include <qt/tonalutils.h>
 
@@ -17,15 +17,15 @@
 static constexpr auto MAX_DIGITS_BTC = 16;
 static constexpr auto MAX_DIGITS_TBC = 13;
 
-BitcoinUnits::BitcoinUnits(QObject *parent):
+RetardioUnits::RetardioUnits(QObject *parent):
         QAbstractListModel(parent),
         unitlist(availableUnits())
 {
 }
 
-QList<BitcoinUnit> BitcoinUnits::availableUnits()
+QList<RetardioUnit> RetardioUnits::availableUnits()
 {
-    static QList<BitcoinUnit> unitlist;
+    static QList<RetardioUnit> unitlist;
     if (!unitlist.isEmpty()) return unitlist;
     unitlist.append(Unit::BTC);
     unitlist.append(Unit::mBTC);
@@ -35,7 +35,7 @@ QList<BitcoinUnit> BitcoinUnits::availableUnits()
     return unitlist;
 }
 
-QString BitcoinUnits::longName(Unit unit)
+QString RetardioUnits::longName(Unit unit)
 {
     switch (unit) {
     case Unit::BTC: return QString("BTC");
@@ -49,7 +49,7 @@ QString BitcoinUnits::longName(Unit unit)
     assert(false);
 }
 
-QString BitcoinUnits::shortName(Unit unit)
+QString RetardioUnits::shortName(Unit unit)
 {
     switch (unit) {
     case Unit::BTC: return longName(unit);
@@ -63,7 +63,7 @@ QString BitcoinUnits::shortName(Unit unit)
     assert(false);
 }
 
-QString BitcoinUnits::description(Unit unit)
+QString RetardioUnits::description(Unit unit)
 {
     switch (unit) {
     case Unit::BTC: return QString("Bitcoins (decimal)");
@@ -77,7 +77,7 @@ QString BitcoinUnits::description(Unit unit)
     assert(false);
 }
 
-qint64 BitcoinUnits::factor(Unit unit)
+qint64 RetardioUnits::factor(Unit unit)
 {
     switch (unit) {
     case Unit::BTC: return 100'000'000;
@@ -91,7 +91,7 @@ qint64 BitcoinUnits::factor(Unit unit)
     assert(false);
 }
 
-int BitcoinUnits::decimals(Unit unit)
+int RetardioUnits::decimals(Unit unit)
 {
     switch (unit) {
     case Unit::BTC: return 8;
@@ -105,7 +105,7 @@ int BitcoinUnits::decimals(Unit unit)
     assert(false);
 }
 
-int BitcoinUnits::radix(Unit unit)
+int RetardioUnits::radix(Unit unit)
 {
     switch (unit) {
     case Unit::bTBC:
@@ -117,7 +117,7 @@ int BitcoinUnits::radix(Unit unit)
     }
 }
 
-BitcoinUnit BitcoinUnits::numsys(Unit unit)
+RetardioUnit RetardioUnits::numsys(Unit unit)
 {
     switch (unit) {
     case Unit::bTBC:
@@ -129,7 +129,7 @@ BitcoinUnit BitcoinUnits::numsys(Unit unit)
     }
 }
 
-qint64 BitcoinUnits::max_digits(Unit unit)
+qint64 RetardioUnits::max_digits(Unit unit)
 {
     switch (numsys(unit)) {
     case Unit::TBC:
@@ -139,7 +139,7 @@ qint64 BitcoinUnits::max_digits(Unit unit)
     }
 }
 
-qint64 BitcoinUnits::singlestep(Unit unit)
+qint64 RetardioUnits::singlestep(Unit unit)
 {
     switch (numsys(unit)) {
     case Unit::TBC:
@@ -149,7 +149,7 @@ qint64 BitcoinUnits::singlestep(Unit unit)
     }
 }
 
-QString BitcoinUnits::format(Unit unit, const CAmount& nIn, bool fPlus, SeparatorStyle separators, bool justify)
+QString RetardioUnits::format(Unit unit, const CAmount& nIn, bool fPlus, SeparatorStyle separators, bool justify)
 {
     // Note: not using straight sprintf here because we do NOT want
     // localized number formatting.
@@ -215,19 +215,19 @@ QString BitcoinUnits::format(Unit unit, const CAmount& nIn, bool fPlus, Separato
 // Please take care to use formatHtmlWithUnit instead, when
 // appropriate.
 
-QString BitcoinUnits::formatWithUnit(Unit unit, const CAmount& amount, bool plussign, SeparatorStyle separators)
+QString RetardioUnits::formatWithUnit(Unit unit, const CAmount& amount, bool plussign, SeparatorStyle separators)
 {
     return format(unit, amount, plussign, separators) + QString(" ") + shortName(unit);
 }
 
-QString BitcoinUnits::formatHtmlWithUnit(const QFont& font, Unit unit, const CAmount& amount, bool plussign, SeparatorStyle separators)
+QString RetardioUnits::formatHtmlWithUnit(const QFont& font, Unit unit, const CAmount& amount, bool plussign, SeparatorStyle separators)
 {
     QString str(formatWithUnit(unit, amount, plussign, separators));
     str.replace(QChar(THIN_SP_CP), QString(THIN_SP_HTML));
     return QString("<span style='white-space:nowrap;%2'>%1</span>").arg(str).arg(GUIUtil::fontToCss(font));
 }
 
-QString BitcoinUnits::formatWithPrivacy(Unit unit, const CAmount& amount, SeparatorStyle separators, bool privacy)
+QString RetardioUnits::formatWithPrivacy(Unit unit, const CAmount& amount, SeparatorStyle separators, bool privacy)
 {
     assert(amount >= 0);
     QString value;
@@ -241,7 +241,7 @@ QString BitcoinUnits::formatWithPrivacy(Unit unit, const CAmount& amount, Separa
     return QString("<span style='white-space: nowrap;'>%1</span>").arg(value);
 }
 
-bool BitcoinUnits::parse(Unit unit, const QString& value, CAmount* val_out)
+bool RetardioUnits::parse(Unit unit, const QString& value, CAmount* val_out)
 {
     if (value.isEmpty()) {
         return false; // Refuse to parse invalid unit or empty string
@@ -288,18 +288,18 @@ bool BitcoinUnits::parse(Unit unit, const QString& value, CAmount* val_out)
     return ok;
 }
 
-QString BitcoinUnits::getAmountColumnTitle(Unit unit)
+QString RetardioUnits::getAmountColumnTitle(Unit unit)
 {
     return QObject::tr("Amount") + " (" + shortName(unit) + ")";
 }
 
-int BitcoinUnits::rowCount(const QModelIndex &parent) const
+int RetardioUnits::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
     return unitlist.size();
 }
 
-QVariant BitcoinUnits::data(const QModelIndex &index, int role) const
+QVariant RetardioUnits::data(const QModelIndex &index, int role) const
 {
     int row = index.row();
     if(row >= 0 && row < unitlist.size())
@@ -319,55 +319,55 @@ QVariant BitcoinUnits::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-CAmount BitcoinUnits::maxMoney()
+CAmount RetardioUnits::maxMoney()
 {
     return MAX_MONEY;
 }
 
-std::variant<qint8, QString> BitcoinUnits::ToSetting(BitcoinUnit unit)
+std::variant<qint8, QString> RetardioUnits::ToSetting(RetardioUnit unit)
 {
     switch (unit) {
-    case BitcoinUnit::BTC:  return qint8{0};
-    case BitcoinUnit::mBTC: return qint8{1};
-    case BitcoinUnit::uBTC: return qint8{2};
-    case BitcoinUnit::SAT:  return qint8{3};
-    case BitcoinUnit::bTBC: return QString("bTBC");
-    case BitcoinUnit::sTBC: return QString("sTBC");
-    case BitcoinUnit::TBC:  return QString("TBC");
+    case RetardioUnit::BTC:  return qint8{0};
+    case RetardioUnit::mBTC: return qint8{1};
+    case RetardioUnit::uBTC: return qint8{2};
+    case RetardioUnit::SAT:  return qint8{3};
+    case RetardioUnit::bTBC: return QString("bTBC");
+    case RetardioUnit::sTBC: return QString("sTBC");
+    case RetardioUnit::TBC:  return QString("TBC");
     } // no default case, so the compiler can warn about missing cases
     assert(false);
 }
 
 namespace {
-BitcoinUnit FromQint8(qint8 num)
+RetardioUnit FromQint8(qint8 num)
 {
     switch (num) {
-    case 0: return BitcoinUnit::BTC;
-    case 1: return BitcoinUnit::mBTC;
-    case 2: return BitcoinUnit::uBTC;
-    case 3: return BitcoinUnit::SAT;
+    case 0: return RetardioUnit::BTC;
+    case 1: return RetardioUnit::mBTC;
+    case 2: return RetardioUnit::uBTC;
+    case 3: return RetardioUnit::SAT;
     }
-    return BitcoinUnit::BTC;
+    return RetardioUnit::BTC;
 }
 } // namespace
 
-BitcoinUnit BitcoinUnits::FromSetting(const QString& s, BitcoinUnit def)
+RetardioUnit RetardioUnits::FromSetting(const QString& s, RetardioUnit def)
 {
-    if (s == "0") return BitcoinUnit::BTC;
-    if (s == "1") return BitcoinUnit::mBTC;
-    if (s == "2") return BitcoinUnit::uBTC;
-    if (s == "3") return BitcoinUnit::SAT;
-    if (s == "4") return BitcoinUnit::sTBC;
-    if (s == "5") return BitcoinUnit::TBC;
-    if (s == "bTBC") return BitcoinUnit::bTBC;
-    if (s == "sTBC") return BitcoinUnit::sTBC;
-    if (s == "TBC")  return BitcoinUnit::TBC;
+    if (s == "0") return RetardioUnit::BTC;
+    if (s == "1") return RetardioUnit::mBTC;
+    if (s == "2") return RetardioUnit::uBTC;
+    if (s == "3") return RetardioUnit::SAT;
+    if (s == "4") return RetardioUnit::sTBC;
+    if (s == "5") return RetardioUnit::TBC;
+    if (s == "bTBC") return RetardioUnit::bTBC;
+    if (s == "sTBC") return RetardioUnit::sTBC;
+    if (s == "TBC")  return RetardioUnit::TBC;
     return def;
 }
 
-QDataStream& operator<<(QDataStream& out, const BitcoinUnit& unit)
+QDataStream& operator<<(QDataStream& out, const RetardioUnit& unit)
 {
-    auto setting_val = BitcoinUnits::ToSetting(unit);
+    auto setting_val = RetardioUnits::ToSetting(unit);
     if (const QString* setting_str = std::get_if<QString>(&setting_val)) {
         return out << qint8{0} << *setting_str;
     } else {
@@ -375,7 +375,7 @@ QDataStream& operator<<(QDataStream& out, const BitcoinUnit& unit)
     }
 }
 
-QDataStream& operator>>(QDataStream& in, BitcoinUnit& unit)
+QDataStream& operator>>(QDataStream& in, RetardioUnit& unit)
 {
     qint8 input;
     in >> input;
@@ -383,7 +383,7 @@ QDataStream& operator>>(QDataStream& in, BitcoinUnit& unit)
     if (!in.atEnd()) {
         QString setting_str;
         in >> setting_str;
-        unit = BitcoinUnits::FromSetting(setting_str, unit);
+        unit = RetardioUnits::FromSetting(setting_str, unit);
     }
     return in;
 }

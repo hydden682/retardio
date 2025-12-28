@@ -3,8 +3,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_COMMON_SIGNMESSAGE_H
-#define BITCOIN_COMMON_SIGNMESSAGE_H
+#ifndef RETARDIO_COMMON_SIGNMESSAGE_H
+#define RETARDIO_COMMON_SIGNMESSAGE_H
 
 #include <addresstype.h>
 #include <primitives/transaction.h>
@@ -117,4 +117,4 @@ public:
     const CTransaction m_to_sign;
 };
 
-#endif // BITCOIN_COMMON_SIGNMESSAGE_H
+#endif // RETARDIO_COMMON_SIGNMESSAGE_H

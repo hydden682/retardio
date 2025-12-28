@@ -5,7 +5,7 @@
 #include <qt/receiverequestdialog.h>
 #include <qt/forms/ui_receiverequestdialog.h>
 
-#include <qt/bitcoinunits.h>
+#include <qt/RetardioUnits.h>
 #include <qt/guiutil.h>
 #include <qt/optionsmodel.h>
 #include <qt/qrimagewidget.h>
@@ -97,7 +97,7 @@ void ReceiveRequestDialog::setInfo(const SendCoinsRecipient &_info)
 {
     this->info = _info;
     setWindowTitle(tr("Request payment to %1").arg(info.label.isEmpty() ? info.address : info.label));
-    QString uri = GUIUtil::formatBitcoinURI(info);
+    QString uri = GUIUtil::formatRetardioURI(info);
 
 #ifdef USE_QRCODE
     if (ui->qr_code->setQR(uri, info.address, model->getOptionsModel()->getFontChoiceForQRCodes())) {
@@ -156,15 +156,15 @@ void ReceiveRequestDialog::updateDisplayUnit()
 {
     if (!model) return;
 
-    const BitcoinUnit display_unit = model->getOptionsModel()->getDisplayUnit();
+    const RetardioUnit display_unit = model->getOptionsModel()->getDisplayUnit();
     const QFont font_for_money = model->getOptionsModel()->getFontForMoney(display_unit);
-    ui->amount_content->setText(BitcoinUnits::formatHtmlWithUnit(font_for_money, display_unit, info.amount));
+    ui->amount_content->setText(RetardioUnits::formatHtmlWithUnit(font_for_money, display_unit, info.amount));
     updateInfoWidget();
 }
 
 void ReceiveRequestDialog::on_btnCopyURI_clicked()
 {
-    GUIUtil::setClipboard(GUIUtil::formatBitcoinURI(info));
+    GUIUtil::setClipboard(GUIUtil::formatRetardioURI(info));
 }
 
 void ReceiveRequestDialog::on_btnCopyAddress_clicked()

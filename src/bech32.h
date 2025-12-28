@@ -11,8 +11,8 @@
 //
 // For more information, see BIP 173 and BIP 350.
 
-#ifndef BITCOIN_BECH32_H
-#define BITCOIN_BECH32_H
+#ifndef RETARDIO_BECH32_H
+#define RETARDIO_BECH32_H
 
 #include <stdint.h>
 #include <string>
@@ -80,4 +80,4 @@ std::pair<std::string, data> Decode(const std::string& str, CharLimit limit, siz
 
 } // namespace bech32
 
-#endif // BITCOIN_BECH32_H
+#endif // RETARDIO_BECH32_H

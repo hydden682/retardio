@@ -5,7 +5,7 @@
 #include <qt/overviewpage.h>
 #include <qt/forms/ui_overviewpage.h>
 
-#include <qt/bitcoinunits.h>
+#include <qt/RetardioUnits.h>
 #include <qt/clientmodel.h>
 #include <qt/guiconstants.h>
 #include <qt/guiutil.h>
@@ -94,7 +94,7 @@ public:
         }
         painter->setPen(foreground);
         QFont font_saved = painter->font();
-        QString amountText = BitcoinUnits::formatWithUnit(unit, amount, true, BitcoinUnits::SeparatorStyle::ALWAYS);
+        QString amountText = RetardioUnits::formatWithUnit(unit, amount, true, RetardioUnits::SeparatorStyle::ALWAYS);
         if(!confirmed)
         {
             amountText = QString("[") + amountText + QString("]");
@@ -129,7 +129,7 @@ public:
         return {DECORATION_SIZE + 8 + minimum_text_width, DECORATION_SIZE};
     }
 
-    BitcoinUnit unit{BitcoinUnit::BTC};
+    RetardioUnit unit{RetardioUnit::BTC};
 
 Q_SIGNALS:
     //! An intermediate signal for emitting from the `paint() const` member function.
@@ -199,28 +199,28 @@ OverviewPage::~OverviewPage()
 
 void OverviewPage::setBalance(const interfaces::WalletBalances& balances)
 {
-    BitcoinUnit unit = walletModel->getOptionsModel()->getDisplayUnit();
+    RetardioUnit unit = walletModel->getOptionsModel()->getDisplayUnit();
     if (walletModel->wallet().isLegacy()) {
         if (walletModel->wallet().privateKeysDisabled()) {
-            ui->labelBalance->setText(BitcoinUnits::formatWithPrivacy(unit, balances.watch_only_balance, BitcoinUnits::SeparatorStyle::ALWAYS, m_privacy));
-            ui->labelUnconfirmed->setText(BitcoinUnits::formatWithPrivacy(unit, balances.unconfirmed_watch_only_balance, BitcoinUnits::SeparatorStyle::ALWAYS, m_privacy));
-            ui->labelImmature->setText(BitcoinUnits::formatWithPrivacy(unit, balances.immature_watch_only_balance, BitcoinUnits::SeparatorStyle::ALWAYS, m_privacy));
-            ui->labelTotal->setText(BitcoinUnits::formatWithPrivacy(unit, balances.watch_only_balance + balances.unconfirmed_watch_only_balance + balances.immature_watch_only_balance, BitcoinUnits::SeparatorStyle::ALWAYS, m_privacy));
+            ui->labelBalance->setText(RetardioUnits::formatWithPrivacy(unit, balances.watch_only_balance, RetardioUnits::SeparatorStyle::ALWAYS, m_privacy));
+            ui->labelUnconfirmed->setText(RetardioUnits::formatWithPrivacy(unit, balances.unconfirmed_watch_only_balance, RetardioUnits::SeparatorStyle::ALWAYS, m_privacy));
+            ui->labelImmature->setText(RetardioUnits::formatWithPrivacy(unit, balances.immature_watch_only_balance, RetardioUnits::SeparatorStyle::ALWAYS, m_privacy));
+            ui->labelTotal->setText(RetardioUnits::formatWithPrivacy(unit, balances.watch_only_balance + balances.unconfirmed_watch_only_balance + balances.immature_watch_only_balance, RetardioUnits::SeparatorStyle::ALWAYS, m_privacy));
         } else {
-            ui->labelBalance->setText(BitcoinUnits::formatWithPrivacy(unit, balances.balance, BitcoinUnits::SeparatorStyle::ALWAYS, m_privacy));
-            ui->labelUnconfirmed->setText(BitcoinUnits::formatWithPrivacy(unit, balances.unconfirmed_balance, BitcoinUnits::SeparatorStyle::ALWAYS, m_privacy));
-            ui->labelImmature->setText(BitcoinUnits::formatWithPrivacy(unit, balances.immature_balance, BitcoinUnits::SeparatorStyle::ALWAYS, m_privacy));
-            ui->labelTotal->setText(BitcoinUnits::formatWithPrivacy(unit, balances.balance + balances.unconfirmed_balance + balances.immature_balance, BitcoinUnits::SeparatorStyle::ALWAYS, m_privacy));
-            ui->labelWatchAvailable->setText(BitcoinUnits::formatWithPrivacy(unit, balances.watch_only_balance, BitcoinUnits::SeparatorStyle::ALWAYS, m_privacy));
-            ui->labelWatchPending->setText(BitcoinUnits::formatWithPrivacy(unit, balances.unconfirmed_watch_only_balance, BitcoinUnits::SeparatorStyle::ALWAYS, m_privacy));
-            ui->labelWatchImmature->setText(BitcoinUnits::formatWithPrivacy(unit, balances.immature_watch_only_balance, BitcoinUnits::SeparatorStyle::ALWAYS, m_privacy));
-            ui->labelWatchTotal->setText(BitcoinUnits::formatWithPrivacy(unit, balances.watch_only_balance + balances.unconfirmed_watch_only_balance + balances.immature_watch_only_balance, BitcoinUnits::SeparatorStyle::ALWAYS, m_privacy));
+            ui->labelBalance->setText(RetardioUnits::formatWithPrivacy(unit, balances.balance, RetardioUnits::SeparatorStyle::ALWAYS, m_privacy));
+            ui->labelUnconfirmed->setText(RetardioUnits::formatWithPrivacy(unit, balances.unconfirmed_balance, RetardioUnits::SeparatorStyle::ALWAYS, m_privacy));
+            ui->labelImmature->setText(RetardioUnits::formatWithPrivacy(unit, balances.immature_balance, RetardioUnits::SeparatorStyle::ALWAYS, m_privacy));
+            ui->labelTotal->setText(RetardioUnits::formatWithPrivacy(unit, balances.balance + balances.unconfirmed_balance + balances.immature_balance, RetardioUnits::SeparatorStyle::ALWAYS, m_privacy));
+            ui->labelWatchAvailable->setText(RetardioUnits::formatWithPrivacy(unit, balances.watch_only_balance, RetardioUnits::SeparatorStyle::ALWAYS, m_privacy));
+            ui->labelWatchPending->setText(RetardioUnits::formatWithPrivacy(unit, balances.unconfirmed_watch_only_balance, RetardioUnits::SeparatorStyle::ALWAYS, m_privacy));
+            ui->labelWatchImmature->setText(RetardioUnits::formatWithPrivacy(unit, balances.immature_watch_only_balance, RetardioUnits::SeparatorStyle::ALWAYS, m_privacy));
+            ui->labelWatchTotal->setText(RetardioUnits::formatWithPrivacy(unit, balances.watch_only_balance + balances.unconfirmed_watch_only_balance + balances.immature_watch_only_balance, RetardioUnits::SeparatorStyle::ALWAYS, m_privacy));
         }
     } else {
-        ui->labelBalance->setText(BitcoinUnits::formatWithPrivacy(unit, balances.balance, BitcoinUnits::SeparatorStyle::ALWAYS, m_privacy));
-        ui->labelUnconfirmed->setText(BitcoinUnits::formatWithPrivacy(unit, balances.unconfirmed_balance, BitcoinUnits::SeparatorStyle::ALWAYS, m_privacy));
-        ui->labelImmature->setText(BitcoinUnits::formatWithPrivacy(unit, balances.immature_balance, BitcoinUnits::SeparatorStyle::ALWAYS, m_privacy));
-        ui->labelTotal->setText(BitcoinUnits::formatWithPrivacy(unit, balances.balance + balances.unconfirmed_balance + balances.immature_balance, BitcoinUnits::SeparatorStyle::ALWAYS, m_privacy));
+        ui->labelBalance->setText(RetardioUnits::formatWithPrivacy(unit, balances.balance, RetardioUnits::SeparatorStyle::ALWAYS, m_privacy));
+        ui->labelUnconfirmed->setText(RetardioUnits::formatWithPrivacy(unit, balances.unconfirmed_balance, RetardioUnits::SeparatorStyle::ALWAYS, m_privacy));
+        ui->labelImmature->setText(RetardioUnits::formatWithPrivacy(unit, balances.immature_balance, RetardioUnits::SeparatorStyle::ALWAYS, m_privacy));
+        ui->labelTotal->setText(RetardioUnits::formatWithPrivacy(unit, balances.balance + balances.unconfirmed_balance + balances.immature_balance, RetardioUnits::SeparatorStyle::ALWAYS, m_privacy));
     }
     // only show immature (newly mined) balance if it's non-zero, so as not to complicate things
     // for the non-mining users
@@ -347,7 +347,7 @@ void OverviewPage::showOutOfSyncWarning(bool fShow)
 
 void OverviewPage::setMonospacedFont(const QFont& dummy)
 {
-    const BitcoinUnit display_unit = clientModel->getOptionsModel()->getDisplayUnit();
+    const RetardioUnit display_unit = clientModel->getOptionsModel()->getDisplayUnit();
     const QFont f = clientModel->getOptionsModel()->getFontForMoney(display_unit);
     ui->labelBalance->setFont(f);
     ui->labelUnconfirmed->setFont(f);

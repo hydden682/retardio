@@ -5,8 +5,8 @@
 /**
  * Functionality for communicating with Tor.
  */
-#ifndef BITCOIN_TORCONTROL_H
-#define BITCOIN_TORCONTROL_H
+#ifndef RETARDIO_TORCONTROL_H
+#define RETARDIO_TORCONTROL_H
 
 #include <retardio-build-config.h> // IWYU pragma: keep
 
@@ -169,4 +169,4 @@ public:
     std::string LaunchTor();
 };
 
-#endif // BITCOIN_TORCONTROL_H
+#endif // RETARDIO_TORCONTROL_H

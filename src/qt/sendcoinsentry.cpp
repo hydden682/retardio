@@ -32,7 +32,7 @@ SendCoinsEntry::SendCoinsEntry(const PlatformStyle *_platformStyle, QWidget *par
     GUIUtil::setupAddressWidget(ui->payTo, this);
 
     // Connect signals
-    connect(ui->payAmount, &BitcoinAmountField::valueChanged, this, &SendCoinsEntry::payAmountChanged);
+    connect(ui->payAmount, &RetardioAmountField::valueChanged, this, &SendCoinsEntry::payAmountChanged);
     connect(ui->checkboxSubtractFeeFromAmount, &QCheckBox::toggled, this, &SendCoinsEntry::subtractFeeFromAmountChanged);
     connect(ui->deleteButton, &QPushButton::clicked, this, &SendCoinsEntry::deleteClicked);
     connect(ui->useAvailableBalanceButton, &QPushButton::clicked, this, &SendCoinsEntry::useAvailableBalanceClicked);
@@ -72,7 +72,7 @@ void SendCoinsEntry::setModel(WalletModel *_model)
     this->model = _model;
 
     if (_model) {
-        ui->payTo->setWarningValidator(new BitcoinAddressUnusedInWalletValidator(*_model));
+        ui->payTo->setWarningValidator(new RetardioAddressUnusedInWalletValidator(*_model));
     } else {
         ui->payTo->setWarningValidator(nullptr);
     }
@@ -222,7 +222,7 @@ void SendCoinsEntry::setFocus()
 void SendCoinsEntry::updateDisplayUnit()
 {
     if (model && model->getOptionsModel()) {
-        const BitcoinUnit display_unit = model->getOptionsModel()->getDisplayUnit();
+        const RetardioUnit display_unit = model->getOptionsModel()->getDisplayUnit();
         ui->payAmount->setDisplayUnit(display_unit);
         const QFont font_for_money = model->getOptionsModel()->getFontForMoney(display_unit);
         ui->payAmount->setFontForMoney(font_for_money);

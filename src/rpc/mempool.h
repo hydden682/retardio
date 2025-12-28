@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_RPC_MEMPOOL_H
-#define BITCOIN_RPC_MEMPOOL_H
+#ifndef RETARDIO_RPC_MEMPOOL_H
+#define RETARDIO_RPC_MEMPOOL_H
 
 #include <consensus/amount.h>
 
@@ -34,4 +34,4 @@ UniValue MempoolToJSON(ChainstateManager& chainman, const CTxMemPool& pool, bool
 /** Mempool Txs to JSON */
 UniValue MempoolTxsToJSON(const CTxMemPool& pool, bool verbose = false, uint64_t sequence_start = 0);
 
-#endif // BITCOIN_RPC_MEMPOOL_H
+#endif // RETARDIO_RPC_MEMPOOL_H

@@ -1,0 +1,81 @@
+{
+    "enabled": true,
+    "coin": "retardio.json",
+
+    "_comment_solo_mode": "SOLO MINING - Block finder gets 100% of reward!",
+    "_comment_address": "Pool address (for tiny fee if desired, or set fee to 0)",
+    "address": "CHANGE_THIS_TO_YOUR_POOL_ADDRESS",
+
+    "_comment_rewardRecipients": "Pool fee (set to 0 for pure solo, or 0.5-1% for pool costs)",
+    "rewardRecipients": {
+    },
+
+    "paymentProcessing": {
+        "_comment": "Solo mode - payments go directly to block finder",
+        "enabled": false,
+        "_comment_why_disabled": "In solo mode, block rewards go directly to miner's address in coinbase"
+    },
+
+    "_comment_ports": "Stratum port configuration",
+    "ports": {
+        "3032": {
+            "_comment": "Universal port for all miners (CPU/GPU/ASIC)",
+            "diff": 8,
+            "varDiff": {
+                "minDiff": 1,
+                "maxDiff": 16384,
+                "targetTime": 15,
+                "retargetTime": 90,
+                "variancePercent": 30,
+                "x2mode": false
+            }
+        }
+    },
+
+    "daemons": [
+        {
+            "host": "127.0.0.1",
+            "port": 18332,
+            "user": "retardiouser",
+            "password": "CHANGE_THIS_TO_YOUR_RPC_PASSWORD"
+        }
+    ],
+
+    "p2p": {
+        "enabled": false,
+        "host": "127.0.0.1",
+        "port": 18333,
+        "disableTransactions": true
+    },
+
+    "mposMode": {
+        "enabled": false
+    },
+
+    "connectionTimeout": 600,
+
+    "_comment_banning": "Ban miners that submit invalid shares",
+    "banning": {
+        "enabled": true,
+        "time": 600,
+        "invalidPercent": 50,
+        "checkThreshold": 500,
+        "purgeInterval": 300
+    },
+
+    "_comment_redis": "Redis for tracking shares (minimal usage in solo mode)",
+    "redis": {
+        "host": "127.0.0.1",
+        "port": 6379,
+        "password": ""
+    },
+
+    "_comment_solo_mining": "SOLO MINING MODE",
+    "shareProcessing": {
+        "_comment": "In solo mode, only blocks matter - shares are just for stats",
+        "internal": {
+            "enabled": true,
+            "validateShares": true
+        }
+    }
+}

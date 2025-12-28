@@ -33,8 +33,8 @@ Documentation for C++ subprocessing library.
 @version 1.0.0
 */
 
-#ifndef BITCOIN_UTIL_SUBPROCESS_H
-#define BITCOIN_UTIL_SUBPROCESS_H
+#ifndef RETARDIO_UTIL_SUBPROCESS_H
+#define RETARDIO_UTIL_SUBPROCESS_H
 
 #include <util/fs.h>
 #include <util/strencodings.h>
@@ -1605,4 +1605,4 @@ namespace detail {
 
 }
 
-#endif // BITCOIN_UTIL_SUBPROCESS_H
+#endif // RETARDIO_UTIL_SUBPROCESS_H

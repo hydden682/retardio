@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_BLOCKFILTER_H
-#define BITCOIN_BLOCKFILTER_H
+#ifndef RETARDIO_BLOCKFILTER_H
+#define RETARDIO_BLOCKFILTER_H
 
 #include <cstddef>
 #include <cstdint>
@@ -174,4 +174,4 @@ public:
     }
 };
 
-#endif // BITCOIN_BLOCKFILTER_H
+#endif // RETARDIO_BLOCKFILTER_H

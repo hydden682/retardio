@@ -3,8 +3,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_UTIL_TIME_H
-#define BITCOIN_UTIL_TIME_H
+#ifndef RETARDIO_UTIL_TIME_H
+#define RETARDIO_UTIL_TIME_H
 
 #include <atomic>
 #include <chrono> // IWYU pragma: export
@@ -189,4 +189,4 @@ private:
  */
 std::chrono::nanoseconds operator+=(std::atomic<std::chrono::nanoseconds>& a, std::chrono::nanoseconds b);
 
-#endif // BITCOIN_UTIL_TIME_H
+#endif // RETARDIO_UTIL_TIME_H

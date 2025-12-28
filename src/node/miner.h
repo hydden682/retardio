@@ -3,8 +3,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_NODE_MINER_H
-#define BITCOIN_NODE_MINER_H
+#ifndef RETARDIO_NODE_MINER_H
+#define RETARDIO_NODE_MINER_H
 
 #include <node/types.h>
 #include <policy/policy.h>
@@ -237,4 +237,4 @@ void RegenerateCommitments(CBlock& block, ChainstateManager& chainman);
 void ApplyArgsManOptions(const ArgsManager& gArgs, BlockAssembler::Options& options);
 } // namespace node
 
-#endif // BITCOIN_NODE_MINER_H
+#endif // RETARDIO_NODE_MINER_H

@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_QT_BITCOINGUI_H
-#define BITCOIN_QT_BITCOINGUI_H
+#ifndef RETARDIO_QT_BITCOINGUI_H
+#define RETARDIO_QT_BITCOINGUI_H
 
 #include <retardio-build-config.h> // IWYU pragma: keep
 
@@ -369,4 +369,4 @@ private Q_SLOTS:
     void onMenuSelection(QAction* action);
 };
 
-#endif // BITCOIN_QT_BITCOINGUI_H
+#endif // RETARDIO_QT_BITCOINGUI_H

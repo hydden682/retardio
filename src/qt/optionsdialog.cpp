@@ -7,8 +7,8 @@
 #include <qt/optionsdialog.h>
 #include <qt/forms/ui_optionsdialog.h>
 
-#include <qt/bitcoinamountfield.h>
-#include <qt/bitcoinunits.h>
+#include <qt/RetardioAmountField.h>
+#include <qt/RetardioUnits.h>
 #include <qt/clientmodel.h>
 #include <qt/guiconstants.h>
 #include <qt/guiutil.h>
@@ -88,7 +88,7 @@ QSize ModScrollArea::sizeHint() const
 
 void OptionsDialog::FixTabOrder(QWidget * const o)
 {
-    BitcoinAmountField * const af = qobject_cast<BitcoinAmountField *>(o);
+    RetardioAmountField * const af = qobject_cast<RetardioAmountField *>(o);
     if (af) {
         prevwidget = af->setupTabChain(prevwidget);
     } else {
@@ -329,7 +329,7 @@ OptionsDialog::OptionsDialog(QWidget* parent, bool enableWallet)
     mempoolreplacement->addItem(QString("with a higher mining fee (no opt-out)"), QVariant("fee,-optin"));
     CreateOptionUI(verticalLayout_Mempool, mempoolreplacement, tr("Transaction &replacement: %s"));
 
-    incrementalrelayfee = new BitcoinAmountField(tabMempool);
+    incrementalrelayfee = new RetardioAmountField(tabMempool);
     connect(incrementalrelayfee, SIGNAL(valueChanged()), this, SLOT(incrementalrelayfee_changed()));
     CreateOptionUI(verticalLayout_Mempool, incrementalrelayfee, tr("Require transaction fees to be at least %s per kvB higher than transactions they are replacing."));
 
@@ -394,10 +394,10 @@ OptionsDialog::OptionsDialog(QWidget* parent, bool enableWallet)
     verticalLayout_Spamfiltering->addWidget(rejecttokens);
     FixTabOrder(rejecttokens);
 
-    minrelaytxfee = new BitcoinAmountField(groupBox_Spamfiltering);
+    minrelaytxfee = new RetardioAmountField(groupBox_Spamfiltering);
     CreateOptionUI(verticalLayout_Spamfiltering, minrelaytxfee, tr("Ignore transactions offering miners less than %s per kvB in transaction fees."));
 
-    minrelaycoinblocks = new BitcoinAmountField(groupBox_Spamfiltering);
+    minrelaycoinblocks = new RetardioAmountField(groupBox_Spamfiltering);
     minrelaycoinblocks->SetMaxValue(std::numeric_limits<CAmount>::max());
     minrelaycoinblocks->setToolTip(tr("This effectively acts as a rate limit. When bitcoins are spent, they reset to zero \"coinblocks\" (aka coin age) and slowly build up more coinblocks based on their value each block afterward. Small coins take longer than large amounts."));
     CreateOptionUI(verticalLayout_Spamfiltering, minrelaycoinblocks, tr("Delay accepting transactions spending coins that have been at rest less than %s per block."));
@@ -532,7 +532,7 @@ OptionsDialog::OptionsDialog(QWidget* parent, bool enableWallet)
     verticalLayout_Spamfiltering->addWidget(rejectnonstddatacarrier);
     FixTabOrder(rejectnonstddatacarrier);
 
-    dustrelayfee = new BitcoinAmountField(groupBox_Spamfiltering);
+    dustrelayfee = new RetardioAmountField(groupBox_Spamfiltering);
     CreateOptionUI(verticalLayout_Spamfiltering, dustrelayfee, tr("Ignore transactions with values that would cost more to spend at a fee rate of %s per kvB (\"dust\")."));
 
     rejectbaredatacarrier = new QCheckBox(groupBox_Spamfiltering);
@@ -617,7 +617,7 @@ OptionsDialog::OptionsDialog(QWidget* parent, bool enableWallet)
 
     verticalLayout_Mining->addWidget(new QLabel(tr("<strong>Note that mining is heavily influenced by the settings on the Mempool and Spam filtering tabs.</strong>")));
 
-    blockmintxfee = new BitcoinAmountField(tabMining);
+    blockmintxfee = new RetardioAmountField(tabMining);
     CreateOptionUI(verticalLayout_Mining, blockmintxfee, tr("Only mine transactions paying a fee of at least %s per kvB."));
 
     blockmaxsize = new QSpinBox(tabMining);
@@ -706,7 +706,7 @@ OptionsDialog::OptionsDialog(QWidget* parent, bool enableWallet)
             ui->lang->addItem(locale.nativeLanguageName() + QString(" (") + langStr + QString(")"), QVariant(langStr));
         }
     }
-    ui->unit->setModel(new BitcoinUnits(this));
+    ui->unit->setModel(new RetardioUnits(this));
 
     /* Widget-to-option mapper */
     mapper = new QDataWidgetMapper(this);

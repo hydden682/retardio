@@ -161,7 +161,7 @@ void ReceiveCoinsDialog::updateFontForMoney()
 {
     if(model && model->getOptionsModel())
     {
-        const BitcoinUnit display_unit = model->getOptionsModel()->getDisplayUnit();
+        const RetardioUnit display_unit = model->getOptionsModel()->getDisplayUnit();
         const QFont font_for_money = model->getOptionsModel()->getFontForMoney(display_unit);
         ui->reqAmount->setFontForMoney(font_for_money);
     }
@@ -372,7 +372,7 @@ void ReceiveCoinsDialog::copyURI()
             continue;
         }
         const RecentRequestEntry& req = submodel->entry(sel.at(sel_ind).row());
-        uri += GUIUtil::formatBitcoinURI(req.recipient);
+        uri += GUIUtil::formatRetardioURI(req.recipient);
         if (sel_ind < sel.size() - 1) {
             uri += QString("\n");
         }

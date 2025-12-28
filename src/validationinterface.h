@@ -3,8 +3,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_VALIDATIONINTERFACE_H
-#define BITCOIN_VALIDATIONINTERFACE_H
+#ifndef RETARDIO_VALIDATIONINTERFACE_H
+#define RETARDIO_VALIDATIONINTERFACE_H
 
 #include <kernel/chain.h>
 #include <kernel/cs_main.h>
@@ -240,4 +240,4 @@ public:
     void NewBlockTemplate(const std::shared_ptr<node::CBlockTemplate>& blocktemplate);
 };
 
-#endif // BITCOIN_VALIDATIONINTERFACE_H
+#endif // RETARDIO_VALIDATIONINTERFACE_H

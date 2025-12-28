@@ -515,7 +515,7 @@ bool WalletModel::bumpFee(uint256 hash, uint256& new_hash)
 
     // allow a user based fee verification
     /*: Asks a user if they would like to manually increase the fee of a transaction that has already been created. */
-    const BitcoinUnit display_unit = getOptionsModel()->getDisplayUnit();
+    const RetardioUnit display_unit = getOptionsModel()->getDisplayUnit();
     const QFont font_for_money = getOptionsModel()->getFontForMoney(display_unit);
     QString questionString = tr("Do you want to increase the fee?");
     questionString.append("<br />");
@@ -523,15 +523,15 @@ bool WalletModel::bumpFee(uint256 hash, uint256& new_hash)
     questionString.append("<tr><td>");
     questionString.append(tr("Current fee:"));
     questionString.append("</td><td>");
-    questionString.append(BitcoinUnits::formatHtmlWithUnit(font_for_money, display_unit, old_fee));
+    questionString.append(RetardioUnits::formatHtmlWithUnit(font_for_money, display_unit, old_fee));
     questionString.append("</td></tr><tr><td>");
     questionString.append(tr("Increase:"));
     questionString.append("</td><td>");
-    questionString.append(BitcoinUnits::formatHtmlWithUnit(font_for_money, display_unit, new_fee - old_fee));
+    questionString.append(RetardioUnits::formatHtmlWithUnit(font_for_money, display_unit, new_fee - old_fee));
     questionString.append("</td></tr><tr><td>");
     questionString.append(tr("New fee:"));
     questionString.append("</td><td>");
-    questionString.append(BitcoinUnits::formatHtmlWithUnit(font_for_money, display_unit, new_fee));
+    questionString.append(RetardioUnits::formatHtmlWithUnit(font_for_money, display_unit, new_fee));
     questionString.append("</td></tr></table>");
 
     // Display warning in the "Confirm fee bump" window if the "Coin Control Features" option is enabled
@@ -661,13 +661,13 @@ CAmount WalletModel::getAvailableBalance(const CCoinControl* control)
     return wallet().getAvailableBalance(*control);
 }
 
-BitcoinAddressUnusedInWalletValidator::BitcoinAddressUnusedInWalletValidator(const WalletModel& wallet_model, QObject *parent) :
+RetardioAddressUnusedInWalletValidator::RetardioAddressUnusedInWalletValidator(const WalletModel& wallet_model, QObject *parent) :
     QValidator(parent),
     m_wallet_model(wallet_model)
 {
 }
 
-QValidator::State BitcoinAddressUnusedInWalletValidator::validate(QString &input, int &pos) const
+QValidator::State RetardioAddressUnusedInWalletValidator::validate(QString &input, int &pos) const
 {
     Q_UNUSED(pos);
     if (m_wallet_model.checkAddressForUsage(std::vector<std::string>{input.toStdString()})) {

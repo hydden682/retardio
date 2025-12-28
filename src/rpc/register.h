@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_RPC_REGISTER_H
-#define BITCOIN_RPC_REGISTER_H
+#ifndef RETARDIO_RPC_REGISTER_H
+#define RETARDIO_RPC_REGISTER_H
 
 #include <retardio-build-config.h> // IWYU pragma: keep
 
@@ -42,4 +42,4 @@ static inline void RegisterAllCoreRPCCommands(CRPCTable &t)
     RegisterStatsRPCCommands(t);
 }
 
-#endif // BITCOIN_RPC_REGISTER_H
+#endif // RETARDIO_RPC_REGISTER_H

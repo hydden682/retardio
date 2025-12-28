@@ -3,8 +3,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_TXDB_H
-#define BITCOIN_TXDB_H
+#ifndef RETARDIO_TXDB_H
+#define RETARDIO_TXDB_H
 
 #include <coins.h>
 #include <dbwrapper.h>
@@ -63,4 +63,4 @@ public:
     std::optional<fs::path> StoragePath() { return m_db->StoragePath(); }
 };
 
-#endif // BITCOIN_TXDB_H
+#endif // RETARDIO_TXDB_H

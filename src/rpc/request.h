@@ -3,8 +3,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_RPC_REQUEST_H
-#define BITCOIN_RPC_REQUEST_H
+#ifndef RETARDIO_RPC_REQUEST_H
+#define RETARDIO_RPC_REQUEST_H
 
 #include <any>
 #include <optional>
@@ -51,4 +51,4 @@ public:
     [[nodiscard]] bool IsNotification() const { return !id.has_value() && m_json_version == JSONRPCVersion::V2; };
 };
 
-#endif // BITCOIN_RPC_REQUEST_H
+#endif // RETARDIO_RPC_REQUEST_H

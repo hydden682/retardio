@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_QT_BITCOINUNITS_H
-#define BITCOIN_QT_BITCOINUNITS_H
+#ifndef RETARDIO_QT_BITCOINUNITS_H
+#define RETARDIO_QT_BITCOINUNITS_H
 
 #include <consensus/amount.h>
 
@@ -129,4 +129,4 @@ typedef BitcoinUnits::Unit BitcoinUnit;
 QDataStream& operator<<(QDataStream& out, const BitcoinUnit& unit);
 QDataStream& operator>>(QDataStream& in, BitcoinUnit& unit);
 
-#endif // BITCOIN_QT_BITCOINUNITS_H
+#endif // RETARDIO_QT_BITCOINUNITS_H

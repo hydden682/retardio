@@ -333,6 +333,51 @@ sleep 10
 
 sudo systemctl start retardio-pool retardio-pool-ui
 
+# Create auto-update script
+echo "Creating auto-update script..."
+cat > ~/retardio-update.sh << 'UPDATEEOF'
+#!/bin/bash
+# Retardio Auto-Update Script
+# Pulls latest from GitHub and updates web files
+
+cd ~/retardio-coin
+
+# Fetch and check for updates
+git fetch origin 29.x-knots
+
+LOCAL=$(git rev-parse HEAD)
+REMOTE=$(git rev-parse origin/29.x-knots)
+
+if [ "$LOCAL" != "$REMOTE" ]; then
+    echo "$(date): Updates found, pulling..."
+    git pull origin 29.x-knots
+
+    # Get current config
+    PUBLIC_IP=$(curl -4 -s ifconfig.me)
+    RPC_PASSWORD=$(grep rpcpassword ~/.retardio/data/retardio.conf | cut -d'=' -f2)
+
+    # Update the all-in-one HTML
+    sed "s/YOUR_VPS_IP/$PUBLIC_IP/g; s/YOUR_RPC_PASSWORD/$RPC_PASSWORD/g" \
+        retardio_all_in_one.html > www/downloads/Retardio.html
+
+    # Update wallet standalone
+    cp wallet_standalone.html www/downloads/wallet.html
+
+    echo "$(date): Update complete!"
+else
+    echo "$(date): Already up to date"
+fi
+UPDATEEOF
+chmod +x ~/retardio-update.sh
+
+# Run initial update
+~/retardio-update.sh
+
+# Add cron job for hourly updates (if not already exists)
+CRON_CMD="0 * * * * $HOME/retardio-update.sh >> $HOME/retardio-update.log 2>&1"
+(crontab -l 2>/dev/null | grep -v "retardio-update.sh"; echo "$CRON_CMD") | crontab -
+echo "Auto-update cron job installed (runs hourly)"
+
 echo ""
 echo "=============================================="
 echo "  SETUP COMPLETE!"

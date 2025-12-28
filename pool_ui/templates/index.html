@@ -5,32 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Retardio Pool Dashboard</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             min-height: 100vh;
             color: #fff;
         }
-
-        .container {
-            display: flex;
-            min-height: 100vh;
-        }
+        .container { display: flex; min-height: 100vh; }
 
         /* Sidebar */
         .sidebar {
-            width: 250px;
+            width: 220px;
             background: rgba(0, 0, 0, 0.3);
             padding: 20px;
             border-right: 1px solid rgba(255, 255, 255, 0.1);
         }
-
         .logo {
             display: flex;
             align-items: center;
@@ -39,35 +29,18 @@
             padding-bottom: 20px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-
         .logo-icon {
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             background: linear-gradient(135deg, #00d4ff, #0099ff);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 20px;
-        }
-
-        .logo-text {
             font-size: 18px;
-            font-weight: 600;
         }
-
-        .nav-section {
-            margin-bottom: 20px;
-        }
-
-        .nav-title {
-            font-size: 12px;
-            text-transform: uppercase;
-            color: rgba(255, 255, 255, 0.5);
-            margin-bottom: 10px;
-        }
-
+        .logo-text { font-size: 16px; font-weight: 600; }
         .nav-item {
             display: flex;
             align-items: center;
@@ -77,226 +50,167 @@
             cursor: pointer;
             transition: all 0.3s;
             margin-bottom: 5px;
+            font-size: 14px;
         }
-
         .nav-item:hover, .nav-item.active {
             background: rgba(0, 212, 255, 0.2);
         }
-
-        .nav-item.active {
-            border-left: 3px solid #00d4ff;
-        }
+        .nav-item.active { border-left: 3px solid #00d4ff; }
 
         /* Main Content */
-        .main {
-            flex: 1;
-            padding: 30px;
-            overflow-y: auto;
-        }
-
+        .main { flex: 1; padding: 25px; overflow-y: auto; }
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
+        .page-title { font-size: 24px; font-weight: 600; }
 
-        .page-title {
-            font-size: 28px;
-            font-weight: 600;
-        }
-
-        /* Stats Cards */
+        /* Stats Grid */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
         }
-
         .stat-card {
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 20px;
+            border-radius: 10px;
+            padding: 18px;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-
         .stat-label {
-            font-size: 14px;
+            font-size: 12px;
             color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
         }
-
         .stat-value {
-            font-size: 32px;
+            font-size: 26px;
             font-weight: 700;
             color: #00d4ff;
         }
+        .stat-value.gold { color: #f5a623; }
+        .stat-sub {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 4px;
+        }
 
-        /* Blocks Table */
+        /* Cards */
         .card {
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 25px;
+            border-radius: 10px;
+            padding: 20px;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
         }
-
         .card-title {
-            font-size: 20px;
+            font-size: 16px;
             font-weight: 600;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .filters {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .filter-group {
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .filter-label {
-            font-size: 14px;
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        th {
+            font-weight: 600;
             color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        td { font-size: 13px; }
+        tr:hover { background: rgba(255, 255, 255, 0.03); }
+        .hash-link { color: #00d4ff; text-decoration: none; }
+        .hash-link:hover { text-decoration: underline; }
+        .worker-tag {
+            background: rgba(0, 212, 255, 0.2);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
         }
 
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .filter-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+        }
         input[type="date"], input[type="text"] {
             background: rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 6px;
             padding: 8px 12px;
             color: #fff;
-            font-size: 14px;
+            font-size: 13px;
         }
-
-        input:focus {
-            outline: none;
-            border-color: #00d4ff;
-        }
-
+        input:focus { outline: none; border-color: #00d4ff; }
         .btn {
             background: linear-gradient(135deg, #00d4ff, #0099ff);
             border: none;
             border-radius: 6px;
-            padding: 10px 20px;
+            padding: 8px 18px;
             color: #fff;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            font-size: 13px;
         }
-
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 20px rgba(0, 212, 255, 0.3);
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-
-        th, td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        th {
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 14px;
-            text-transform: uppercase;
-        }
-
-        td {
-            font-size: 14px;
-        }
-
-        tr:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .hash-link {
-            color: #00d4ff;
-            text-decoration: none;
-        }
-
-        .hash-link:hover {
-            text-decoration: underline;
-        }
-
-        .worker-tag {
-            background: rgba(0, 212, 255, 0.2);
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 13px;
-        }
-
         .no-data {
             text-align: center;
-            padding: 40px;
+            padding: 30px;
             color: rgba(255, 255, 255, 0.5);
         }
-
-        /* Animated background */
-        .bg-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-            overflow: hidden;
-        }
-
-        .dot {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: rgba(0, 212, 255, 0.3);
-            border-radius: 50%;
-            animation: float 15s infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(-100vh) translateX(50px); opacity: 0; }
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-        }
-
+        .loading { text-align: center; padding: 30px; }
         .spinner {
-            width: 40px;
-            height: 40px;
+            width: 30px;
+            height: 30px;
             border: 3px solid rgba(255, 255, 255, 0.1);
             border-top-color: #00d4ff;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
+            margin: 0 auto 10px;
         }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        /* Sections */
+        .section { display: none; }
+        .section.active { display: block; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar { width: 60px; padding: 10px; }
+            .logo-text, .nav-item span { display: none; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
 <body>
-    <div class="bg-animation" id="bgAnimation"></div>
-
     <div class="container">
         <!-- Sidebar -->
         <div class="sidebar">
@@ -304,78 +218,112 @@
                 <div class="logo-icon">R</div>
                 <div class="logo-text">Retardio Pool</div>
             </div>
-
-            <div class="nav-section">
-                <div class="nav-title">Dashboard</div>
-                <div class="nav-item active" onclick="showSection('dashboard')">
-                    📊 Dashboard
-                </div>
-                <div class="nav-item" onclick="showSection('blocks')">
-                    📦 Blocks
-                </div>
-                <div class="nav-item" onclick="showSection('workers')">
-                    👷 Workers
-                </div>
+            <div class="nav-item active" onclick="showSection('dashboard')">
+                <span>Dashboard</span>
+            </div>
+            <div class="nav-item" onclick="showSection('workers')">
+                <span>Workers</span>
+            </div>
+            <div class="nav-item" onclick="showSection('blocks')">
+                <span>Blocks</span>
             </div>
         </div>
 
         <!-- Main Content -->
         <div class="main">
-            <div class="header">
-                <h1 class="page-title">Pool Dashboard</h1>
-            </div>
+            <!-- DASHBOARD SECTION -->
+            <div id="dashboard-section" class="section active">
+                <div class="header">
+                    <h1 class="page-title">Dashboard</h1>
+                </div>
 
-            <!-- Stats -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-label">Total Blocks Found</div>
-                    <div class="stat-value" id="totalBlocks">-</div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Block Height</div>
+                        <div class="stat-value" id="blockHeight">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Network Difficulty</div>
+                        <div class="stat-value" id="networkDiff">-</div>
+                        <div class="stat-sub" id="networkDiffRaw"></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Network Hash Rate</div>
+                        <div class="stat-value" id="networkHashrate">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Pool Best Difficulty</div>
+                        <div class="stat-value gold" id="poolBestDiff">-</div>
+                        <div class="stat-sub" id="poolBestDiffRaw"></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Total Blocks Found</div>
+                        <div class="stat-value" id="totalBlocks">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Active Workers</div>
+                        <div class="stat-value" id="activeWorkers">-</div>
+                    </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-label">Blocks (24h)</div>
-                    <div class="stat-value" id="blocks24h">-</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Active Workers</div>
-                    <div class="stat-value" id="activeWorkers">-</div>
-                </div>
-            </div>
 
-            <!-- Active Workers List -->
-            <div class="card" style="margin-bottom: 30px;">
-                <div class="card-title">Connected Workers</div>
-                <div id="workersListContainer">
-                    <div class="loading">
-                        <div class="spinner"></div>
-                        <div>Loading workers...</div>
+                <div class="card">
+                    <div class="card-title">Recent Blocks</div>
+                    <div id="recentBlocksTable">
+                        <div class="loading"><div class="spinner"></div>Loading...</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Blocks Table -->
-            <div class="card">
-                <div class="card-title">Found Blocks</div>
-
-                <div class="filters">
-                    <div class="filter-group">
-                        <span class="filter-label">Start Date:</span>
-                        <input type="date" id="startDate" value="2025-01-01">
-                    </div>
-                    <div class="filter-group">
-                        <span class="filter-label">End Date:</span>
-                        <input type="date" id="endDate">
-                    </div>
-                    <div class="filter-group">
-                        <span class="filter-label">Worker:</span>
-                        <input type="text" id="workerFilter" placeholder="Filter by worker...">
-                    </div>
-                    <button class="btn" onclick="loadBlocks()">Search</button>
+            <!-- WORKERS SECTION -->
+            <div id="workers-section" class="section">
+                <div class="header">
+                    <h1 class="page-title">Workers</h1>
                 </div>
 
-                <div id="blocksTableContainer">
-                    <div class="loading">
-                        <div class="spinner"></div>
-                        <div>Loading blocks...</div>
+                <div class="stats-grid" style="margin-bottom: 20px;">
+                    <div class="stat-card">
+                        <div class="stat-label">Connected Workers</div>
+                        <div class="stat-value" id="workerCount">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Total Pool Hashrate</div>
+                        <div class="stat-value" id="poolHashrate">-</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Connected Workers</div>
+                    <div id="workersTable">
+                        <div class="loading"><div class="spinner"></div>Loading workers...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BLOCKS SECTION -->
+            <div id="blocks-section" class="section">
+                <div class="header">
+                    <h1 class="page-title">Found Blocks</h1>
+                </div>
+
+                <div class="card">
+                    <div class="filters">
+                        <div class="filter-group">
+                            <span class="filter-label">Start:</span>
+                            <input type="date" id="startDate" value="2025-01-01">
+                        </div>
+                        <div class="filter-group">
+                            <span class="filter-label">End:</span>
+                            <input type="date" id="endDate">
+                        </div>
+                        <div class="filter-group">
+                            <span class="filter-label">Worker:</span>
+                            <input type="text" id="workerFilter" placeholder="Filter...">
+                        </div>
+                        <button class="btn" onclick="loadBlocks()">Search</button>
+                    </div>
+
+                    <div id="blocksTableContainer">
+                        <div class="loading"><div class="spinner"></div>Loading blocks...</div>
                     </div>
                 </div>
             </div>
@@ -383,109 +331,226 @@
     </div>
 
     <script>
-        // Set default end date to today
+        // Set default end date
         document.getElementById('endDate').value = new Date().toISOString().split('T')[0];
 
-        // Create background animation dots
-        const bgAnimation = document.getElementById('bgAnimation');
-        for (let i = 0; i < 50; i++) {
-            const dot = document.createElement('div');
-            dot.className = 'dot';
-            dot.style.left = Math.random() * 100 + '%';
-            dot.style.top = Math.random() * 100 + '%';
-            dot.style.animationDelay = Math.random() * 15 + 's';
-            dot.style.animationDuration = (10 + Math.random() * 10) + 's';
-            bgAnimation.appendChild(dot);
+        // Format numbers
+        function formatNumber(num, decimals = 2) {
+            if (num >= 1e15) return (num / 1e15).toFixed(decimals) + ' PH/s';
+            if (num >= 1e12) return (num / 1e12).toFixed(decimals) + ' TH/s';
+            if (num >= 1e9) return (num / 1e9).toFixed(decimals) + ' GH/s';
+            if (num >= 1e6) return (num / 1e6).toFixed(decimals) + ' MH/s';
+            if (num >= 1e3) return (num / 1e3).toFixed(decimals) + ' KH/s';
+            return num.toFixed(decimals) + ' H/s';
         }
 
-        // Load stats
+        function formatDiff(diff) {
+            if (diff >= 1e12) return (diff / 1e12).toFixed(2) + 'T';
+            if (diff >= 1e9) return (diff / 1e9).toFixed(2) + 'G';
+            if (diff >= 1e6) return (diff / 1e6).toFixed(2) + 'M';
+            if (diff >= 1e3) return (diff / 1e3).toFixed(2) + 'K';
+            return diff.toFixed(2);
+        }
+
+        function formatUptime(secs) {
+            if (secs < 60) return Math.floor(secs) + 's';
+            if (secs < 3600) return Math.floor(secs / 60) + 'm';
+            if (secs < 86400) return (secs / 3600).toFixed(1) + 'h';
+            return (secs / 86400).toFixed(1) + ' days';
+        }
+
+        function formatTimeAgo(timestamp) {
+            const now = Date.now() / 1000;
+            const diff = now - timestamp;
+            if (diff < 60) return 'Just now';
+            if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+            if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+            return Math.floor(diff / 86400) + 'd ago';
+        }
+
+        // Show section
+        function showSection(section) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(section + '-section').classList.add('active');
+            event.target.closest('.nav-item').classList.add('active');
+
+            if (section === 'blocks') loadBlocks();
+        }
+
+        // Load stats for dashboard
         async function loadStats() {
             try {
                 const res = await fetch('/api/stats');
                 const data = await res.json();
+
+                // Dashboard stats
                 document.getElementById('totalBlocks').textContent = data.total_blocks;
-                document.getElementById('blocks24h').textContent = data.blocks_24h;
                 document.getElementById('activeWorkers').textContent = data.active_miners || 0;
 
-                // Update workers list
-                const workersContainer = document.getElementById('workersListContainer');
-                const workers = data.active_workers || [];
+                // Network stats
+                const net = data.network || {};
+                document.getElementById('blockHeight').textContent = net.block_height || '-';
 
-                if (workers.length === 0) {
-                    workersContainer.innerHTML = '<div class="no-data">No workers currently connected</div>';
-                } else {
-                    let html = '<div style="display: flex; flex-wrap: wrap; gap: 10px;">';
-                    for (const worker of workers) {
-                        // Parse worker name (format: address.workername)
-                        const parts = worker.split('.');
-                        const workerName = parts.length > 1 ? parts.slice(1).join('.') : worker;
-                        const address = parts[0] || '';
-                        const shortAddr = address.length > 12 ? address.substring(0, 8) + '...' + address.substring(address.length - 4) : address;
+                const netDiff = net.network_diff || 0;
+                document.getElementById('networkDiff').textContent = formatDiff(netDiff);
+                document.getElementById('networkDiffRaw').textContent = netDiff.toLocaleString();
 
-                        html += `
-                            <div style="background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 8px; padding: 12px 16px; min-width: 200px;">
-                                <div style="font-weight: 600; color: #00d4ff; margin-bottom: 4px;">${workerName}</div>
-                                <div style="font-size: 12px; color: rgba(255,255,255,0.5);" title="${address}">${shortAddr}</div>
-                            </div>
-                        `;
-                    }
-                    html += '</div>';
-                    workersContainer.innerHTML = html;
-                }
+                const netHash = net.network_hashrate || 0;
+                document.getElementById('networkHashrate').textContent = formatNumber(netHash);
+
+                const poolBest = net.pool_best_diff || 0;
+                document.getElementById('poolBestDiff').textContent = formatDiff(poolBest);
+                document.getElementById('poolBestDiffRaw').textContent = poolBest.toLocaleString();
+
+                // Workers page stats
+                document.getElementById('workerCount').textContent = data.active_miners || 0;
+                const poolHash = net.pool_hashrate || 0;
+                document.getElementById('poolHashrate').textContent = formatNumber(poolHash);
+
+                // Workers table
+                updateWorkersTable(data.workers_detail || []);
+
+                // Recent blocks for dashboard
+                loadRecentBlocks();
+
             } catch (err) {
                 console.error('Error loading stats:', err);
             }
         }
 
-        // Load blocks
+        // Update workers table
+        function updateWorkersTable(workers) {
+            const container = document.getElementById('workersTable');
+            if (!workers || workers.length === 0) {
+                container.innerHTML = '<div class="no-data">No workers connected</div>';
+                return;
+            }
+
+            let html = `<table>
+                <thead><tr>
+                    <th>Worker</th>
+                    <th>Address</th>
+                    <th>Hash Rate</th>
+                    <th>Best Difficulty</th>
+                    <th>Shares</th>
+                    <th>Uptime</th>
+                    <th>Last Seen</th>
+                </tr></thead><tbody>`;
+
+            for (const w of workers) {
+                const name = w.name.split('.').slice(1).join('.') || w.name;
+                const addr = w.address || '-';
+                const shortAddr = addr.length > 12 ? addr.substring(0, 8) + '...' + addr.slice(-4) : addr;
+
+                html += `<tr>
+                    <td><span class="worker-tag">${name}</span></td>
+                    <td title="${addr}">${shortAddr}</td>
+                    <td>${formatNumber(w.hashrate || 0)}</td>
+                    <td style="color: #f5a623;">${formatDiff(w.best_diff || 0)}</td>
+                    <td>${w.shares || 0}</td>
+                    <td>${formatUptime(w.uptime || 0)}</td>
+                    <td>${formatTimeAgo(w.last_seen || Date.now()/1000)}</td>
+                </tr>`;
+            }
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        // Load recent blocks for dashboard
+        async function loadRecentBlocks() {
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                const res = await fetch(`/api/blocks?start=2025-01-01&end=${today}`);
+                const blocks = await res.json();
+
+                const container = document.getElementById('recentBlocksTable');
+                if (!blocks || blocks.length === 0) {
+                    container.innerHTML = '<div class="no-data">No blocks found yet</div>';
+                    return;
+                }
+
+                // Show last 5 blocks
+                const recent = blocks.slice(0, 5);
+                let html = `<table>
+                    <thead><tr>
+                        <th>Time</th>
+                        <th>Height</th>
+                        <th>Hash</th>
+                        <th>Worker</th>
+                        <th>Reward</th>
+                    </tr></thead><tbody>`;
+
+                for (const b of recent) {
+                    const date = new Date(b.timestamp);
+                    const timeStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    const shortHash = b.hash ? b.hash.substring(0, 12) + '...' : '-';
+                    const worker = b.worker ? b.worker.split('.').slice(1).join('.') || b.worker : '-';
+
+                    html += `<tr>
+                        <td>${timeStr}</td>
+                        <td>${b.height}</td>
+                        <td><span class="hash-link">${shortHash}</span></td>
+                        <td><span class="worker-tag">${worker}</span></td>
+                        <td>${b.reward ? b.reward.toFixed(2) + ' RTD' : '-'}</td>
+                    </tr>`;
+                }
+
+                html += '</tbody></table>';
+                container.innerHTML = html;
+            } catch (err) {
+                console.error('Error loading recent blocks:', err);
+            }
+        }
+
+        // Load all blocks for blocks page
         async function loadBlocks() {
             const container = document.getElementById('blocksTableContainer');
-            container.innerHTML = '<div class="loading"><div class="spinner"></div><div>Loading blocks...</div></div>';
+            container.innerHTML = '<div class="loading"><div class="spinner"></div>Loading blocks...</div>';
 
             try {
-                const startDate = document.getElementById('startDate').value;
-                const endDate = document.getElementById('endDate').value;
+                const start = document.getElementById('startDate').value;
+                const end = document.getElementById('endDate').value;
                 const worker = document.getElementById('workerFilter').value;
 
-                let url = `/api/blocks?start=${startDate}&end=${endDate}`;
+                let url = `/api/blocks?start=${start}&end=${end}`;
                 if (worker) url += `&worker=${encodeURIComponent(worker)}`;
 
                 const res = await fetch(url);
                 const blocks = await res.json();
 
-                if (blocks.length === 0) {
-                    container.innerHTML = '<div class="no-data">No blocks found for this period</div>';
+                if (!blocks || blocks.length === 0) {
+                    container.innerHTML = '<div class="no-data">No blocks found</div>';
                     return;
                 }
 
-                let html = `
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Time</th>
-                                <th>Height</th>
-                                <th>Hash</th>
-                                <th>Worker</th>
-                                <th>Reward</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
+                let html = `<table>
+                    <thead><tr>
+                        <th>Time</th>
+                        <th>Height</th>
+                        <th>Hash</th>
+                        <th>Worker</th>
+                        <th>Address</th>
+                        <th>Reward</th>
+                    </tr></thead><tbody>`;
 
-                for (const block of blocks) {
-                    const date = new Date(block.timestamp);
-                    const formattedDate = date.toLocaleDateString() + ', ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                    const shortHash = block.hash ? block.hash.substring(0, 16) + '...' : 'N/A';
+                for (const b of blocks) {
+                    const date = new Date(b.timestamp);
+                    const timeStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    const shortHash = b.hash ? b.hash.substring(0, 16) + '...' : '-';
+                    const worker = b.worker ? b.worker.split('.').slice(1).join('.') || b.worker : '-';
+                    const addr = b.address || '-';
+                    const shortAddr = addr.length > 12 ? addr.substring(0, 8) + '...' + addr.slice(-4) : addr;
 
-                    html += `
-                        <tr>
-                            <td>${formattedDate}</td>
-                            <td>${block.height}</td>
-                            <td><a class="hash-link" href="/explorer/block/${block.hash}" target="_blank">${shortHash}</a></td>
-                            <td><span class="worker-tag">${block.worker || 'Unknown'}</span></td>
-                            <td>${block.reward ? block.reward.toFixed(2) + ' RTD' : '-'}</td>
-                        </tr>
-                    `;
+                    html += `<tr>
+                        <td>${timeStr}</td>
+                        <td>${b.height}</td>
+                        <td><span class="hash-link">${shortHash}</span></td>
+                        <td><span class="worker-tag">${worker}</span></td>
+                        <td title="${addr}">${shortAddr}</td>
+                        <td>${b.reward ? b.reward.toFixed(2) + ' RTD' : '-'}</td>
+                    </tr>`;
                 }
 
                 html += '</tbody></table>';
@@ -496,30 +561,9 @@
             }
         }
 
-        // Show different sections (for now all show same view)
-        function showSection(section) {
-            // Update active nav item
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            event.target.classList.add('active');
-
-            // Update page title
-            const titles = {
-                'dashboard': 'Pool Dashboard',
-                'blocks': 'Found Blocks',
-                'workers': 'Active Workers'
-            };
-            document.querySelector('.page-title').textContent = titles[section] || 'Dashboard';
-        }
-
-        // Initial load
+        // Initial load and refresh
         loadStats();
-        loadBlocks();
-
-        // Refresh every 30 seconds
-        setInterval(() => {
-            loadStats();
-            loadBlocks();
-        }, 30000);
+        setInterval(loadStats, 15000);  // Refresh every 15 seconds
     </script>
 </body>
 </html>

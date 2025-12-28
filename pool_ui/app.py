@@ -13,6 +13,8 @@ from flask_cors import CORS
 import sqlite3
 import os
 import secrets
+import json
+import urllib.request
 from datetime import datetime
 from functools import wraps
 
@@ -22,6 +24,7 @@ CORS(app)
 # Configuration via environment variables
 DB_PATH = os.environ.get('POOL_DB_PATH', os.path.join(os.path.dirname(__file__), 'pool.db'))
 API_KEY = os.environ.get('POOL_API_KEY', '')
+POOL_STATS_URL = os.environ.get('POOL_STATS_URL', 'http://127.0.0.1:3334')
 
 # Generate API key if not set (for first-run)
 if not API_KEY:
@@ -151,10 +154,38 @@ def get_stats():
 
     conn.close()
 
+    # Get live stats from pool server
+    active_miners = 0
+    active_workers = []
+    workers_detail = []
+    network_stats = {}
+    try:
+        # Get miners list
+        req = urllib.request.Request(f"{POOL_STATS_URL}/miners")
+        with urllib.request.urlopen(req, timeout=2) as resp:
+            data = json.loads(resp.read().decode())
+            active_miners = data.get('count', 0)
+            active_workers = data.get('workers', [])
+            workers_detail = data.get('workers_detail', [])
+    except Exception:
+        pass
+
+    try:
+        # Get network stats
+        req = urllib.request.Request(f"{POOL_STATS_URL}/stats")
+        with urllib.request.urlopen(req, timeout=2) as resp:
+            network_stats = json.loads(resp.read().decode())
+    except Exception:
+        pass
+
     return jsonify({
         'total_blocks': total_blocks,
         'blocks_24h': recent_blocks,
-        'top_workers': [{'worker': w['worker'], 'blocks': w['blocks']} for w in top_workers]
+        'top_workers': [{'worker': w['worker'], 'blocks': w['blocks']} for w in top_workers],
+        'active_miners': active_miners,
+        'active_workers': active_workers,
+        'workers_detail': workers_detail,
+        'network': network_stats
     })
 
 @app.route('/api/worker/<worker>')

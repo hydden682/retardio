@@ -34,6 +34,9 @@ POOL_ADDRESS = os.environ.get("POOL_ADDRESS", "")
 miners = {}
 extranonce_counter = 0
 
+# Worker statistics tracking
+worker_stats = {}  # {worker_name: {best_diff, shares, connect_time, last_seen, hashrate}}
+
 def extract_miner_address(worker_name):
     """
     Extract wallet address from miner's stratum worker name.
@@ -77,14 +80,57 @@ class StatsHandler(BaseHTTPRequestHandler):
         pass  # Suppress logging
 
     def do_GET(self):
+        self.send_header('Access-Control-Allow-Origin', '*')
+
         if self.path == '/miners' or self.path == '/api/miners':
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')
-            self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
+
+            # Build detailed worker info
+            workers_detail = []
+            current_time = time.time()
+            for name in miners.keys():
+                stats = worker_stats.get(name, {})
+                connect_time = stats.get('connect_time', current_time)
+                uptime_secs = current_time - connect_time
+                workers_detail.append({
+                    'name': name,
+                    'address': stats.get('address', ''),
+                    'best_diff': stats.get('best_diff', 0),
+                    'shares': stats.get('shares', 0),
+                    'hashrate': stats.get('hashrate', 0),
+                    'uptime': uptime_secs,
+                    'last_seen': stats.get('last_seen', current_time)
+                })
+
             data = {
                 'count': len(miners),
-                'workers': list(miners.keys())
+                'workers': list(miners.keys()),
+                'workers_detail': workers_detail
+            }
+            self.wfile.write(json.dumps(data).encode())
+
+        elif self.path == '/stats' or self.path == '/api/stats':
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+
+            # Get network info from node
+            info = rpc("getblockchaininfo")
+            mining_info = rpc("getmininginfo")
+
+            # Calculate total pool hashrate and best difficulty
+            total_hashrate = sum(s.get('hashrate', 0) for s in worker_stats.values())
+            pool_best_diff = max((s.get('best_diff', 0) for s in worker_stats.values()), default=0)
+
+            data = {
+                'block_height': info.get('blocks', 0) if info else 0,
+                'network_diff': info.get('difficulty', 0) if info else 0,
+                'network_hashrate': mining_info.get('networkhashps', 0) if mining_info else 0,
+                'pool_hashrate': total_hashrate,
+                'pool_best_diff': pool_best_diff,
+                'active_workers': len(miners)
             }
             self.wfile.write(json.dumps(data).encode())
         else:
@@ -382,6 +428,34 @@ class StratumMiner:
         hash_int = int(hash_display, 16)
         target_int = int(job["target"], 16)
 
+        # Calculate share difficulty
+        diff1_target = 0x00000000FFFF0000000000000000000000000000000000000000000000000000
+        share_diff = diff1_target / hash_int if hash_int > 0 else 0
+
+        # Update worker stats
+        if self.worker_name in worker_stats:
+            stats = worker_stats[self.worker_name]
+            stats['shares'] += 1
+            stats['last_seen'] = time.time()
+
+            # Track best difficulty
+            if share_diff > stats['best_diff']:
+                stats['best_diff'] = share_diff
+                print(f"    [NEW BEST DIFF: {share_diff:.2f}]")
+
+            # Calculate hashrate from share times (last 10 shares)
+            stats['share_times'].append(time.time())
+            if len(stats['share_times']) > 10:
+                stats['share_times'] = stats['share_times'][-10:]
+            if len(stats['share_times']) >= 2:
+                time_span = stats['share_times'][-1] - stats['share_times'][0]
+                if time_span > 0:
+                    # Estimate hashrate: shares * difficulty * 2^32 / time
+                    shares_in_span = len(stats['share_times']) - 1
+                    stats['hashrate'] = (shares_in_span * self.difficulty * 4294967296) / time_span
+
+        print(f"    share_diff: {share_diff:.6f}")
+
         if hash_int < target_int:
             print(f"\n[!!!] BLOCK FOUND!")
 
@@ -460,6 +534,22 @@ class StratumMiner:
                                 print(f"    [!] Invalid address in worker name, using POOL_ADDRESS")
                             else:
                                 print(f"    [!] WARNING: No valid address! Using OP_TRUE (anyone can spend)")
+
+                        # Initialize worker stats
+                        if self.worker_name not in worker_stats:
+                            worker_stats[self.worker_name] = {
+                                'address': self.miner_wallet or '',
+                                'best_diff': 0,
+                                'shares': 0,
+                                'connect_time': time.time(),
+                                'last_seen': time.time(),
+                                'hashrate': 0,
+                                'share_times': []  # For hashrate calculation
+                            }
+                        else:
+                            # Reconnecting worker - update connect time but keep best_diff
+                            worker_stats[self.worker_name]['connect_time'] = time.time()
+                            worker_stats[self.worker_name]['last_seen'] = time.time()
 
                         await self.send({"id": msg_id, "result": True, "error": None})
                         await self.send_job(clean=True)

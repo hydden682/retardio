@@ -134,7 +134,9 @@
     </footer>
 
     <script>
-        const API = '';
+        // Auto-detect base path for when running behind a reverse proxy
+        const basePath = window.location.pathname.replace(/\/$/, '');
+        const API = basePath.includes('/explorer') ? '/explorer' : '';
 
         async function fetchAPI(endpoint) {
             try {

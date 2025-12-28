@@ -394,9 +394,9 @@
                 const sha = sha256(publicKey);
                 const hash160 = ripemd160(sha);
 
-                // Add version byte (0x00 for mainnet) and checksum
+                // Add version byte (35 = 0x23 for Retardio 'F' addresses) and checksum
                 const versioned = new Uint8Array(21);
-                versioned[0] = 0x00; // Version byte for P2PKH
+                versioned[0] = 35; // Retardio mainnet address prefix
                 versioned.set(hash160, 1);
 
                 const checksum = doubleSha256(versioned);
@@ -407,9 +407,9 @@
                 const address = base58Encode(addressBytes);
 
                 // Create WIF (Wallet Import Format) for private key
-                // Version 0x80 + privateKey + 0x01 (compressed) + checksum
+                // Version 163 (0xa3) + privateKey + 0x01 (compressed) + checksum
                 const wifData = new Uint8Array(34);
-                wifData[0] = 0x80; // Mainnet WIF version
+                wifData[0] = 163; // Retardio mainnet WIF prefix
                 wifData.set(privateKey, 1);
                 wifData[33] = 0x01; // Compressed flag
 

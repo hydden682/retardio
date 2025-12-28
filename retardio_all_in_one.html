@@ -571,9 +571,9 @@
                 const sha = sha256(pubKey);
                 const hash160 = ripemd160(sha);
 
-                // Add version byte (0x00 for mainnet) and checksum
+                // Add version byte (35 = 0x23 for Retardio 'F' addresses) and checksum
                 const addrData = new Uint8Array(21);
-                addrData[0] = 0x00;
+                addrData[0] = 35;  // Retardio mainnet address prefix
                 addrData.set(hash160, 1);
                 const addrHash1 = sha256(addrData);
                 const addrHash2 = sha256(addrHash1);
@@ -582,9 +582,9 @@
                 addrFinal.set(addrHash2.slice(0, 4), 21);
                 const address = base58Encode(addrFinal);
 
-                // Create WIF (Wallet Import Format) - version 0x80 + privkey + 0x01 (compressed) + checksum
+                // Create WIF (Wallet Import Format) - version 163 (0xa3) + privkey + 0x01 (compressed) + checksum
                 const wifData = new Uint8Array(34);
-                wifData[0] = 0x80;
+                wifData[0] = 163;  // Retardio mainnet WIF prefix
                 wifData.set(privKey, 1);
                 wifData[33] = 0x01;
                 const wifHash1 = sha256(wifData);

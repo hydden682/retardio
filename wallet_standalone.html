@@ -178,12 +178,82 @@
         </div>
     </div>
 
-    <!-- Noble-secp256k1: Audited, pure JS secp256k1 implementation -->
-    <!-- Source: https://github.com/paulmillr/noble-secp256k1 -->
+    <!-- secp256k1 Implementation - Self-contained, no external dependencies -->
     <script>
-    // noble-secp256k1 v1.7.1 (minified, audited library)
-    // License: MIT, Author: Paul Miller
-    !function(r,n){"object"==typeof exports&&"undefined"!=typeof module?n(exports):"function"==typeof define&&define.amd?define(["exports"],n):n((r="undefined"!=typeof globalThis?globalThis:r||self).nobleSecp256k1={})}(this,(function(r){"use strict";const n=BigInt(0),e=BigInt(1),t=BigInt(2),o=BigInt(3),i=BigInt(8),s=Object.freeze({a:n,b:BigInt(7),P:BigInt("0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f"),n:BigInt("0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141"),h:e,Gx:BigInt("0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798"),Gy:BigInt("0x483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8"),beta:BigInt("0x7ae96a2b657c07106e64479eac3434e99cf0497512f58995c1396c28719501ee")}),a=BigInt("0x3086d221a7d46bcde86c90e49284eb15"),c=BigInt("0xe4437ed6010e88286f547fa90abfe4c3"),u=BigInt("0x114ca50f7a8e2f3f657c1108d9d44cfd8"),f=BigInt("0x100000000000000000000000000000000"),l=(r,n)=>(r%n+n)%n,d=(r,n)=>{const{P:e}=s;let t=r;for(;n-- >n;)t*=t,t%=e;return t},h=r=>{const{P:n}=s;let i=e,a=n-t,c=r;for(;a>n;)a&e&&(i=i*c%n),c=c*c%n,a>>=e;return i},g=r=>{const{P:i}=s,a=l(r,i);if(a===n)return n;if(function(r){const{P:n}=s,e=r;return d(e,(n-e)/t)===e}(a)!==e)throw new Error("Cannot find square root");let c,u,f,h=i+e>>t,g=a,y=d(a,(i-o>>t)+e),p=d(a,i-o>>t),b=(y*y*p%i-e)%i===n?y:y*d(t,(i-e)/BigInt(4))%i;for(c=b,u=i-e,f=p*t%i;c*c%i!==a;){let r=f,n=t;for(;r!==e;)r=r*r%i,n*=t;const s=u/n>>e,d=BigInt(1)<<s;c=c*d%i,u=n,f=f*d*d%i}return l((c&e)===n?i-c:c,i)};class y{constructor(r,n){this.x=r,this.y=n}static fromCompressedHex(r){const n=32===r.length,e=v(n?r:r.subarray(1));if(!w(e))throw new Error("Point is not on curve");let t=g(l(d(e,o)+s.b,s.P));const i=(t&e)===e;return n?i||(t=l(-t,s.P)):((1&r[0])===1)!==i&&(t=l(-t,s.P)),new y(e,t)}static fromUncompressedHex(r){const n=v(r.subarray(1,33)),e=v(r.subarray(33,65));return new y(n,e)}static fromHex(r){const n=B(r);if(33===n.length)return this.fromCompressedHex(n);if(65===n.length)return this.fromUncompressedHex(n);throw new Error(`Point.fromHex: received invalid point. Expected 33 or 65 bytes, not ${n.length}`)}static fromPrivateKey(r){return y.BASE.multiply(M(r))}static fromSignature(r,e,t){const{n:o,P:i}=s,a=t>>e,c=1&t,u="string"==typeof r?v(B(r)):v(r),f=l(u,o);if(f===n)throw new Error("Cannot recover: msgHash is invalid (zero)");const{r:d,s:g}=x.fromHex(e);if(c&&d>=o)throw new Error("Cannot recover: r is invalid (> n)");const p=c?d+o:d,b=h(p*h(g)%o),w=l(-f*b,o),m=l(g*b,o),E=1===a?"03":"02",A=y.fromHex(E+_(p)),S=y.BASE.multiply(w),I=A.multiply(m);return S.add(I)}toRawBytes(r=!0){return U(this.toHex(r))}toHex(r=!0){const n=_(this.x);return r?`${this.y&e?"03":"02"}${n}`:`04${n}${_(this.y)}`}toHexX(){return this.toHex(!0).slice(2)}toRawX(){return this.toRawBytes(!0).slice(1)}assertValidity(){const r="Point is not on elliptic curve",{x:e,y:t}=this;if(!w(e)||!w(t))throw new Error(r);const i=l(t*t,s.P);if(l(d(e,o)+s.b-i,s.P)!==n)throw new Error(r)}equals(r){return this.x===r.x&&this.y===r.y}negate(){return new y(this.x,l(-this.y,s.P))}double(){return b.fromAffine(this).double().toAffine()}add(r){return b.fromAffine(this).add(b.fromAffine(r)).toAffine()}subtract(r){return this.add(r.negate())}multiply(r){return b.fromAffine(this).multiply(r,this).toAffine()}multiplyAndAddUnsafe(r,n,t){const o=b.fromAffine(this),i=n===e||n===s.n-e||this.equals(y.BASE)?o.multiply(n,this):o.multiplyUnsafe(n),a=b.fromAffine(r).multiplyUnsafe(t);return i.add(a).toAffine()}}y.BASE=new y(s.Gx,s.Gy),y.ZERO=new y(n,n);class p{constructor(r,n,e,t){this.x=r,this.y=n,this.z=e,this.t=t}static fromAffine(r){return r.equals(y.ZERO)?p.ZERO:new p(r.x,r.y,e,l(r.x*r.y,s.P))}toAffine(r=h(this.z)){const n=this.x*r%s.P,e=this.y*r%s.P;return new y(n,e)}add(r){const{P:n}=s,{x:e,y:i,z:a,t:c}=this,{x:u,y:f,z:l,t:d}=r,h=e*u%n,g=i*f%n,y=c*d*t%n,p=a*l%n,b=((e+i)*(u+f)-h-g)%n,w=(p+y)%n,m=(p-y)%n,E=(h+g)%n;return new p(b*m%n,E*w%n,m*w%n,b*E%n)}double(){const{P:r}=s,{x:n,y:e,z:o}=this,i=n*n%r,a=e*e%r,c=t*o*o%r,u=i+a,f=((n+e)*(n+e)-u)%r,l=(i-a)%r,d=(u-c)%r;return new p(f*d%r,u*l%r,d*l%r,f*u%r)}multiply(r,e){const{n:t,P:o}=s;let i=p.ZERO,a=p.fromAffine(e);for(;r>n;)r&n&&(i=i.add(a)),a=a.double(),r>>=n;return i}multiplyUnsafe(r){const{n:e,P:t}=s;let o=p.ZERO,i=this;for(;r>n;)r&n&&(o=o.add(i)),i=i.double(),r>>=n;return o}}p.ZERO=new p(n,e,e,n);class b{constructor(r,e,t){this.x=r,this.y=e,this.z=t}static fromAffine(r){if(r.equals(y.ZERO))return b.ZERO;const{x:n,y:t}=r;return new b(n,t,e)}static normalizeZ(r){const n=function(r,n=s.P){const t=new Array(r.length);return r.reduce(((r,e,o)=>(t[o]=r,l(r*e,n))),e),r.reduceRight(((r,e,o)=>(t[o]=l(t[o]*r,n),l(r*e,n))),h(t[r.length-1])),t}(r.map((r=>r.z)));return r.map(((r,e)=>r.toAffine(n[e])))}equals(r){const{P:n}=s,{x:e,y:t,z:o}=this,{x:i,y:a,z:c}=r,u=l(e*c-i*o,n),f=l(t*c-a*o,n);return u===n&&f===n}negate(){return new b(l(-this.x,s.P),this.y,this.z)}double(){const{P:r}=s,{x:n,y:e,z:i}=this,a=l(n*n,r),c=l(e*e,r),u=l(c*c,r),f=n+c,d=l(t*(l(f*f,r)-a-u),r),h=l(o*a,r),g=l(h*h,r);return new b(l(g-t*d,r),l(h*(d-l(i*u,r))-i*u,r),l(t*e*i,r))}add(r){const{P:n}=s,{x:e,y:i,z:a}=this,{x:c,y:u,z:f}=r,d=l(a*a,n),h=l(f*f,n),g=l(e*h,n),y=l(c*d,n),p=l(i*f*h,n),b=l(u*a*d,n),w=l(y-g,n),m=l(b-p,n);if(w===n)return m===n?this.double():b.ZERO;const E=l(w*w,n),A=l(w*E,n),S=l(g*E,n);return new b(l(m*m-A-t*S,n),l(m*(S-l(t*l(m*m-A-t*S,n),n))-p*A,n),l((g+m)*(g+m)-l((g+m)*(g+m),n)-E+l(a+f,n)*l(a+f,n)-d-h,n))}subtract(r){return this.add(r.negate())}multiply(r,n){let t,o,{n:i,P:a}=s,c=l(r,i);if(c===e)return this;if(c===i-e)return this.negate();const u=y.BASE.equals(n),f=u?function(){if(!E){let r=y.BASE,n=b.fromAffine(r);E=[n];for(let r=0;r<255;r++)n=n.double(),E.push(n)}return E}():void 0;let d=b.ZERO,h=b.fromAffine(n);const g=C(c);if(u&&256===g.length)for(let r=0,n=0;r<256;r++){const e=g[r];e&&(d=d.add(f[n])),n+=1}else for(const r of g)d=d.double(),r&&(d=d.add(h));return d}multiplyUnsafe(r){const{n:t,P:o}=s;let i=l(r,t);if(i===n)return b.ZERO;if(i===e)return this;if(i===t-e)return this.negate();let a=b.ZERO,c=this;for(;i>n;)i&e&&(a=a.add(c)),c=c.double(),i>>=e;return a}toAffine(r){const{x:n,y:e,z:t}=this,o=r||h(t);if(o===n)return y.ZERO;return new y(l(n*o,s.P),l(e*o,s.P))}}b.ZERO=new b(n,e,n);let E=void 0;class x{constructor(r,n){this.r=r,this.s=n,this.assertValidity()}static fromCompact(r){const n="string"==typeof r?r:P(r),e=n.slice(0,64),t=n.slice(64,128);return new x(v(e),v(t))}static fromDER(r){const n=r instanceof Uint8Array?r:U(r);if(n[0]!==48)throw new Error("Invalid signature: missing DER header");const e=n[1];if(e!==n.length-2)throw new Error("Invalid signature: incorrect total length");if(n[2]!==2)throw new Error("Invalid signature: missing r marker");const t=n[3],o=n.slice(4,4+t);if(128&o[0])throw new Error("Invalid signature: r is negative");if(n[4+t]!==2)throw new Error("Invalid signature: missing s marker");const i=n[5+t],s=n.slice(6+t);if(128&s[0])throw new Error("Invalid signature: s is negative");if(e!==t+i+4)throw new Error("Invalid signature: incorrect marker lengths");return new x(v(o),v(s))}static fromHex(r){return this.fromDER(r)}assertValidity(){const{r:r,s:e}=this;if(!A(r))throw new Error("Invalid Signature: r must be 0 < r < n");if(!A(e))throw new Error("Invalid Signature: s must be 0 < s < n")}hasHighS(){return this.s>s.n>>e}normalizeS(){return this.hasHighS()?new x(this.r,l(-this.s,s.n)):this}toDERRawBytes(){return U(this.toDERHex())}toDERHex(){const r=S(this.r),n=S(this.s);return`30${S((r.length+n.length)/2+4)}02${S(r.length/2)}${r}02${S(n.length/2)}${n}`}toCompactRawBytes(){return U(this.toCompactHex())}toCompactHex(){return _(this.r)+_(this.s)}}function A(r){return n<r&&r<s.n}function w(r){return n<r&&r<s.P}function m(r){return r instanceof y?r:y.fromHex(r)}function B(r){return r instanceof Uint8Array?r:"string"==typeof r?U(r):Uint8Array.from(r)}function M(r){let t;if("bigint"==typeof r)t=r;else if("number"==typeof r&&Number.isSafeInteger(r)&&r>0)t=BigInt(r);else if("string"==typeof r){const n=r.length;if(64!==n&&n<130)throw new Error("Invalid private key: expected 32 or 65 bytes");t=v(r)}else{if(!(r instanceof Uint8Array))throw new TypeError("Private key must be Uint8Array, hex string, or bigint");if(32!==r.length&&65!==r.length)throw new Error("Invalid private key: expected 32 or 65 bytes");t=v(r)}if(!A(t))throw new Error("Private key is invalid: not in 1..n-1 range");return t}function v(r){if(r instanceof Uint8Array)r=P(r);else if("string"!=typeof r)throw new TypeError("hexToNumber: expected Uint8Array or string");return BigInt(`0x${r||"0"}`)}function P(r){if(!(r instanceof Uint8Array))throw new Error("Expected Uint8Array");let n="";for(let e=0;e<r.length;e++)n+=r[e].toString(16).padStart(2,"0");return n}function U(r){if("string"!=typeof r)throw new TypeError("hexToBytes: expected string, got "+typeof r);if(r.length%2)throw new Error("hexToBytes: received invalid unpadded hex"+r.length);const n=new Uint8Array(r.length/2);for(let e=0;e<n.length;e++){const t=2*e,o=r.slice(t,t+2),i=Number.parseInt(o,16);if(Number.isNaN(i)||i<0)throw new Error("Invalid byte sequence");n[e]=i}return n}function _(r){return r.toString(16).padStart(64,"0")}function S(r){const n=r.toString(16);return(1&n.length?"0":"")+n}function C(r){const n=[];for(;r>0n;)n.push(1n&r?1:0),r>>=1n;return n.reverse(),n}r.CURVE=s,r.Point=y,r.Signature=x,r.getPublicKey=function(r,n=!0){return y.fromPrivateKey(r).toRawBytes(n)},r.getSharedSecret=function(r,n,e=!0){const t=m(n),o=M(r);return t.multiply(o).toRawBytes(e)},r.recoverPublicKey=function(r,n,e,t=!0){return y.fromSignature(r,n,e).toRawBytes(t)},r.schnorr={getPublicKey:function(r){return y.fromPrivateKey(r).toRawX()}},r.sign=async function(r,n,e){return function(r,n,e={}){if(null==r)throw new Error("Expected valid message hash, not "+typeof r);const t="string"==typeof r?r:P(r),i=M(n),c=v(t);if(c===s.n)throw new Error("Message hash is invalid: equals n");const u=function(r,n){let e=r;const t=s.n>>BigInt(128),o=e>>BigInt(128),i=e&f;let l=n&f,d=n>>BigInt(128);const h=o*d%t,g=l*i;let y=d*i+l*o;return e=(y&f)<<BigInt(128)|g&f,(y=y>>BigInt(128))+(e>>BigInt(256)),l=e&f,d=e>>BigInt(128),y=h*f+d*a+l*c,l=y&f,d=y>>BigInt(128),e=l<<BigInt(128)|e&f,y=d+l*u,{k1:e,k2:y}}(i,c),l=y.BASE.multiplyAndAddUnsafe(y.BASE,u.k1,u.k2);if(null==l)throw new Error("Derived point is null");const d=l.x,g=l.y&e?s.n-d:d,p=h(d)%s.n,b=(g+i*p)%s.n,w=p===s.n?s.n:p,m=b===s.n?s.n:b,B=new x(w,m);if(!e.strict||!B.hasHighS())return B;return B.normalizeS()}(r,n,e)},r.signSync=function(r,n,e){return function(r,n,e={}){if(null==r)throw new Error("Expected valid message hash, not "+typeof r);const t="string"==typeof r?r:P(r),i=M(n),c=v(t);if(c===s.n)throw new Error("Message hash is invalid: equals n");const u=function(r,n){let e=r;const t=s.n>>BigInt(128),o=e>>BigInt(128),i=e&f;let l=n&f,d=n>>BigInt(128);const h=o*d%t,g=l*i;let y=d*i+l*o;return e=(y&f)<<BigInt(128)|g&f,(y=y>>BigInt(128))+(e>>BigInt(256)),l=e&f,d=e>>BigInt(128),y=h*f+d*a+l*c,l=y&f,d=y>>BigInt(128),e=l<<BigInt(128)|e&f,y=d+l*u,{k1:e,k2:y}}(i,c),l=y.BASE.multiplyAndAddUnsafe(y.BASE,u.k1,u.k2);if(null==l)throw new Error("Derived point is null");const d=l.x,g=l.y&e?s.n-d:d,p=h(d)%s.n,b=(g+i*p)%s.n,w=p===s.n?s.n:p,m=b===s.n?s.n:b,B=new x(w,m);if(!e.strict||!B.hasHighS())return B;return B.normalizeS()}(r,n,e)},r.utils={bytesToHex:P,hexToBytes:U,concatBytes:function(...r){return r.reduce(((r,n)=>{const e=new Uint8Array(r.length+n.length);return e.set(r),e.set(n,r.length),e}),new Uint8Array)},mod:l,invert:h,isValidPrivateKey:function(r){try{return M(r),!0}catch(r){return!1}},hashToPrivateKey:function(r){r=B(r);const n=40;if(r.length<n||r.length>1024)throw new Error("Expected 40-1024 bytes of input");const e=l(v(r),s.n-BigInt(1))+BigInt(1);return U(_(e))},randomBytes:function(r=32){if("undefined"!=typeof window&&window.crypto&&window.crypto.getRandomValues)return window.crypto.getRandomValues(new Uint8Array(r));if("undefined"!=typeof process&&process.versions&&process.versions.node){const{randomBytes:n}=require("crypto");return Uint8Array.from(n(r))}throw new Error("Secure random not available")},randomPrivateKey:function(){return r.utils.hashToPrivateKey(r.utils.randomBytes(40))},precompute:function(r=8,n=y.BASE){return n.multiply(BigInt(3)),n}},r.verify=function(r,n,e,t={}){const o="strict"in t&&t.strict;let i;try{i=x.fromDER(r)}catch(n){if(o)throw n;i=x.fromCompact(r)}if(o&&i.hasHighS())throw new Error("Invalid signature: high S");const a=m(e),c=v(n),u=h(i.s),f=l(c*u,s.n),d=l(i.r*u,s.n),g=y.BASE.multiplyAndAddUnsafe(a,f,d);return null!=g&&l(g.x,s.n)===i.r}}));
+    // Self-contained secp256k1 implementation for wallet generation
+    const secp256k1 = (function() {
+        const P = BigInt('0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f');
+        const N = BigInt('0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141');
+        const Gx = BigInt('0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798');
+        const Gy = BigInt('0x483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8');
+        const ZERO = BigInt(0), ONE = BigInt(1), TWO = BigInt(2), THREE = BigInt(3);
+
+        const mod = (a, m = P) => { let r = a % m; return r < ZERO ? r + m : r; };
+        const invert = (a, m = P) => {
+            let [x, y, u, v] = [ZERO, ONE, ONE, ZERO];
+            while (a !== ZERO) { const q = m / a, r = m % a; [m, a] = [a, r]; [x, u] = [u, x - q * u]; [y, v] = [v, y - q * v]; }
+            return mod(x, P);
+        };
+
+        function pointAdd(p1, p2) {
+            if (!p1) return p2; if (!p2) return p1;
+            const [x1, y1] = p1, [x2, y2] = p2;
+            if (x1 === x2) { if (y1 !== y2) return null; return pointDouble(p1); }
+            const slope = mod((y2 - y1) * invert(mod(x2 - x1)));
+            const x3 = mod(slope * slope - x1 - x2);
+            const y3 = mod(slope * (x1 - x3) - y1);
+            return [x3, y3];
+        }
+
+        function pointDouble(p) {
+            if (!p) return null;
+            const [x, y] = p;
+            const slope = mod(THREE * x * x * invert(TWO * y));
+            const x3 = mod(slope * slope - TWO * x);
+            const y3 = mod(slope * (x - x3) - y);
+            return [x3, y3];
+        }
+
+        function pointMultiply(k, p = [Gx, Gy]) {
+            let result = null, addend = p;
+            while (k > ZERO) {
+                if (k & ONE) result = pointAdd(result, addend);
+                addend = pointDouble(addend);
+                k >>= ONE;
+            }
+            return result;
+        }
+
+        function getPublicKey(privKey, compressed = true) {
+            const privBigInt = typeof privKey === 'bigint' ? privKey :
+                BigInt('0x' + Array.from(privKey).map(b => b.toString(16).padStart(2, '0')).join(''));
+            const [x, y] = pointMultiply(privBigInt);
+            const xHex = x.toString(16).padStart(64, '0');
+            const yHex = y.toString(16).padStart(64, '0');
+            if (compressed) {
+                const prefix = (y & ONE) === ZERO ? '02' : '03';
+                return hexToBytes(prefix + xHex);
+            }
+            return hexToBytes('04' + xHex + yHex);
+        }
+
+        function hexToBytes(hex) {
+            const bytes = new Uint8Array(hex.length / 2);
+            for (let i = 0; i < bytes.length; i++) bytes[i] = parseInt(hex.substr(i * 2, 2), 16);
+            return bytes;
+        }
+
+        function randomPrivateKey() {
+            const bytes = new Uint8Array(32);
+            crypto.getRandomValues(bytes);
+            bytes[0] &= 0x7f;
+            return bytes;
+        }
+
+        return { getPublicKey, utils: { randomPrivateKey } };
+    })();
+
+    window.nobleSecp256k1 = secp256k1;
     </script>
 
     <script>

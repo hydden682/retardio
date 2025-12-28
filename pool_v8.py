@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-Retardio Stratum Pool v8.1 - Security Hardened
-- Proper P2PKH coinbase output (coins go to pool address)
+Retardio Stratum Pool v8.2 - TRUE SOLO POOL
+- Each miner receives 100% of their block rewards directly
+- Miner's address extracted from stratum worker name
 - Configurable via environment variables
 - Fixed BIP34 height encoding
 """
@@ -15,27 +16,98 @@ import subprocess
 import urllib.request
 import os
 from datetime import datetime
+from http.server import HTTPServer, BaseHTTPRequestHandler
+import threading
 
 # Configuration via environment variables with defaults
 RPC_CLI = os.environ.get("RETARDIO_CLI", "/usr/local/bin/retardio-cli")
 DATA_DIR = os.environ.get("RETARDIO_DATADIR", os.path.expanduser("~/.retardio/data"))
 POOL_PORT = int(os.environ.get("POOL_PORT", "3333"))
 POOL_UI_URL = os.environ.get("POOL_UI_URL", "http://127.0.0.1:5555")
+POOL_STATS_PORT = int(os.environ.get("POOL_STATS_PORT", "3334"))
 
-# Pool wallet address - MUST be set for production
-# This is where all mined coins will go
+# Pool wallet address - OPTIONAL for solo pool
+# In solo mode, miner's address is extracted from their worker name
+# POOL_ADDRESS is only used as fallback if miner address is invalid
 POOL_ADDRESS = os.environ.get("POOL_ADDRESS", "")
 
 miners = {}
 extranonce_counter = 0
 
-def report_block_to_ui(height, block_hash, worker, reward):
+def extract_miner_address(worker_name):
+    """
+    Extract wallet address from miner's stratum worker name.
+    Common formats:
+      - FAddress (just the address)
+      - FAddress.rig1 (address.worker_id)
+      - FAddress/rig1 (address/worker_id)
+    Returns the address if valid, None otherwise.
+    """
+    if not worker_name:
+        return None
+
+    # Extract address part (before . or /)
+    address = worker_name.split('.')[0].split('/')[0].strip()
+
+    # Validate it looks like a Retardio address
+    # Must start with 'F' and be proper base58 length (26-35 chars typically)
+    if not address.startswith('F') or len(address) < 25 or len(address) > 36:
+        return None
+
+    # Validate base58 characters
+    ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
+    for char in address:
+        if char not in ALPHABET:
+            return None
+
+    # Try to decode the address to verify checksum
+    try:
+        version, pubkey_hash = decode_address(address)
+        # Check version byte (should be 0x23 = 35 for Retardio 'F' addresses)
+        if version != 0x23:
+            print(f"    [!] Warning: Address version {version} != expected 0x23")
+        return address
+    except (ValueError, Exception) as e:
+        print(f"    [!] Invalid address in worker name: {e}")
+        return None
+
+class StatsHandler(BaseHTTPRequestHandler):
+    """Simple HTTP handler for pool stats API"""
+    def log_message(self, format, *args):
+        pass  # Suppress logging
+
+    def do_GET(self):
+        if self.path == '/miners' or self.path == '/api/miners':
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            data = {
+                'count': len(miners),
+                'workers': list(miners.keys())
+            }
+            self.wfile.write(json.dumps(data).encode())
+        else:
+            self.send_response(404)
+            self.end_headers()
+
+def start_stats_server():
+    """Start HTTP server for live stats in a background thread"""
+    try:
+        server = HTTPServer(('0.0.0.0', POOL_STATS_PORT), StatsHandler)
+        print(f"Stats API listening on port {POOL_STATS_PORT}...")
+        server.serve_forever()
+    except Exception as e:
+        print(f"Stats server error: {e}")
+
+def report_block_to_ui(height, block_hash, worker, reward, miner_address=None):
     """Report found block to the pool dashboard"""
     try:
         data = json.dumps({
             "height": height,
             "hash": block_hash,
             "worker": worker,
+            "address": miner_address or "",
             "reward": reward / 100000000,
             "timestamp": datetime.now().isoformat()
         }).encode()
@@ -168,6 +240,7 @@ class StratumMiner:
         self.extranonce1 = f"{extranonce_counter:08x}"
         self.extranonce2_size = 4
         self.worker_name = None
+        self.miner_wallet = None  # Miner's wallet address for solo mining
         self.difficulty = 1
         self.jobs = {}
         self.job_counter = 0
@@ -220,13 +293,16 @@ class StratumMiner:
         cb1 = "02000000" + "01" + "00"*32 + "ffffffff" + f"{scriptsig_len:02x}" + height_script
 
         # Coinbase part 2: sequence + output count + outputs + locktime
-        if POOL_ADDRESS:
-            # Proper P2PKH output to pool address
-            output_script = create_p2pkh_output(reward, POOL_ADDRESS)
+        # SOLO POOL: Use miner's address first, then POOL_ADDRESS fallback
+        coinbase_address = self.miner_wallet or POOL_ADDRESS
+
+        if coinbase_address:
+            # Proper P2PKH output to miner's address (SOLO) or pool address (fallback)
+            output_script = create_p2pkh_output(reward, coinbase_address)
             cb2 = "ffffffff" + "01" + output_script + "00000000"
         else:
             # FALLBACK: OP_TRUE output (WARNING: anyone can spend!)
-            print("[WARNING] No POOL_ADDRESS set - using OP_TRUE output!")
+            print("[WARNING] No valid address - using OP_TRUE output!")
             cb2 = "ffffffff" + "01" + struct.pack("<Q", reward).hex() + "0151" + "00000000"
 
         version_hex = struct.pack("<I", template["version"]).hex()
@@ -327,8 +403,10 @@ class StratumMiner:
 
             result = rpc("submitblock", block_hex)
             if result is None or result == "":
+                reward_address = self.miner_wallet or POOL_ADDRESS or "OP_TRUE"
                 print(f"[***] BLOCK ACCEPTED! Height {template['height']}")
-                report_block_to_ui(template['height'], hash_display, self.worker_name, template['coinbasevalue'])
+                print(f"[***] Reward -> {reward_address}")
+                report_block_to_ui(template['height'], hash_display, self.worker_name, template['coinbasevalue'], self.miner_wallet)
                 try:
                     await self.send({"id": None, "method": "client.show_message", "params": [f"BLOCK FOUND! Height {template['height']}"]})
                 except Exception:
@@ -370,7 +448,19 @@ class StratumMiner:
                     elif method == "mining.authorize":
                         self.worker_name = params[0] if params else "unknown"
                         miners[self.worker_name] = self
-                        print(f"[+] Authorized: {self.worker_name}")
+
+                        # Extract miner's wallet address from worker name (SOLO POOL)
+                        self.miner_wallet = extract_miner_address(self.worker_name)
+                        if self.miner_wallet:
+                            print(f"[+] Authorized: {self.worker_name}")
+                            print(f"    Mining to: {self.miner_wallet}")
+                        else:
+                            print(f"[+] Authorized: {self.worker_name}")
+                            if POOL_ADDRESS:
+                                print(f"    [!] Invalid address in worker name, using POOL_ADDRESS")
+                            else:
+                                print(f"    [!] WARNING: No valid address! Using OP_TRUE (anyone can spend)")
+
                         await self.send({"id": msg_id, "result": True, "error": None})
                         await self.send_job(clean=True)
 
@@ -408,22 +498,31 @@ async def job_broadcaster():
 
 async def main():
     print("=" * 60)
-    print("  RETARDIO POOL v8.1 - Security Hardened")
+    print("  RETARDIO POOL v8.2 - TRUE SOLO POOL")
     print("=" * 60)
+    print()
+    print("SOLO MINING MODE:")
+    print("  - Miners use their wallet address as stratum username")
+    print("  - Format: FAddress or FAddress.rigname")
+    print("  - Block rewards go 100% to the miner who found it")
+    print()
 
-    # Check configuration
-    if not POOL_ADDRESS:
-        print("\n[!!!] WARNING: POOL_ADDRESS not set!")
-        print("[!!!] Set POOL_ADDRESS environment variable to your wallet address")
-        print("[!!!] Without this, mined coins use OP_TRUE (anyone can spend!)")
-        print()
+    # Optional fallback address
+    if POOL_ADDRESS:
+        print(f"Fallback Address: {POOL_ADDRESS}")
+        print("  (Used if miner's address in worker name is invalid)")
     else:
-        print(f"Pool Address: {POOL_ADDRESS}")
+        print("No fallback POOL_ADDRESS set")
+        print("  (Miners MUST use valid address as worker name)")
 
     print(f"RPC CLI: {RPC_CLI}")
     print(f"Data Dir: {DATA_DIR}")
     print(f"Pool Port: {POOL_PORT}")
     print(f"UI URL: {POOL_UI_URL}")
+
+    # Start stats server in background thread
+    stats_thread = threading.Thread(target=start_stats_server, daemon=True)
+    stats_thread.start()
 
     info = rpc("getblockchaininfo")
     if not info:

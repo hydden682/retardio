@@ -39,6 +39,12 @@ sudo apt install -y git build-essential libtool autotools-dev automake pkg-confi
     libssl-dev libevent-dev bsdmainutils python3 python3-pip libboost-all-dev \
     libdb-dev libdb++-dev nginx ufw sqlite3
 
+# Update libstdc++ for pre-built binaries compatibility
+echo "Updating C++ standard library..."
+sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+sudo apt update
+sudo apt install -y libstdc++6
+
 pip3 install flask flask-cors
 
 # Clone repo
@@ -300,6 +306,11 @@ EOF
 
 sudo ln -sf /etc/nginx/sites-available/retardio /etc/nginx/sites-enabled/
 sudo rm -f /etc/nginx/sites-enabled/default
+
+# Fix permissions for nginx to access www directory
+chmod 755 $HOME
+chmod -R 755 $HOME/retardio-coin/www
+
 sudo nginx -t && sudo systemctl reload nginx
 
 # Configure firewall

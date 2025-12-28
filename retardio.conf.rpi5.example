@@ -1,0 +1,72 @@
+# Retardio RPi5 Configuration
+# Optimized for Raspberry Pi 5 with 4GB RAM
+
+# ============================================
+# NETWORK CONFIGURATION
+# ============================================
+# Options: main, testnet, regtest, signet
+chain=regtest
+
+# ============================================
+# RPC SETTINGS
+# ============================================
+server=1
+rpcuser=retardiorpc
+rpcpassword=CHANGE_THIS_TO_SECURE_PASSWORD
+rpcallowip=127.0.0.1
+rpcport=22555
+
+# Allow RPC from local network (uncomment if needed)
+# rpcallowip=192.168.0.0/16
+
+# ============================================
+# PERFORMANCE (Optimized for 4GB RAM)
+# ============================================
+# Database cache in MB (512 is good for 4GB RAM)
+dbcache=512
+
+# Maximum mempool size in MB
+maxmempool=100
+
+# Maximum peer connections
+maxconnections=40
+
+# Maximum upload bandwidth (MB/day, 0=unlimited)
+maxuploadtarget=1000
+
+# ============================================
+# NETWORK
+# ============================================
+listen=1
+port=22556
+
+# UPnP port mapping (enable if behind NAT)
+upnp=0
+
+# NAT-PMP (alternative to UPnP)
+natpmp=0
+
+# ============================================
+# PRUNING (Optional - saves disk space)
+# ============================================
+# Uncomment to enable pruning (keeps only last N MB)
+# prune=2000
+
+# ============================================
+# WALLET
+# ============================================
+# Disable wallet if running node-only
+# disablewallet=1
+
+# ============================================
+# LOGGING
+# ============================================
+debug=0
+printtoconsole=0
+shrinkdebugfile=1
+
+# ============================================
+# SEED NODES (Add known peers here)
+# ============================================
+# addnode=seed.retardio.net:22556
+# addnode=192.168.1.100:22556

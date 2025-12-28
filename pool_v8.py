@@ -24,6 +24,7 @@ RPC_CLI = os.environ.get("RETARDIO_CLI", "/usr/local/bin/retardio-cli")
 DATA_DIR = os.environ.get("RETARDIO_DATADIR", os.path.expanduser("~/.retardio/data"))
 POOL_PORT = int(os.environ.get("POOL_PORT", "3333"))
 POOL_UI_URL = os.environ.get("POOL_UI_URL", "http://127.0.0.1:5555")
+POOL_UI_API_KEY = os.environ.get("POOL_UI_API_KEY", "")  # API key for pool UI authentication
 POOL_STATS_PORT = int(os.environ.get("POOL_STATS_PORT", "3334"))
 
 # Pool share difficulty - LOW for hobby miners to submit shares frequently
@@ -163,10 +164,13 @@ def report_block_to_ui(height, block_hash, worker, reward, miner_address=None):
             "reward": reward / 100000000,
             "timestamp": datetime.now().isoformat()
         }).encode()
+        headers = {"Content-Type": "application/json"}
+        if POOL_UI_API_KEY:
+            headers["X-API-Key"] = POOL_UI_API_KEY
         req = urllib.request.Request(
             f"{POOL_UI_URL}/api/blocks/add",
             data=data,
-            headers={"Content-Type": "application/json"}
+            headers=headers
         )
         urllib.request.urlopen(req, timeout=5)
         print(f"    [Block reported to UI]")
@@ -626,6 +630,7 @@ async def main():
     print(f"Data Dir: {DATA_DIR}")
     print(f"Pool Port: {POOL_PORT}")
     print(f"UI URL: {POOL_UI_URL}")
+    print(f"UI API Key: {'configured' if POOL_UI_API_KEY else 'NOT SET - block reports will fail!'}")
 
     # Start stats server in background thread
     stats_thread = threading.Thread(target=start_stats_server, daemon=True)

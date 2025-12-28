@@ -45,7 +45,7 @@ sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
 sudo apt update
 sudo apt install -y libstdc++6
 
-pip3 install flask flask-cors
+pip3 install flask flask-cors requests
 
 # Clone repo
 echo "[3/8] Cloning Retardio..."
@@ -173,6 +173,25 @@ RestartSec=10
 WantedBy=multi-user.target
 EOF
 
+# Block Explorer service
+sudo tee /etc/systemd/system/retardio-explorer.service > /dev/null << EOF
+[Unit]
+Description=Retardio Block Explorer
+After=retardio-node.service
+
+[Service]
+Type=simple
+User=$USER
+WorkingDirectory=$HOME/retardio-coin/explorer
+Environment="PORT=3002"
+ExecStart=/usr/bin/python3 $HOME/retardio-coin/explorer/app.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
 # Update pool config with correct paths
 sed -i "s|/home/hydden682|$HOME|g" ~/retardio-coin/pool_v8.py
 
@@ -256,6 +275,13 @@ cat > ~/retardio-coin/www/index.html << 'HTMLEOF'
     <script>
         fetch('/api/stats').then(r => r.json()).then(d => {
             document.getElementById('blocks').textContent = d.total_blocks || 0;
+            if (d.network && d.network.block_height) {
+                document.getElementById('height').textContent = d.network.block_height;
+            }
+        }).catch(() => {});
+        // Also try explorer API for block height
+        fetch('/explorer/api/status').then(r => r.json()).then(d => {
+            if (d.blocks) document.getElementById('height').textContent = d.blocks;
         }).catch(() => {});
     </script>
 </body>
@@ -289,9 +315,17 @@ server {
         proxy_set_header Host \$host;
     }
 
-    # Block explorer (if you set one up later)
+    # Block explorer
     location /explorer {
         proxy_pass http://127.0.0.1:3002/;
+        proxy_http_version 1.1;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+    }
+
+    # Explorer API
+    location /explorer/api/ {
+        proxy_pass http://127.0.0.1:3002/api/;
         proxy_http_version 1.1;
         proxy_set_header Host \$host;
     }
@@ -323,7 +357,7 @@ sudo ufw --force enable
 
 # Enable and start services
 sudo systemctl daemon-reload
-sudo systemctl enable retardio-node retardio-pool retardio-pool-ui
+sudo systemctl enable retardio-node retardio-pool retardio-pool-ui retardio-explorer
 sudo systemctl start retardio-node
 
 # Wait for node to start
@@ -331,7 +365,15 @@ echo ""
 echo "Waiting for node to start..."
 sleep 10
 
-sudo systemctl start retardio-pool retardio-pool-ui
+sudo systemctl start retardio-pool retardio-pool-ui retardio-explorer
+
+# Register local node with explorer
+echo ""
+echo "Registering node with block explorer..."
+sleep 5
+curl -s -X POST http://127.0.0.1:3002/api/nodes/register \
+    -H "Content-Type: application/json" \
+    -d "{\"host\": \"127.0.0.1\", \"port\": 18332, \"rpc_user\": \"$RPC_USER\", \"rpc_pass\": \"$RPC_PASSWORD\"}" || true
 
 # Create auto-update script
 echo "Creating auto-update script..."
@@ -388,6 +430,7 @@ echo ""
 echo "PUBLIC URLS:"
 echo "  Website:     http://$PUBLIC_IP"
 echo "  Dashboard:   http://$PUBLIC_IP/dashboard"
+echo "  Explorer:    http://$PUBLIC_IP/explorer"
 echo "  Downloads:   http://$PUBLIC_IP/downloads"
 echo ""
 echo "MINING POOL:"

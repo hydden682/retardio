@@ -26,6 +26,11 @@ POOL_PORT = int(os.environ.get("POOL_PORT", "3333"))
 POOL_UI_URL = os.environ.get("POOL_UI_URL", "http://127.0.0.1:5555")
 POOL_STATS_PORT = int(os.environ.get("POOL_STATS_PORT", "3334"))
 
+# Pool share difficulty - LOW for hobby miners to submit shares frequently
+# This allows miners to see progress even if they never find a block
+# Shares that meet network difficulty will be submitted as blocks
+POOL_SHARE_DIFF = float(os.environ.get("POOL_SHARE_DIFF", "0.001"))
+
 # Pool wallet address - OPTIONAL for solo pool
 # In solo mode, miner's address is extracted from their worker name
 # POOL_ADDRESS is only used as fallback if miner address is invalid
@@ -317,13 +322,15 @@ class StratumMiner:
         self.job_counter += 1
         job_id = f"{self.job_counter:08x}"
 
-        # Calculate network difficulty
+        # Calculate network difficulty (for block submission)
         target_int = int(template["target"], 16)
         diff1_target = 0x00000000FFFF0000000000000000000000000000000000000000000000000000
         network_diff = diff1_target / target_int if target_int > 0 else 1
 
-        if abs(network_diff - self.difficulty) > 0.0001:
-            await self.send_difficulty(network_diff)
+        # Send LOW pool share difficulty so hobby miners can submit shares
+        # They'll see progress even if they never find a block
+        if abs(POOL_SHARE_DIFF - self.difficulty) > 0.0001:
+            await self.send_difficulty(POOL_SHARE_DIFF)
 
         prevhash_rpc = template["previousblockhash"]
         prevhash_words = [prevhash_rpc[i:i+8] for i in range(0, 64, 8)]
@@ -371,7 +378,8 @@ class StratumMiner:
             "version_hex": version_hex,
             "version_int": template["version"],
             "nbits": nbits,
-            "target": template["target"]
+            "target": template["target"],
+            "network_diff": network_diff  # Store for block validation
         }
 
         await self.send({
@@ -457,6 +465,18 @@ class StratumMiner:
 
         print(f"    share_diff: {share_diff:.6f}")
 
+        # Check if share meets pool difficulty (for counting)
+        # Pool difficulty is MUCH lower than network difficulty
+        if share_diff < POOL_SHARE_DIFF:
+            print(f"[-] Share below pool difficulty ({POOL_SHARE_DIFF})")
+            await self.send({"id": msg_id, "result": False, "error": [23, "Low difficulty share", None]})
+            print(f"{'='*60}\n")
+            return
+
+        # Share is valid for pool stats - accept it
+        print(f"[+] Valid share! (pool_diff={POOL_SHARE_DIFF}, share_diff={share_diff:.6f})")
+
+        # Check if share also meets NETWORK difficulty (potential block!)
         if hash_int < target_int:
             print(f"\n[!!!] BLOCK FOUND!")
 
@@ -486,16 +506,12 @@ class StratumMiner:
                     await self.send({"id": None, "method": "client.show_message", "params": [f"BLOCK FOUND! Height {template['height']}"]})
                 except Exception:
                     pass
-                await self.send({"id": msg_id, "result": True, "error": None})
                 await self.send_job(clean=True)
-                print(f"{'='*60}\n")
-                return
             else:
-                print(f"[!!!] Rejected: {result}")
-                await self.send({"id": msg_id, "result": False, "error": [23, str(result), None]})
-        else:
-            print(f"[-] Share below target")
-            await self.send({"id": msg_id, "result": False, "error": [23, "Low difficulty share", None]})
+                print(f"[!!!] Block rejected by node: {result}")
+
+        # Accept the share (even if not a block)
+        await self.send({"id": msg_id, "result": True, "error": None})
 
         print(f"{'='*60}\n")
 

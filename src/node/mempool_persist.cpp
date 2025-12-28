@@ -40,11 +40,11 @@ namespace node {
 
 static const uint64_t MEMPOOL_DUMP_VERSION_NO_XOR_KEY{1};
 static const uint64_t MEMPOOL_DUMP_VERSION{2};
-static constexpr uint64_t MEMPOOL_KNOTS_DUMP_VERSION = 0;
+static constexpr uint64_t MEMPOOL_RETARDIO_DUMP_VERSION = 0;
 
-bool LoadMempoolKnots(CTxMemPool& pool, const fs::path& knots_filepath, FopenFn mockable_fopen_function)
+bool LoadMempoolRetardio(CTxMemPool& pool, const fs::path& retardio_filepath, FopenFn mockable_fopen_function)
 {
-    AutoFile file{mockable_fopen_function(knots_filepath, "rb")};
+    AutoFile file{mockable_fopen_function(retardio_filepath, "rb")};
     if (file.IsNull()) {
         // Typically missing if there's nothing to save
         return false;
@@ -53,7 +53,7 @@ bool LoadMempoolKnots(CTxMemPool& pool, const fs::path& knots_filepath, FopenFn 
     try {
         uint64_t version;
         file >> version;
-        if (version != MEMPOOL_KNOTS_DUMP_VERSION) {
+        if (version != MEMPOOL_RETARDIO_DUMP_VERSION) {
             return false;
         }
 
@@ -67,7 +67,7 @@ bool LoadMempoolKnots(CTxMemPool& pool, const fs::path& knots_filepath, FopenFn 
             pool.PrioritiseTransaction(txid, priority, 0);
         }
     } catch (const std::exception& e) {
-        LogInfo("Failed to deserialize mempool-knots data on file: %s. Continuing anyway.\n", e.what());
+        LogInfo("Failed to deserialize mempool-retardio data on file: %s. Continuing anyway.\n", e.what());
         return false;
     }
 
@@ -178,10 +178,10 @@ bool LoadMempool(CTxMemPool& pool, const fs::path& load_path, Chainstate& active
         return false;
     }
 
-    if (opts.load_knots_data) {
-        auto knots_filepath = load_path;
-        knots_filepath.replace_filename("mempool-knots.dat");
-        LoadMempoolKnots(pool, knots_filepath, opts.mockable_fopen_function);
+    if (opts.load_retardio_data) {
+        auto retardio_filepath = load_path;
+        retardio_filepath.replace_filename("mempool-retardio.dat");
+        LoadMempoolRetardio(pool, retardio_filepath, opts.mockable_fopen_function);
     }
 
     LogInfo("Imported mempool transactions from file: %i succeeded, %i failed, %i expired, %i already there, %i waiting for initial broadcast\n", count, failed, expired, already_there, unbroadcast);
@@ -257,17 +257,17 @@ bool DumpMempool(const CTxMemPool& pool, const fs::path& dump_path, FopenFn mock
                 strprintf("Error closing %s: %s", fs::PathToString(file_fspath), SysErrorString(errno)));
         }
 
-        auto knots_filepath = dump_path;
-        knots_filepath.replace_filename("mempool-knots.dat");
+        auto retardio_filepath = dump_path;
+        retardio_filepath.replace_filename("mempool-retardio.dat");
         LogInfo("Writing %u mempool prioritizations to file...\n", priority_deltas.size());
         if (priority_deltas.size()) {
-            auto knots_tmppath = knots_filepath;
-            knots_tmppath += ".new";
+            auto retardio_tmppath = retardio_filepath;
+            retardio_tmppath += ".new";
 
-            AutoFile file{mockable_fopen_function(knots_tmppath, "wb")};
+            AutoFile file{mockable_fopen_function(retardio_tmppath, "wb")};
             if (file.IsNull()) return false;
 
-            uint64_t version = MEMPOOL_KNOTS_DUMP_VERSION;
+            uint64_t version = MEMPOOL_RETARDIO_DUMP_VERSION;
             file << version;
 
             WriteCompactSize(file, priority_deltas.size());
@@ -280,13 +280,13 @@ bool DumpMempool(const CTxMemPool& pool, const fs::path& dump_path, FopenFn mock
             if (!file.Commit()) throw std::runtime_error("Commit failed");
             if (file.fclose() != 0) {
                 throw std::runtime_error(
-                    strprintf("Error closing %s: %s", fs::PathToString(knots_tmppath), SysErrorString(errno)));
+                    strprintf("Error closing %s: %s", fs::PathToString(retardio_tmppath), SysErrorString(errno)));
             }
-            if (!RenameOver(knots_tmppath, knots_filepath)) {
-                throw std::runtime_error("Rename failed (mempool-knots.dat)");
+            if (!RenameOver(retardio_tmppath, retardio_filepath)) {
+                throw std::runtime_error("Rename failed (mempool-retardio.dat)");
             }
         } else {
-            fs::remove(knots_filepath);
+            fs::remove(retardio_filepath);
         }
 
         if (!RenameOver(dump_path + ".new", dump_path)) {
@@ -297,7 +297,7 @@ bool DumpMempool(const CTxMemPool& pool, const fs::path& dump_path, FopenFn mock
         LogInfo("Dumped mempool: %.3fs to copy, %.3fs to dump, %d bytes dumped to file\n",
                   Ticks<SecondsDouble>(mid - start),
                   Ticks<SecondsDouble>(last - mid),
-                  (priority_deltas.empty() ? 0 : fs::file_size(knots_filepath)) +
+                  (priority_deltas.empty() ? 0 : fs::file_size(retardio_filepath)) +
                   fs::file_size(dump_path));
     } catch (const std::exception& e) {
         LogInfo("Failed to dump mempool: %s. Continuing anyway.\n", e.what());

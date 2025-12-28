@@ -513,15 +513,15 @@ RPCConsole::RPCConsole(interfaces::Node& node, const PlatformStyle *_platformSty
             // Restore failed (perhaps missing setting), center the window
             move(QGuiApplication::primaryScreen()->availableGeometry().center() - frameGeometry().center());
         }
-        ui->splitter->restoreState(settings.value("RPCConsoleWindowPeersTabSplitterSizes_Knots23").toByteArray());
+        ui->splitter->restoreState(settings.value("RPCConsoleWindowPeersTabSplitterSizes_retardio23").toByteArray());
     } else
 #endif // ENABLE_WALLET
     {
         // RPCConsole is a child widget.
-        ui->splitter->restoreState(settings.value("RPCConsoleWidgetPeersTabSplitterSizes_Knots23").toByteArray());
+        ui->splitter->restoreState(settings.value("RPCConsoleWidgetPeersTabSplitterSizes_retardio23").toByteArray());
     }
 
-    m_peer_widget_header_state = settings.value("PeersTabPeerHeaderState_Knots23").toByteArray();
+    m_peer_widget_header_state = settings.value("PeersTabPeerHeaderState_retardio23").toByteArray();
     m_banlist_widget_header_state = settings.value("PeersTabBanlistHeaderState").toByteArray();
     m_alternating_row_colors = settings.value("PeersTabAlternatingRowColors").toBool();
 
@@ -700,15 +700,15 @@ RPCConsole::~RPCConsole()
     if (WalletModel::isWalletEnabled()) {
         // RPCConsole widget is a window.
         settings.setValue("RPCConsoleWindowGeometry", saveGeometry());
-        settings.setValue("RPCConsoleWindowPeersTabSplitterSizes_Knots23", ui->splitter->saveState());
+        settings.setValue("RPCConsoleWindowPeersTabSplitterSizes_retardio23", ui->splitter->saveState());
     } else
 #endif // ENABLE_WALLET
     {
         // RPCConsole is a child widget.
-        settings.setValue("RPCConsoleWidgetPeersTabSplitterSizes_Knots23", ui->splitter->saveState());
+        settings.setValue("RPCConsoleWidgetPeersTabSplitterSizes_retardio23", ui->splitter->saveState());
     }
 
-    settings.setValue("PeersTabPeerHeaderState_Knots23", m_peer_widget_header_state);
+    settings.setValue("PeersTabPeerHeaderState_retardio23", m_peer_widget_header_state);
     settings.setValue("PeersTabBanlistHeaderState", m_banlist_widget_header_state);
 
     WriteCommandHistory();

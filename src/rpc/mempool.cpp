@@ -94,14 +94,14 @@ static RPCHelpMan sendrawtransaction()
             const UniValue* json_ign_rejs = &request.params[3];
 
             if (request.params[1].isArray() && request.params[2].isNull() && request.params[3].isNull()) {
-                // ignore_rejects used to occupy this position (v0.12.0.knots20160226.rc1-v0.17.1.knots20181229)
+                // ignore_rejects used to occupy this position (v0.12.0.retardio20160226.rc1-v0.17.1.retardio20181229)
                 json_ign_rejs = &request.params[1];
             } else {
                 if (!request.params[1].isNull()) {
                     max_raw_tx_fee_rate = ParseFeeRate(self.Arg<UniValue>("maxfeerate"));
                 }
                 if (request.params[2].isArray() && request.params[3].isNull()) {
-                    // ignore_rejects used to occupy this position (v0.18.0.knots20190502-v23.0.knots20220529)
+                    // ignore_rejects used to occupy this position (v0.18.0.retardio20190502-v23.0.retardio20220529)
                     json_ign_rejs = &request.params[2];
                 } else if (!request.params[2].isNull()) {
                     max_burn_amount = AmountFromValue(request.params[2]);

@@ -3506,7 +3506,7 @@ static RPCHelpMan dumptxoutset()
 
     const UniValue& hr_format = [&]() -> const UniValue& {
         if (options["format"].isNull() && request.params[1].isArray()) {
-            // Knots 0.20.0-28.1 compatibility
+            // retardio 0.20.0-28.1 compatibility
             snapshot_type = "latest";
             return request.params[1];
         }
@@ -3519,7 +3519,7 @@ static RPCHelpMan dumptxoutset()
             return options["show_header"].get_bool();
         }
         if (is_human_readable && request.params[2].isBool()) {
-            // Knots 0.20.0-28.1 compatibility
+            // retardio 0.20.0-28.1 compatibility
             return request.params[2].get_bool();
         }
         if (!request.params[2].isNull()) request.params[2].get_obj();  // type check skipped earlier

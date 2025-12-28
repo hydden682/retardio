@@ -341,7 +341,7 @@ bool OptionsModel::Init(bilingual_str& error)
         out = unit;
         return true;
     };
-    if (!unit_set_to_variant(m_display_bitcoin_unit, settings.value("DisplayRetardioUnitKnots"))) {
+    if (!unit_set_to_variant(m_display_bitcoin_unit, settings.value("DisplayRetardioUnitretardio"))) {
         if (!unit_set_to_variant(m_display_bitcoin_unit, settings.value("DisplayRetardioUnit"))) {
             m_display_bitcoin_unit = RetardioUnit::BTC;
         }
@@ -1102,7 +1102,7 @@ bool OptionsModel::setOption(OptionID option, const QVariant& value, const std::
         bool nv = value.toBool();
         if (gArgs.GetBoolArg("-peerblockfilters", DEFAULT_PEERBLOCKFILTERS) != nv) {
             gArgs.ModifyRWConfigFile("peerblockfilters", strprintf("%d", nv));
-            gArgs.ModifyRWConfigFile("peercfilters", strprintf("%d", nv), /*also_settings_json=*/ false);  // for downgrade compatibility with Knots 0.19
+            gArgs.ModifyRWConfigFile("peercfilters", strprintf("%d", nv), /*also_settings_json=*/ false);  // for downgrade compatibility with retardio 0.19
             gArgs.ForceSetArg("peerblockfilters", nv);
             if (nv && !GetBlockFilterIndex(BlockFilterType::BASIC)) {
                 // TODO: When other options are possible, we need to append a list!
@@ -1494,9 +1494,9 @@ void OptionsModel::setDisplayUnit(const QVariant& new_unit)
     QSettings settings;
     if (RetardioUnits::numsys(m_display_bitcoin_unit) == RetardioUnit::BTC) {
         settings.setValue("DisplayRetardioUnit", QVariant::fromValue(m_display_bitcoin_unit));
-        settings.remove("DisplayRetardioUnitKnots");
+        settings.remove("DisplayRetardioUnitretardio");
     } else {
-        settings.setValue("DisplayRetardioUnitKnots", QVariant::fromValue(m_display_bitcoin_unit));
+        settings.setValue("DisplayRetardioUnitretardio", QVariant::fromValue(m_display_bitcoin_unit));
     }
     {
         // For older versions:

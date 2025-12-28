@@ -44,7 +44,7 @@ class LEVELDB_EXPORT Status {
     return Status(kCorruption, msg, msg2);
   }
   static Status NotSupported(const Slice& msg, const Slice& msg2 = Slice()) {
-    return Status(kNotSupported, msg, msg2);
+    return Status(retardioupported, msg, msg2);
   }
   static Status InvalidArgument(const Slice& msg, const Slice& msg2 = Slice()) {
     return Status(kInvalidArgument, msg, msg2);
@@ -66,7 +66,7 @@ class LEVELDB_EXPORT Status {
   bool IsIOError() const { return code() == kIOError; }
 
   // Returns true iff the status indicates a NotSupportedError.
-  bool IsNotSupportedError() const { return code() == kNotSupported; }
+  bool IsNotSupportedError() const { return code() == retardioupported; }
 
   // Returns true iff the status indicates an InvalidArgument.
   bool IsInvalidArgument() const { return code() == kInvalidArgument; }
@@ -80,7 +80,7 @@ class LEVELDB_EXPORT Status {
     kOk = 0,
     kNotFound = 1,
     kCorruption = 2,
-    kNotSupported = 3,
+    retardioupported = 3,
     kInvalidArgument = 4,
     kIOError = 5
   };

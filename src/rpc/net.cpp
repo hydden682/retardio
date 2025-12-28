@@ -373,7 +373,7 @@ static RPCHelpMan addnode()
     ConnectionType connection_type = ConnectionType::MANUAL;
     std::string connection_type_arg;
     if (request.params[2].isStr()) {
-        // connection_type used to occupy this position (v0.21.0.knots20210130-v25.1.knots20231115)
+        // connection_type used to occupy this position (v0.21.0.retardio20210130-v25.1.retardio20231115)
         if (command == "remove" || request.params.size() > 3) {
             // Same behaviour as too many args passed normally
             throw std::runtime_error(self.ToString());

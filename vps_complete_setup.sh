@@ -49,12 +49,39 @@ if [ ! -d "retardio-coin" ]; then
 fi
 cd retardio-coin
 
-# Build node (if not already built)
-echo "[4/8] Building Retardio node..."
-if [ ! -f "build/bin/retardiod" ]; then
-    ./autogen.sh
-    ./configure --without-gui --disable-tests --disable-bench
-    make -j$(nproc)
+# Get node binaries
+echo "[4/8] Setting up Retardio node..."
+mkdir -p build/bin
+
+# Try to download pre-built binaries from GitHub releases
+RELEASE_URL="https://github.com/hydden682/retardio/releases/download/v1.1.0/retardio-linux-x86_64.tar.gz"
+if curl -sL --fail "$RELEASE_URL" -o /tmp/retardio-binaries.tar.gz 2>/dev/null; then
+    echo "Downloading pre-built binaries..."
+    tar -xzf /tmp/retardio-binaries.tar.gz -C build/bin/
+    chmod +x build/bin/retardiod build/bin/retardio-cli
+    rm /tmp/retardio-binaries.tar.gz
+else
+    echo ""
+    echo "================================================================"
+    echo "  PRE-BUILT BINARIES NOT AVAILABLE"
+    echo "================================================================"
+    echo ""
+    echo "No pre-built Linux binaries found. You have two options:"
+    echo ""
+    echo "OPTION 1: Build on a larger VPS (4GB+ RAM required)"
+    echo "  sudo apt install -y autoconf automake"
+    echo "  cd ~/retardio-coin"
+    echo "  ./autogen.sh"
+    echo "  ./configure --without-gui --disable-tests --disable-bench"
+    echo "  make -j\$(nproc)"
+    echo ""
+    echo "OPTION 2: Build locally and upload binaries"
+    echo "  Build on your local machine, then:"
+    echo "  scp retardiod retardio-cli root@$PUBLIC_IP:~/retardio-coin/build/bin/"
+    echo ""
+    echo "After getting binaries, run this script again."
+    echo "================================================================"
+    exit 1
 fi
 
 # Create data directory

@@ -19,6 +19,16 @@ PUBLIC_IP=$(curl -s ifconfig.me)
 echo "Your Public IP: $PUBLIC_IP"
 echo ""
 
+# Generate secure random credentials
+RPC_USER="retardio"
+RPC_PASSWORD=$(openssl rand -hex 24)
+POOL_API_KEY=$(openssl rand -hex 32)
+
+echo "Generated secure credentials (SAVE THESE):"
+echo "  RPC Password: $RPC_PASSWORD"
+echo "  Pool API Key: $POOL_API_KEY"
+echo ""
+
 # Update system
 echo "[1/8] Updating system..."
 sudo apt update && sudo apt upgrade -y
@@ -54,14 +64,23 @@ mkdir -p ~/.retardio/data
 cat > ~/.retardio/data/retardio.conf << EOF
 server=1
 daemon=1
-rpcuser=retardio
-rpcpassword=retardiopass123
+rpcuser=$RPC_USER
+rpcpassword=$RPC_PASSWORD
 rpcallowip=127.0.0.1
 rpcport=18332
 port=18333
 listen=1
 txindex=1
 EOF
+
+# Save credentials to a secure file
+cat > ~/.retardio/credentials << EOF
+# Retardio Credentials - KEEP THIS FILE SECURE
+RPC_USER=$RPC_USER
+RPC_PASSWORD=$RPC_PASSWORD
+POOL_API_KEY=$POOL_API_KEY
+EOF
+chmod 600 ~/.retardio/credentials
 
 # Create systemd services
 echo "[6/8] Creating services..."
@@ -112,6 +131,7 @@ After=network.target
 Type=simple
 User=$USER
 WorkingDirectory=$HOME/retardio-coin/pool_ui
+Environment="POOL_API_KEY=$POOL_API_KEY"
 ExecStart=/usr/bin/python3 $HOME/retardio-coin/pool_ui/app.py
 Restart=always
 RestartSec=10

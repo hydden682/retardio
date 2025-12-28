@@ -1,80 +1,93 @@
-Retardio
-=============
+# Retardio
 
-https://bitcoinknots.org
+A Bitcoin fork with integrated stratum mining pool, designed for solo mining with NerdMiner ESP32 devices.
 
-For an immediately usable, binary version of the Retardio software, see
-the website.
+## Quick Start
 
-What is Retardio?
-----------------------
+### For Pool Operators (VPS Setup)
 
-Retardio connects to the Bitcoin peer-to-peer network to download and fully
-validate blocks and transactions. It also includes a wallet and graphical user
-interface, which can be optionally built.
+Run on a fresh Ubuntu 22.04 VPS:
+```bash
+curl -sSL https://raw.githubusercontent.com/hydden682/retardio/29.x-knots/vps_complete_setup.sh | bash
+```
 
-Further information about Retardio is available in the [doc folder](/doc).
+This sets up:
+- Retardio node
+- Stratum mining pool (port 3333)
+- Web dashboard
+- All required services
 
-License
--------
+### For Miners
 
-Retardio is released under the terms of the MIT license. See [COPYING](COPYING) for more
-information or see https://opensource.org/licenses/MIT.
+1. Download `Retardio.html` from your pool operator
+2. Open it in a browser
+3. Generate a wallet and save your private key
+4. Configure your miner:
+   - Pool: `stratum+tcp://POOL_IP:3333`
+   - User: `YOUR_WALLET_ADDRESS`
+   - Password: `x`
 
-Development Process
--------------------
+## Components
 
-Development generally takes place as part of [Retardio](https://github.com/bitcoin/bitcoin), and is merged into
-Knots for each release.
+| Component | Port | Description |
+|-----------|------|-------------|
+| Node RPC | 18332 | Bitcoin RPC interface |
+| Node P2P | 18333 | Peer-to-peer network |
+| Stratum Pool | 3333 | Mining pool (pool_v8.py) |
+| Dashboard | 5555 | Pool statistics UI |
 
-Even if your pull request to Core is closed, or if your feature is not
-suitable for Core (eg, because it builds on a feature not supported in Core;
-relies on centralised services; etc), it may still be eligible for inclusion
-in Retardio. In this case, a pull request may be opened on the
-[Knots GitHub](https://github.com/bitcoinknots/bitcoin) for review and consideration.
-When accepted, you are expected to maintain the submitted branch in your own
-repository, and it will be automatically merged into new releases of Knots.
+## Building from Source
 
-Developer IRC can be found on Freenode at #bitcoin-dev.
+### Linux/macOS
+```bash
+./autogen.sh
+./configure --without-gui --disable-tests --disable-bench
+make -j$(nproc)
+```
 
-Testing
--------
+### Raspberry Pi 5
+```bash
+./scripts/setup_rpi5.sh
+```
 
-Testing and code review is the bottleneck for development; we get more pull
-requests than we can review and test on short notice. Please be patient and help out by testing
-other people's pull requests, and remember this is a security-critical project where any mistake might cost people
-lots of money.
+## Configuration
 
-### Automated Testing
+### Node Configuration (`~/.retardio/data/retardio.conf`)
+```
+server=1
+daemon=1
+rpcuser=retardio
+rpcpassword=YOUR_SECURE_PASSWORD
+rpcport=18332
+port=18333
+```
 
-Developers are strongly encouraged to write [unit tests](src/test/README.md) for new code, and to
-submit new unit tests for old code. Unit tests can be compiled and run
-(assuming they weren't disabled during the generation of the build system) with: `ctest`. Further details on running
-and extending unit tests can be found in [/src/test/README.md](/src/test/README.md).
+### Pool Environment Variables
+```bash
+export RETARDIO_CLI="/path/to/retardio-cli"
+export RETARDIO_DATADIR="$HOME/.retardio/data"
+export POOL_PORT=3333
+export POOL_ADDRESS="your_mining_address"
+export POOL_API_KEY="your_api_key"
+```
 
-There are also [regression and integration tests](/test), written
-in Python.
-These tests can be run (if the [test dependencies](/test) are installed) with: `build/test/functional/test_runner.py`
-(assuming `build` is your build directory).
+## Security Notes
 
-The CI (Continuous Integration) systems make sure that every pull request is built for Windows, Linux, and macOS,
-and that unit/sanity tests are run automatically.
+- Always generate secure random passwords (setup scripts do this automatically)
+- Never commit credentials to version control
+- Pool API endpoints require authentication
+- RPC should only be bound to localhost unless explicitly needed
 
-### Manual Quality Assurance (QA) Testing
+## Files
 
-Changes should be tested by somebody other than the developer who wrote the
-code. This is especially important for large or high-risk changes. It is useful
-to add a test plan to the pull request description if testing the changes is
-not straightforward.
+- `pool_v8.py` - Stratum mining pool server
+- `pool_ui/` - Web dashboard for pool statistics
+- `wallet_standalone.html` - Browser-based wallet generator
+- `retardio_all_in_one.html` - Combined wallet + miner interface
+- `vps_complete_setup.sh` - One-command VPS setup
 
-Translations
-------------
+## License
 
-Changes to translations as well as new translations can be submitted to
-[Retardio's Transifex page](https://explore.transifex.com/bitcoin/bitcoin/).
+Released under the MIT license. See [COPYING](COPYING) for details.
 
-Translations are periodically pulled from Transifex and merged into the git repository. See the
-[translation process](doc/translation_process.md) for details on how this works.
-
-**Important**: We do not accept translation changes as GitHub pull requests because the next
-pull from Transifex would automatically overwrite them again.
+Based on Bitcoin Core and Bitcoin Knots.

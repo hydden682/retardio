@@ -390,9 +390,12 @@
     <div class="app">
         <header class="header">
             <div class="logo">RETARDIO</div>
-            <div class="status">
-                <span class="status-dot" id="statusDot"></span>
-                <span id="statusText">Disconnected</span>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div class="status">
+                    <span class="status-dot" id="statusDot"></span>
+                    <span id="statusText">Disconnected</span>
+                </div>
+                <button onclick="openSettings()" style="background: none; border: none; cursor: pointer; font-size: 1.2rem; color: var(--text-secondary);" title="Settings">⚙️</button>
             </div>
         </header>
 
@@ -487,10 +490,44 @@
         </div>
     </div>
 
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal">
+            <h2>⚙️ RPC Settings</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 15px;">Configure connection to your Retardio node</p>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div>
+                    <label style="display: block; color: var(--text-secondary); margin-bottom: 5px; font-size: 0.85rem;">RPC URL</label>
+                    <input type="text" id="settingsRpcUrl" placeholder="http://127.0.0.1:18332" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-secondary); color: var(--text-primary);">
+                </div>
+                <div>
+                    <label style="display: block; color: var(--text-secondary); margin-bottom: 5px; font-size: 0.85rem;">RPC Username</label>
+                    <input type="text" id="settingsRpcUser" placeholder="retardio" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-secondary); color: var(--text-primary);">
+                </div>
+                <div>
+                    <label style="display: block; color: var(--text-secondary); margin-bottom: 5px; font-size: 0.85rem;">RPC Password</label>
+                    <input type="password" id="settingsRpcPass" placeholder="Your RPC password" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-secondary); color: var(--text-primary);">
+                </div>
+            </div>
+            <div class="modal-actions" style="margin-top: 20px;">
+                <button class="btn btn-secondary" onclick="closeModals()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveSettings()">Save & Connect</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        const RPC_URL = 'http://127.0.0.1:18332';
-        const RPC_USER = 'retardio';
-        const RPC_PASS = 'retardiopass123';
+        // Configurable RPC settings - load from localStorage or use defaults
+        let RPC_URL = localStorage.getItem('rpc_url') || 'http://127.0.0.1:18332';
+        let RPC_USER = localStorage.getItem('rpc_user') || 'retardio';
+        let RPC_PASS = localStorage.getItem('rpc_pass') || '';
+
+        // Show settings prompt if no password configured
+        if (!RPC_PASS) {
+            setTimeout(() => {
+                alert('Please configure your RPC credentials in Settings (gear icon) to connect to your node.');
+            }, 500);
+        }
 
         let connected = false;
         let myAddress = '';
@@ -593,6 +630,26 @@
 
         function closeModals() {
             document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+        }
+
+        function openSettings() {
+            document.getElementById('settingsRpcUrl').value = RPC_URL;
+            document.getElementById('settingsRpcUser').value = RPC_USER;
+            document.getElementById('settingsRpcPass').value = RPC_PASS;
+            document.getElementById('settingsModal').classList.add('active');
+        }
+
+        function saveSettings() {
+            RPC_URL = document.getElementById('settingsRpcUrl').value || 'http://127.0.0.1:18332';
+            RPC_USER = document.getElementById('settingsRpcUser').value || 'retardio';
+            RPC_PASS = document.getElementById('settingsRpcPass').value || '';
+
+            localStorage.setItem('rpc_url', RPC_URL);
+            localStorage.setItem('rpc_user', RPC_USER);
+            localStorage.setItem('rpc_pass', RPC_PASS);
+
+            closeModals();
+            updateStatus(); // Try to connect with new credentials
         }
 
         function copyAddress() {

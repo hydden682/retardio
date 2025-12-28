@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """
-Retardio Stratum Pool v8 - NerdMiner Block Detection
-Sends actual network difficulty so NerdMiner knows when it finds a block
+Retardio Stratum Pool v8.1 - Security Hardened
+- Proper P2PKH coinbase output (coins go to pool address)
+- Configurable via environment variables
+- Fixed BIP34 height encoding
 """
 
 import asyncio
@@ -11,12 +13,21 @@ import struct
 import time
 import subprocess
 import urllib.request
+import os
 from datetime import datetime
 
-RPC_CLI = "/home/hydden682/retardio-coin/build/bin/retardio-cli"
-DATA_DIR = "/home/hydden682/.retardio/data"
-POOL_PORT = 3333
-POOL_UI_URL = "http://localhost:5555"  # Pool dashboard URL
+# Configuration via environment variables with defaults
+RPC_CLI = os.environ.get("RETARDIO_CLI", "/usr/local/bin/retardio-cli")
+DATA_DIR = os.environ.get("RETARDIO_DATADIR", os.path.expanduser("~/.retardio/data"))
+POOL_PORT = int(os.environ.get("POOL_PORT", "3333"))
+POOL_UI_URL = os.environ.get("POOL_UI_URL", "http://127.0.0.1:5555")
+
+# Pool wallet address - MUST be set for production
+# This is where all mined coins will go
+POOL_ADDRESS = os.environ.get("POOL_ADDRESS", "")
+
+miners = {}
+extranonce_counter = 0
 
 def report_block_to_ui(height, block_hash, worker, reward):
     """Report found block to the pool dashboard"""
@@ -25,7 +36,7 @@ def report_block_to_ui(height, block_hash, worker, reward):
             "height": height,
             "hash": block_hash,
             "worker": worker,
-            "reward": reward / 100000000,  # Convert satoshis to RTD
+            "reward": reward / 100000000,
             "timestamp": datetime.now().isoformat()
         }).encode()
         req = urllib.request.Request(
@@ -38,30 +49,36 @@ def report_block_to_ui(height, block_hash, worker, reward):
     except Exception as e:
         print(f"    [UI report failed: {e}]")
 
-miners = {}
-extranonce_counter = 0
-
 def rpc(method, *args):
+    """Execute RPC command to node"""
     try:
         cmd = [RPC_CLI, f"-datadir={DATA_DIR}", method] + [str(a) for a in args]
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
         if result.returncode == 0 and result.stdout.strip():
             try:
                 return json.loads(result.stdout)
-            except:
+            except json.JSONDecodeError:
                 return result.stdout.strip()
+        if result.stderr:
+            print(f"RPC stderr: {result.stderr}")
+        return None
+    except subprocess.TimeoutExpired:
+        print(f"RPC Timeout: {method}")
         return None
     except Exception as e:
         print(f"RPC Error: {e}")
         return None
 
 def sha256d(data):
+    """Double SHA-256 hash"""
     return hashlib.sha256(hashlib.sha256(data).digest()).digest()
 
 def reverse_bytes(data):
+    """Reverse byte order"""
     return data[::-1]
 
 def swap_endian_words(hex_str):
+    """Swap endianness of each 4-byte word"""
     data = bytes.fromhex(hex_str)
     result = b''
     for i in range(0, len(data), 4):
@@ -69,22 +86,77 @@ def swap_endian_words(hex_str):
     return result
 
 def merkle_root(coinbase_hash, branches):
+    """Calculate merkle root from coinbase and branches"""
     current = coinbase_hash
     for branch in branches:
         current = sha256d(current + bytes.fromhex(branch))
     return current
 
 def serialize_height(height):
+    """
+    Serialize block height for coinbase (BIP34 compliant)
+    Uses minimal push encoding as required by consensus rules
+    """
     if height == 0:
-        return "00"
-    elif height >= 1 and height <= 16:
-        return f"{0x50 + height:02x}"
-    elif height < 128:
+        return "0100"  # Push 1 byte: 0x00
+    elif height <= 0x7f:
+        # Heights 1-127: push 1 byte
         return f"01{height:02x}"
-    elif height < 32768:
+    elif height <= 0x7fff:
+        # Heights 128-32767: push 2 bytes (little-endian)
         return f"02{height & 0xff:02x}{(height >> 8) & 0xff:02x}"
-    else:
+    elif height <= 0x7fffff:
+        # Heights 32768-8388607: push 3 bytes
         return f"03{height & 0xff:02x}{(height >> 8) & 0xff:02x}{(height >> 16) & 0xff:02x}"
+    else:
+        # Heights 8388608+: push 4 bytes
+        return f"04{height & 0xff:02x}{(height >> 8) & 0xff:02x}{(height >> 16) & 0xff:02x}{(height >> 24) & 0xff:02x}"
+
+def decode_address(address):
+    """
+    Decode a base58check address to get the pubkey hash
+    Returns (version_byte, pubkey_hash) or raises ValueError
+    """
+    ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
+
+    # Base58 decode
+    n = 0
+    for char in address:
+        n = n * 58 + ALPHABET.index(char)
+
+    # Convert to bytes (25 bytes for P2PKH)
+    data = n.to_bytes(25, 'big')
+
+    # Verify checksum
+    payload = data[:-4]
+    checksum = data[-4:]
+    expected_checksum = sha256d(payload)[:4]
+
+    if checksum != expected_checksum:
+        raise ValueError("Invalid address checksum")
+
+    version = payload[0]
+    pubkey_hash = payload[1:]
+
+    return version, pubkey_hash
+
+def create_p2pkh_output(amount_satoshis, address):
+    """
+    Create a P2PKH output script for the coinbase
+    Returns the serialized output (amount + scriptPubKey)
+    """
+    version, pubkey_hash = decode_address(address)
+
+    # P2PKH scriptPubKey: OP_DUP OP_HASH160 <20 bytes> OP_EQUALVERIFY OP_CHECKSIG
+    # 76 a9 14 <pubkey_hash> 88 ac
+    script = bytes([0x76, 0xa9, 0x14]) + pubkey_hash + bytes([0x88, 0xac])
+
+    # Output: 8-byte amount (LE) + varint script length + script
+    output = struct.pack("<Q", amount_satoshis)
+    output += bytes([len(script)])
+    output += script
+
+    return output.hex()
 
 class StratumMiner:
     def __init__(self, reader, writer):
@@ -96,36 +168,40 @@ class StratumMiner:
         self.extranonce1 = f"{extranonce_counter:08x}"
         self.extranonce2_size = 4
         self.worker_name = None
-        self.difficulty = 1  # Will be updated to network difficulty
+        self.difficulty = 1
         self.jobs = {}
+        self.job_counter = 0
 
     async def send(self, data):
-        msg = json.dumps(data) + "\n"
-        self.writer.write(msg.encode())
-        await self.writer.drain()
+        """Send JSON message to miner"""
+        try:
+            msg = json.dumps(data) + "\n"
+            self.writer.write(msg.encode())
+            await self.writer.drain()
+        except Exception as e:
+            print(f"[-] Send error: {e}")
 
     async def send_difficulty(self, diff):
-        """Send actual network difficulty so miner knows when it finds a block"""
+        """Send difficulty to miner"""
         self.difficulty = diff
         await self.send({"id": None, "method": "mining.set_difficulty", "params": [diff]})
         print(f"    [Difficulty sent: {diff}]")
 
     async def send_job(self, clean=True):
+        """Send mining job to miner"""
         template = rpc("getblocktemplate", '{"rules":["segwit"]}')
         if not template:
             print("[-] Failed to get block template")
             return
 
-        job_id = f"{int(time.time()) & 0xFFFFFFFF:08x}"
+        self.job_counter += 1
+        job_id = f"{self.job_counter:08x}"
 
-        # Calculate difficulty from target
-        # Bitcoin difficulty 1 target = 0x00000000FFFF0000000000000000000000000000000000000000000000000000
-        # difficulty = diff1_target / current_target
+        # Calculate network difficulty
         target_int = int(template["target"], 16)
         diff1_target = 0x00000000FFFF0000000000000000000000000000000000000000000000000000
         network_diff = diff1_target / target_int if target_int > 0 else 1
 
-        # Send difficulty BEFORE the job so miner uses correct target
         if abs(network_diff - self.difficulty) > 0.0001:
             await self.send_difficulty(network_diff)
 
@@ -136,15 +212,32 @@ class StratumMiner:
         height = template["height"]
         reward = template["coinbasevalue"]
         height_script = serialize_height(height)
+
+        # Calculate scriptsig length: height_script + extranonce1 (4 bytes) + extranonce2 (4 bytes)
         scriptsig_len = len(height_script)//2 + 4 + self.extranonce2_size
 
+        # Coinbase part 1: version + input count + prevout + scriptsig length + height
         cb1 = "02000000" + "01" + "00"*32 + "ffffffff" + f"{scriptsig_len:02x}" + height_script
-        cb2 = "ffffffff" + "01" + struct.pack("<Q", reward).hex() + "0151" + "00000000"
+
+        # Coinbase part 2: sequence + output count + outputs + locktime
+        if POOL_ADDRESS:
+            # Proper P2PKH output to pool address
+            output_script = create_p2pkh_output(reward, POOL_ADDRESS)
+            cb2 = "ffffffff" + "01" + output_script + "00000000"
+        else:
+            # FALLBACK: OP_TRUE output (WARNING: anyone can spend!)
+            print("[WARNING] No POOL_ADDRESS set - using OP_TRUE output!")
+            cb2 = "ffffffff" + "01" + struct.pack("<Q", reward).hex() + "0151" + "00000000"
 
         version_hex = struct.pack("<I", template["version"]).hex()
         nbits = template["bits"]
         ntime = f"{template['curtime']:08x}"
         merkle_branches = [tx["txid"] for tx in template.get("transactions", [])]
+
+        # Limit job history to prevent memory leak
+        if len(self.jobs) > 10:
+            oldest = list(self.jobs.keys())[0]
+            del self.jobs[oldest]
 
         self.jobs[job_id] = {
             "template": template,
@@ -166,6 +259,7 @@ class StratumMiner:
         print(f"[>] Job {job_id} (height={height}, diff={network_diff:.6f})")
 
     async def handle_submit(self, msg_id, params):
+        """Handle share submission from miner"""
         if len(params) < 5:
             await self.send({"id": msg_id, "result": False, "error": [20, "Invalid params", None]})
             return
@@ -190,7 +284,7 @@ class StratumMiner:
         # Merkle root
         mr = merkle_root(coinbase_hash, job["merkle_branches"])
 
-        # Build header (NerdMiner compatible)
+        # Build header
         version_bytes = reverse_bytes(bytes.fromhex(job["version_hex"]))
         prevhash_bytes = swap_endian_words(job["prevhash_stratum"])
         merkle_bytes = mr
@@ -215,9 +309,18 @@ class StratumMiner:
         if hash_int < target_int:
             print(f"\n[!!!] BLOCK FOUND!")
 
+            # Build full block
             block_hex = header.hex()
             tx_count = 1 + len(template.get("transactions", []))
-            block_hex += f"{tx_count:02x}" if tx_count < 0xFD else f"fd{tx_count:04x}"
+
+            # Proper varint encoding for tx count
+            if tx_count < 0xFD:
+                block_hex += f"{tx_count:02x}"
+            elif tx_count <= 0xFFFF:
+                block_hex += f"fd{tx_count & 0xff:02x}{(tx_count >> 8) & 0xff:02x}"
+            elif tx_count <= 0xFFFFFFFF:
+                block_hex += f"fe{tx_count & 0xff:02x}{(tx_count >> 8) & 0xff:02x}{(tx_count >> 16) & 0xff:02x}{(tx_count >> 24) & 0xff:02x}"
+
             block_hex += coinbase_hex
             for tx in template.get("transactions", []):
                 block_hex += tx["data"]
@@ -225,14 +328,11 @@ class StratumMiner:
             result = rpc("submitblock", block_hex)
             if result is None or result == "":
                 print(f"[***] BLOCK ACCEPTED! Height {template['height']}")
-                # Report to pool UI dashboard
                 report_block_to_ui(template['height'], hash_display, self.worker_name, template['coinbasevalue'])
-                # Notify miner it found a block (some miners display this)
                 try:
                     await self.send({"id": None, "method": "client.show_message", "params": [f"BLOCK FOUND! Height {template['height']}"]})
-                except:
+                except Exception:
                     pass
-                # Send new job immediately for next block
                 await self.send({"id": msg_id, "result": True, "error": None})
                 await self.send_job(clean=True)
                 print(f"{'='*60}\n")
@@ -241,14 +341,13 @@ class StratumMiner:
                 print(f"[!!!] Rejected: {result}")
                 await self.send({"id": msg_id, "result": False, "error": [23, str(result), None]})
         else:
-            # Share doesn't meet network target - reject it
-            # This shouldn't happen if difficulty is set correctly
-            print(f"[-] Share below target (shouldn't happen)")
+            print(f"[-] Share below target")
             await self.send({"id": msg_id, "result": False, "error": [23, "Low difficulty share", None]})
 
         print(f"{'='*60}\n")
 
     async def handle(self):
+        """Main handler for miner connection"""
         print(f"[+] Connection from {self.address}")
         try:
             while True:
@@ -267,7 +366,6 @@ class StratumMiner:
                             "result": [[["mining.set_difficulty", "1"], ["mining.notify", "1"]], self.extranonce1, self.extranonce2_size],
                             "error": None
                         })
-                        # Don't send difficulty here - will send with first job
 
                     elif method == "mining.authorize":
                         self.worker_name = params[0] if params else "unknown"
@@ -280,12 +378,13 @@ class StratumMiner:
                         await self.handle_submit(msg_id, params)
 
                     elif method == "mining.suggest_difficulty":
-                        # Ignore miner's suggestion - we use network difficulty
-                        pass
+                        pass  # Ignore - we use network difficulty
 
                     elif method == "mining.extranonce.subscribe":
                         await self.send({"id": msg_id, "result": True, "error": None})
 
+                except json.JSONDecodeError as e:
+                    print(f"[-] JSON decode error: {e}")
                 except Exception as e:
                     print(f"[-] Error: {e}")
                     import traceback
@@ -298,30 +397,49 @@ class StratumMiner:
             print(f"[-] Disconnected: {self.worker_name or self.address}")
 
 async def job_broadcaster():
+    """Periodically send new jobs to all miners"""
     while True:
         await asyncio.sleep(30)
         for miner in list(miners.values()):
             try:
                 await miner.send_job(clean=False)
-            except:
+            except Exception:
                 pass
 
 async def main():
     print("=" * 60)
-    print("  RETARDIO POOL v8 - NerdMiner Block Detection")
-    print("  Sends network difficulty so miners see block finds")
+    print("  RETARDIO POOL v8.1 - Security Hardened")
     print("=" * 60)
+
+    # Check configuration
+    if not POOL_ADDRESS:
+        print("\n[!!!] WARNING: POOL_ADDRESS not set!")
+        print("[!!!] Set POOL_ADDRESS environment variable to your wallet address")
+        print("[!!!] Without this, mined coins use OP_TRUE (anyone can spend!)")
+        print()
+    else:
+        print(f"Pool Address: {POOL_ADDRESS}")
+
+    print(f"RPC CLI: {RPC_CLI}")
+    print(f"Data Dir: {DATA_DIR}")
+    print(f"Pool Port: {POOL_PORT}")
+    print(f"UI URL: {POOL_UI_URL}")
 
     info = rpc("getblockchaininfo")
     if not info:
-        print("ERROR: Cannot connect to node!")
+        print("\nERROR: Cannot connect to node!")
+        print("Make sure retardiod is running and RPC is accessible")
         return
 
-    print(f"Node: Block {info['blocks']}, Diff {info['difficulty']:.6f}")
-    print(f"Port: {POOL_PORT}")
+    print(f"\nNode: Block {info['blocks']}, Diff {info['difficulty']:.6f}")
     print("=" * 60)
+    print(f"Pool listening on port {POOL_PORT}...")
 
-    server = await asyncio.start_server(lambda r, w: StratumMiner(r, w).handle(), '0.0.0.0', POOL_PORT)
+    server = await asyncio.start_server(
+        lambda r, w: StratumMiner(r, w).handle(),
+        '0.0.0.0',
+        POOL_PORT
+    )
     asyncio.create_task(job_broadcaster())
 
     async with server:

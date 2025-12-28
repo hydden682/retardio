@@ -8,6 +8,13 @@ echo "=================================="
 echo "Retardio Node Setup for RPi5"
 echo "=================================="
 
+# Generate secure random password
+RPC_PASSWORD=$(openssl rand -hex 24)
+echo ""
+echo "Generated RPC Password: $RPC_PASSWORD"
+echo "(Save this - you'll need it for wallet access)"
+echo ""
+
 # Check architecture
 ARCH=$(uname -m)
 if [[ "$ARCH" != "aarch64" ]]; then
@@ -53,7 +60,7 @@ mkdir -p ~/.retardio/data
 # Create config
 echo ""
 echo "[5/6] Creating configuration..."
-cat > ~/.retardio/data/retardio.conf << 'EOF'
+cat > ~/.retardio/data/retardio.conf << EOF
 # Retardio Node Configuration for RPi5
 server=1
 daemon=1
@@ -63,14 +70,14 @@ rpcport=18332
 
 # RPC credentials
 rpcuser=retardio
-rpcpassword=retardiopass_rpi5
+rpcpassword=$RPC_PASSWORD
 
 # Allow local RPC
 rpcallowip=127.0.0.1
 rpcbind=127.0.0.1
 
 # Data directory
-datadir=/home/pi/.retardio/data
+datadir=$HOME/.retardio/data
 
 # Performance settings for RPi5
 dbcache=512
@@ -84,9 +91,13 @@ addnode=96.236.21.232:18333
 gen=0
 EOF
 
-# Update datadir path based on actual user
-ACTUAL_USER=$(whoami)
-sed -i "s|/home/pi|/home/$ACTUAL_USER|g" ~/.retardio/data/retardio.conf
+# Save credentials for future reference
+cat > ~/.retardio/credentials << EOF
+# Retardio RPC Credentials - KEEP SECURE
+RPC_USER=retardio
+RPC_PASSWORD=$RPC_PASSWORD
+EOF
+chmod 600 ~/.retardio/credentials
 
 # Create helper scripts
 echo ""

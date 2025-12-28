@@ -2,6 +2,8 @@
 /*build*
 !/build-aux
 !/build_msvc
+!/build_release.ps1
+!/build_release.sh
 
 *.pyc
 
@@ -23,3 +25,16 @@ test/lint/test_runner/target/
 /ci/scratch/
 *.tar.gz
 *.zip
+
+# Pool artifacts
+pool_ui/*.db
+*.log
+__pycache__/
+*.pyc
+
+# Credentials (should never be committed)
+**/credentials
+*.env
+
+# Generated release directories
+Retardio-v*/

@@ -1,19 +1,43 @@
 #!/usr/bin/env python3
 """
-Retardio Pool Dashboard
+Retardio Pool Dashboard v1.1
 Web UI to display found blocks and pool statistics
+
+Security fixes:
+- Debug mode disabled
+- API key authentication for block submission
 """
 
 from flask import Flask, render_template, jsonify, request
 from flask_cors import CORS
 import sqlite3
 import os
+import secrets
 from datetime import datetime
+from functools import wraps
 
 app = Flask(__name__)
 CORS(app)
 
-DB_PATH = os.path.join(os.path.dirname(__file__), 'pool.db')
+# Configuration via environment variables
+DB_PATH = os.environ.get('POOL_DB_PATH', os.path.join(os.path.dirname(__file__), 'pool.db'))
+API_KEY = os.environ.get('POOL_API_KEY', '')
+
+# Generate API key if not set (for first-run)
+if not API_KEY:
+    API_KEY = secrets.token_hex(32)
+    print(f"[WARNING] No POOL_API_KEY set. Generated temporary key: {API_KEY}")
+    print("[WARNING] Set POOL_API_KEY environment variable for production!")
+
+def require_api_key(f):
+    """Decorator to require API key for internal endpoints"""
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        provided_key = request.headers.get('X-API-Key') or request.args.get('api_key')
+        if not provided_key or provided_key != API_KEY:
+            return jsonify({'error': 'Unauthorized'}), 401
+        return f(*args, **kwargs)
+    return decorated
 
 def get_db():
     conn = sqlite3.connect(DB_PATH)
@@ -83,9 +107,12 @@ def get_blocks():
     return jsonify(blocks)
 
 @app.route('/api/blocks/add', methods=['POST'])
+@require_api_key
 def add_block():
-    """Add a new found block (called by pool)"""
+    """Add a new found block (called by pool server only)"""
     data = request.json
+    if not data:
+        return jsonify({'error': 'No data provided'}), 400
     conn = get_db()
     conn.execute('''
         INSERT INTO blocks (height, hash, worker, address, reward, timestamp)
@@ -148,4 +175,6 @@ def get_worker_stats(worker):
 
 if __name__ == '__main__':
     init_db()
-    app.run(host='0.0.0.0', port=5555, debug=True)
+    # SECURITY: Debug mode MUST be False in production (allows RCE)
+    port = int(os.environ.get('POOL_UI_PORT', 5555))
+    app.run(host='0.0.0.0', port=port, debug=False)

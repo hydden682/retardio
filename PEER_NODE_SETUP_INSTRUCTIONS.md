@@ -66,12 +66,17 @@ mkdir -p ~/.retardio
 nano ~/.retardio/bitcoin.conf
 ```
 
-Paste this configuration:
+First, generate a secure random password:
+```bash
+openssl rand -hex 24
+```
+
+Copy the output - that's your RPC password. Then paste this configuration:
 ```
 rpcport=18332
 port=18333
 rpcuser=retardiouser
-rpcpassword=retardiopass123
+rpcpassword=YOUR_GENERATED_PASSWORD_HERE
 server=1
 rpcallowip=127.0.0.1
 rpcbind=127.0.0.1
@@ -80,7 +85,9 @@ rpcbind=127.0.0.1
 addnode=YOUR_IP_ADDRESS:18333
 ```
 
-**IMPORTANT**: Replace `YOUR_IP_ADDRESS` with your actual IP address (the friend needs to ask you for this).
+**IMPORTANT**:
+- Replace `YOUR_GENERATED_PASSWORD_HERE` with the password you generated above
+- Replace `YOUR_IP_ADDRESS` with the pool operator's IP address
 
 Save and exit (Ctrl+X, then Y, then Enter).
 

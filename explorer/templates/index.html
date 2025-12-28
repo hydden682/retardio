@@ -344,10 +344,25 @@
             if (e.key === 'Enter') search();
         });
 
+        // Handle URL hash routing (e.g., #block-2608)
+        function handleHashRoute() {
+            const hash = window.location.hash;
+            if (hash.startsWith('#block-')) {
+                const height = hash.replace('#block-', '');
+                if (height && !isNaN(height)) {
+                    showBlock(parseInt(height));
+                }
+            }
+        }
+
         // Initial load
         loadStats();
         loadBlocks();
         loadNodes();
+
+        // Check URL hash on page load
+        handleHashRoute();
+        window.addEventListener('hashchange', handleHashRoute);
 
         // Auto refresh
         setInterval(() => {

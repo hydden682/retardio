@@ -491,7 +491,7 @@
                     html += `<tr>
                         <td>${timeStr}</td>
                         <td>${b.height}</td>
-                        <td><span class="hash-link">${shortHash}</span></td>
+                        <td><a href="/explorer/#block-${b.height}" target="_blank" class="hash-link" title="${b.hash}">${shortHash}</a></td>
                         <td><span class="worker-tag">${worker}</span></td>
                         <td>${b.reward ? b.reward.toFixed(2) + ' RTD' : '-'}</td>
                     </tr>`;
@@ -546,7 +546,7 @@
                     html += `<tr>
                         <td>${timeStr}</td>
                         <td>${b.height}</td>
-                        <td><span class="hash-link">${shortHash}</span></td>
+                        <td><a href="/explorer/#block-${b.height}" target="_blank" class="hash-link" title="${b.hash}">${shortHash}</a></td>
                         <td><span class="worker-tag">${worker}</span></td>
                         <td title="${addr}">${shortAddr}</td>
                         <td>${b.reward ? b.reward.toFixed(2) + ' RTD' : '-'}</td>

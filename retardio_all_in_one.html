@@ -608,7 +608,15 @@
 
         function copy(id) {
             const text = document.getElementById(id).textContent;
-            navigator.clipboard.writeText(text);
+            // Fallback for HTTP (navigator.clipboard requires HTTPS)
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-9999px';
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
             alert('Copied to clipboard!');
         }
 

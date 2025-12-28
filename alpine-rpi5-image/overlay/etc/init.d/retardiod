@@ -1,0 +1,37 @@
+#!/sbin/openrc-run
+#
+# Retardio Daemon OpenRC Init Script
+#
+
+name="retardiod"
+description="Retardio Node Daemon"
+
+command="/usr/local/bin/retardiod"
+command_args="-daemon -conf=/home/retardio/.retardio/retardio.conf -datadir=/home/retardio/.retardio"
+command_user="retardio:retardio"
+pidfile="/run/retardiod.pid"
+
+start_pre() {
+    checkpath -d -m 0755 -o retardio:retardio /home/retardio/.retardio
+}
+
+start() {
+    ebegin "Starting ${name}"
+    start-stop-daemon --start \
+        --user ${command_user%%:*} \
+        --exec ${command} \
+        -- ${command_args}
+    eend $?
+}
+
+stop() {
+    ebegin "Stopping ${name}"
+    /usr/local/bin/retardio-cli -conf=/home/retardio/.retardio/retardio.conf stop 2>/dev/null || true
+    start-stop-daemon --stop --exec ${command}
+    eend $?
+}
+
+depend() {
+    need net
+    after firewall
+}

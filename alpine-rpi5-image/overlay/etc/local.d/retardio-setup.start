@@ -1,0 +1,56 @@
+#!/bin/sh
+#
+# Retardio First-Boot Setup Script
+# Runs once on first boot to configure the node
+#
+
+SETUP_MARKER="/home/retardio/.retardio/.setup_complete"
+
+# Only run if not already set up
+if [ -f "$SETUP_MARKER" ]; then
+    exit 0
+fi
+
+echo "=============================================="
+echo "  Retardio Node First Boot Setup"
+echo "=============================================="
+
+# Create retardio user if not exists
+if ! id -u retardio >/dev/null 2>&1; then
+    adduser -D -h /home/retardio -s /bin/sh retardio
+    echo "retardio:retardio" | chpasswd
+    echo "Created user 'retardio' with password 'retardio'"
+fi
+
+# Set ownership
+chown -R retardio:retardio /home/retardio
+
+# Generate RPC password if not set
+CONF_FILE="/home/retardio/.retardio/retardio.conf"
+if ! grep -q "rpcpassword=" "$CONF_FILE" 2>/dev/null || grep -q "CHANGE_THIS" "$CONF_FILE" 2>/dev/null; then
+    RPC_PASS=$(head -c 32 /dev/urandom | base64 | tr -dc 'a-zA-Z0-9' | head -c 32)
+    sed -i "s/rpcpassword=.*/rpcpassword=$RPC_PASS/" "$CONF_FILE"
+    echo "Generated secure RPC password"
+fi
+
+# Enable and start services
+rc-update add retardiod default
+rc-service retardiod start
+
+# Mark setup as complete
+touch "$SETUP_MARKER"
+
+echo ""
+echo "=============================================="
+echo "  Setup Complete!"
+echo "=============================================="
+echo ""
+echo "Retardio node is starting..."
+echo ""
+echo "Default credentials:"
+echo "  User: retardio"
+echo "  Pass: retardio (change with 'passwd')"
+echo ""
+echo "Check node status:"
+echo "  retardio-cli getblockchaininfo"
+echo ""

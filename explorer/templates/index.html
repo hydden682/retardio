@@ -294,15 +294,52 @@
             `;
         }
 
-        function showAddress(address) {
+        async function showAddress(address) {
             document.getElementById('mainContent').style.display = 'none';
             document.getElementById('detailContent').style.display = 'block';
+            document.getElementById('detailContent').innerHTML = '<div class="loading">Loading address data...</div>';
+
+            const data = await fetchAPI('/api/address/' + encodeURIComponent(address));
+            if (!data || data.error) {
+                document.getElementById('detailContent').innerHTML = `
+                    <div class="detail-page">
+                        <div class="detail-header"><h1>Address</h1></div>
+                        <div class="detail-grid">
+                            <div class="detail-item"><label>Address</label><div class="value">${address}</div></div>
+                            <div class="detail-item"><label>Status</label><div class="value">No transaction data found for this address</div></div>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            const txRows = (data.transactions || []).map(tx => `
+                <tr onclick="showTransaction('${tx.txid}')" style="cursor:pointer">
+                    <td class="hash"><span class="hash-short">${tx.txid}</span></td>
+                    <td><a href="#" onclick="event.stopPropagation(); showBlock(${tx.block_height}); return false;">${tx.block_height}</a></td>
+                    <td><span class="badge ${tx.tx_type === 'received' ? 'badge-green' : 'badge-blue'}">${tx.tx_type === 'received' ? '+' : ''}${tx.net_amount?.toFixed(8) || '0'} RET</span></td>
+                    <td class="time-ago">${tx.timestamp ? timeAgo(tx.timestamp) : '-'}</td>
+                </tr>
+            `).join('');
+
             document.getElementById('detailContent').innerHTML = `
                 <div class="detail-page">
-                    <div class="detail-header"><h1>Address</h1></div>
+                    <div class="detail-header"><h1>Address Details</h1></div>
                     <div class="detail-grid">
-                        <div class="detail-item"><label>Address</label><div class="value">${address}</div></div>
-                        <div class="detail-item"><label>Note</label><div class="value">Full address indexing requires nodes with addressindex enabled</div></div>
+                        <div class="detail-item" style="grid-column: 1 / -1"><label>Address</label><div class="value">${data.address}</div></div>
+                        <div class="detail-item"><label>Balance</label><div class="value" style="color: #4ade80; font-size: 1.3rem;">${data.balance?.toFixed(8) || '0'} RET</div></div>
+                        <div class="detail-item"><label>Total Received</label><div class="value">${data.total_received?.toFixed(8) || '0'} RET</div></div>
+                        <div class="detail-item"><label>Total Spent</label><div class="value">${data.total_spent?.toFixed(8) || '0'} RET</div></div>
+                        <div class="detail-item"><label>Transactions</label><div class="value">${data.tx_count || 0}</div></div>
+                    </div>
+                    <div class="section" style="margin-top:20px">
+                        <div class="section-header"><h2>Transaction History</h2></div>
+                        <table>
+                            <thead><tr><th>TxID</th><th>Block</th><th>Amount</th><th>Time</th></tr></thead>
+                            <tbody>
+                                ${txRows || '<tr><td colspan="4" class="loading">No transactions found</td></tr>'}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             `;

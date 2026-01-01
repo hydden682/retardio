@@ -64,8 +64,32 @@ def init_db():
                 fee REAL, is_coinbase INTEGER DEFAULT 0,
                 total_output REAL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
+            CREATE TABLE IF NOT EXISTS tx_outputs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                txid TEXT NOT NULL,
+                vout_index INTEGER NOT NULL,
+                address TEXT,
+                value REAL,
+                block_height INTEGER,
+                timestamp INTEGER,
+                UNIQUE(txid, vout_index)
+            );
+            CREATE TABLE IF NOT EXISTS tx_inputs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                txid TEXT NOT NULL,
+                vin_index INTEGER NOT NULL,
+                prev_txid TEXT,
+                prev_vout INTEGER,
+                address TEXT,
+                value REAL,
+                block_height INTEGER,
+                UNIQUE(txid, vin_index)
+            );
             CREATE INDEX IF NOT EXISTS idx_blocks_hash ON blocks(hash);
             CREATE INDEX IF NOT EXISTS idx_tx_block ON transactions(block_height);
+            CREATE INDEX IF NOT EXISTS idx_outputs_address ON tx_outputs(address);
+            CREATE INDEX IF NOT EXISTS idx_inputs_address ON tx_inputs(address);
+            CREATE INDEX IF NOT EXISTS idx_outputs_txid ON tx_outputs(txid);
         ''')
         db.commit()
 
@@ -128,6 +152,32 @@ def sync_blocks():
                         db.execute('INSERT OR REPLACE INTO transactions VALUES (?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP)',
                             (tx['txid'], height, block['hash'], block.get('time', 0),
                              tx.get('size', 0), 0, is_coinbase, total_output))
+                        # Store transaction outputs with addresses
+                        for vout in tx.get('vout', []):
+                            vout_idx = vout.get('n', 0)
+                            value = vout.get('value', 0)
+                            addresses = vout.get('scriptPubKey', {}).get('addresses', [])
+                            # Also check 'address' field (newer Bitcoin Core versions)
+                            if not addresses:
+                                addr = vout.get('scriptPubKey', {}).get('address')
+                                if addr:
+                                    addresses = [addr]
+                            for addr in addresses:
+                                db.execute('INSERT OR REPLACE INTO tx_outputs (txid, vout_index, address, value, block_height, timestamp) VALUES (?,?,?,?,?,?)',
+                                    (tx['txid'], vout_idx, addr, value, height, block.get('time', 0)))
+                        # Store transaction inputs (for spending tracking)
+                        if not is_coinbase:
+                            for vin_idx, vin in enumerate(tx.get('vin', [])):
+                                prev_txid = vin.get('txid')
+                                prev_vout = vin.get('vout')
+                                if prev_txid:
+                                    # Try to look up the address from the previous output
+                                    prev_cursor = db.execute('SELECT address, value FROM tx_outputs WHERE txid = ? AND vout_index = ?', (prev_txid, prev_vout))
+                                    prev_row = prev_cursor.fetchone()
+                                    addr = prev_row['address'] if prev_row else None
+                                    value = prev_row['value'] if prev_row else 0
+                                    db.execute('INSERT OR REPLACE INTO tx_inputs (txid, vin_index, prev_txid, prev_vout, address, value, block_height) VALUES (?,?,?,?,?,?,?)',
+                                        (tx['txid'], vin_idx, prev_txid, prev_vout, addr, value, height))
                     db.commit()
                 logger.info(f"Synced block {height}")
             time.sleep(10)
@@ -194,6 +244,61 @@ def api_tx(txid):
         return jsonify({'error': 'Not found'}), 404
     return jsonify(dict(row))
 
+@app.route('/api/address/<address>')
+def api_address(address):
+    db = get_db()
+    # Get all outputs (received) for this address
+    received_cursor = db.execute('''
+        SELECT txid, vout_index, value, block_height, timestamp
+        FROM tx_outputs WHERE address = ? ORDER BY block_height DESC
+    ''', (address,))
+    received = [dict(row) for row in received_cursor.fetchall()]
+
+    # Get all inputs (spent) from this address
+    spent_cursor = db.execute('''
+        SELECT txid, vin_index, prev_txid, prev_vout, value, block_height
+        FROM tx_inputs WHERE address = ? ORDER BY block_height DESC
+    ''', (address,))
+    spent = [dict(row) for row in spent_cursor.fetchall()]
+
+    # Calculate balance
+    total_received = sum(r['value'] or 0 for r in received)
+    total_spent = sum(s['value'] or 0 for s in spent)
+    balance = total_received - total_spent
+
+    # Get unique transactions involving this address
+    tx_set = set()
+    for r in received:
+        tx_set.add(r['txid'])
+    for s in spent:
+        tx_set.add(s['txid'])
+
+    # Get transaction details
+    transactions = []
+    for txid in tx_set:
+        tx_cursor = db.execute('SELECT * FROM transactions WHERE txid = ?', (txid,))
+        tx_row = tx_cursor.fetchone()
+        if tx_row:
+            tx_dict = dict(tx_row)
+            # Calculate net amount for this address in this tx
+            tx_received = sum(r['value'] or 0 for r in received if r['txid'] == txid)
+            tx_spent = sum(s['value'] or 0 for s in spent if s['txid'] == txid)
+            tx_dict['net_amount'] = tx_received - tx_spent
+            tx_dict['tx_type'] = 'received' if tx_dict['net_amount'] > 0 else 'sent'
+            transactions.append(tx_dict)
+
+    # Sort by block height descending
+    transactions.sort(key=lambda x: x.get('block_height', 0), reverse=True)
+
+    return jsonify({
+        'address': address,
+        'balance': balance,
+        'total_received': total_received,
+        'total_spent': total_spent,
+        'tx_count': len(transactions),
+        'transactions': transactions[:50]  # Limit to 50 most recent
+    })
+
 @app.route('/api/search')
 def api_search():
     q = request.args.get('q', '').strip()
@@ -215,7 +320,10 @@ def api_search():
         if r:
             return jsonify({'type': 'tx', 'txid': q})
     if q.startswith('F') or q.startswith('R'):
-        return jsonify({'type': 'address', 'address': q})
+        # Check if we have any data for this address
+        c = db.execute('SELECT COUNT(*) as cnt FROM tx_outputs WHERE address = ?', (q,))
+        r = c.fetchone()
+        return jsonify({'type': 'address', 'address': q, 'has_data': r['cnt'] > 0 if r else False})
     return jsonify({'error': 'Not found'}), 404
 
 @app.route('/api/nodes')

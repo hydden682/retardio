@@ -200,15 +200,37 @@ sed -i "s|/home/hydden682|$HOME|g" ~/retardio-coin/pool_v8.py
 # Setup nginx
 echo "[7/8] Configuring web server..."
 
-# Create downloads directory with configured files
-mkdir -p ~/retardio-coin/www/downloads
+# Setup SSL Certificates
+echo "Setting up SSL certificates..."
+sudo mkdir -p /etc/nginx/ssl
+# Check and copy certificates
+if [ -f "$HOME/retardiochain.com.pem" ] && [ -f "$HOME/retardiochain.com.key" ]; then
+    echo "Certificates found in home directory. Installing..."
+    sudo cp "$HOME/retardiochain.com.pem" /etc/nginx/ssl/retardiochain.com.pem
+    sudo cp "$HOME/retardiochain.com.key" /etc/nginx/ssl/retardiochain.com.key
+elif [ -f "retardiochain.com.pem" ] && [ -f "retardiochain.com.key" ]; then
+    echo "Certificates found in current directory. Installing..."
+    sudo cp retardiochain.com.pem /etc/nginx/ssl/retardiochain.com.pem
+    sudo cp retardiochain.com.key /etc/nginx/ssl/retardiochain.com.key
+else
+    echo "WARNING: SSL Certificates not found! HTTPS will fail."
+    echo "Please upload 'retardiochain.com.pem' and 'retardiochain.com.key' to $HOME"
+fi
+sudo chmod 600 /etc/nginx/ssl/*.key
+sudo chmod 644 /etc/nginx/ssl/*.pem
+
+# Setup web directory
+sudo mkdir -p /var/www/retardio/downloads
+sudo mkdir -p /var/www/webflasher
+sudo chown -R $USER:$USER /var/www/retardio
+sudo chown -R $USER:$USER /var/www/webflasher
 
 # Create configured all-in-one HTML
 sed "s/retardiopool.xyz/$POOL_DOMAIN/g; s/retardiochain.com/$CHAIN_DOMAIN/g" \
-    ~/retardio-coin/retardio_all_in_one.html > ~/retardio-coin/www/downloads/Retardio.html
+    ~/retardio-coin/retardio_all_in_one.html > /var/www/retardio/downloads/Retardio.html
 
 # Create landing page
-cat > ~/retardio-coin/www/index.html << 'HTMLEOF'
+cat > /var/www/retardio/index.html << 'HTMLEOF'
 <!DOCTYPE html>
 <html>
 <head>
@@ -301,16 +323,16 @@ sudo tee /etc/nginx/sites-available/retardio << EOF
 
 server {
     listen 80;
-    # listen 443 ssl;
+    listen 443 ssl;
     server_name $CHAIN_DOMAIN www.$CHAIN_DOMAIN $PUBLIC_IP;
     
-    # SSL Configuration (Uncomment and ensure certs are at these paths)
-    # ssl_certificate /etc/nginx/ssl/retardio.crt;
-    # ssl_certificate_key /etc/nginx/ssl/retardio.key;
-    # ssl_protocols TLSv1.2 TLSv1.3;
-    # ssl_cipher_list ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
+    # SSL Configuration
+    ssl_certificate /etc/nginx/ssl/retardiochain.com.pem;
+    ssl_certificate_key /etc/nginx/ssl/retardiochain.com.key;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_cipher_list ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
 
-    root \$HOME/retardio-coin/www;
+    root /var/www/retardio;
     index index.html;
 
     # Main site
@@ -360,19 +382,43 @@ server {
 
     # Downloads
     location /downloads {
-        alias \$HOME/retardio-coin/www/downloads;
+        alias /var/www/retardio/downloads;
         autoindex on;
+    }
+}
+
+# Webflasher subdomain - HTTP redirect to HTTPS
+server {
+    listen 80;
+    server_name webflasher.$CHAIN_DOMAIN;
+    return 301 https://\$host\$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name webflasher.$CHAIN_DOMAIN;
+
+    ssl_certificate /etc/nginx/ssl/retardiochain.com.pem;
+    ssl_certificate_key /etc/nginx/ssl/retardiochain.com.key;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
+
+    root /var/www/webflasher;
+    index index.html;
+
+    location / {
+        try_files \$uri \$uri/ =404;
     }
 }
 
 server {
     listen 80;
-    # listen 443 ssl;
+    listen 443 ssl;
     server_name $POOL_DOMAIN www.$POOL_DOMAIN;
 
-    # SSL Configuration (Uncomment and ensure certs are at these paths)
-    # ssl_certificate /etc/nginx/ssl/retardio.crt;
-    # ssl_certificate_key /etc/nginx/ssl/retardio.key;
+    # SSL Configuration
+    ssl_certificate /etc/nginx/ssl/retardiochain.com.pem;
+    ssl_certificate_key /etc/nginx/ssl/retardiochain.com.key;
 
     # Ensure / also works for the dashboard on the pool domain
     location / {
@@ -405,8 +451,8 @@ sudo ln -sf /etc/nginx/sites-available/retardio /etc/nginx/sites-enabled/
 sudo rm -f /etc/nginx/sites-enabled/default
 
 # Fix permissions for nginx to access www directory
-chmod 755 $HOME
-chmod -R 755 $HOME/retardio-coin/www
+sudo chown -R www-data:www-data /var/www/retardio
+sudo chmod -R 755 /var/www/retardio
 
 sudo nginx -t && sudo systemctl reload nginx
 
@@ -464,10 +510,12 @@ if [ "$LOCAL" != "$REMOTE" ]; then
 
     # Update the all-in-one HTML
     sed "s/retardiopool.xyz/$POOL_DOMAIN/g; s/retardiochain.com/$CHAIN_DOMAIN/g" \
-        retardio_all_in_one.html > www/downloads/Retardio.html
+        retardio_all_in_one.html > /var/www/retardio/downloads/Retardio.html
 
     # Update wallet standalone
-    cp wallet_standalone.html www/downloads/wallet.html
+    cp wallet_standalone.html /var/www/retardio/downloads/wallet.html
+
+    sudo chown -R www-data:www-data /var/www/retardio
 
     echo "$(date): Update complete!"
 else

@@ -1,0 +1,15 @@
+{
+  "name": "retardio_wallet",
+  "type": "module",
+  "version": "0.1.0",
+  "files": [
+    "retardio_wallet_bg.wasm",
+    "retardio_wallet.js",
+    "retardio_wallet.d.ts"
+  ],
+  "main": "retardio_wallet.js",
+  "types": "retardio_wallet.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}

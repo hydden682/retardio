@@ -14,6 +14,8 @@ echo "  RETARDIO COMPLETE VPS SETUP"
 echo "=============================================="
 echo ""
 
+cd "$HOME"
+
 # Get public IP (force IPv4)
 PUBLIC_IP=$(curl -4 -s ifconfig.me)
 echo "Your Public IP: $PUBLIC_IP"

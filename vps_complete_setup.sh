@@ -332,6 +332,12 @@ server {
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_cipher_list ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
 
+    # Security Headers
+    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+
     root /var/www/retardio;
     index index.html;
 
@@ -402,6 +408,12 @@ server {
     ssl_certificate_key /etc/nginx/ssl/retardiochain.com.key;
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
+
+    # Security Headers
+    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
 
     root /var/www/webflasher;
     index index.html;
@@ -511,6 +523,18 @@ if [ "$LOCAL" != "$REMOTE" ]; then
     # Update the all-in-one HTML
     sed "s/retardiopool.xyz/$POOL_DOMAIN/g; s/retardiochain.com/$CHAIN_DOMAIN/g" \
         retardio_all_in_one.html > /var/www/retardio/downloads/Retardio.html
+
+    # Update webflasher Wallet (if present)
+    if [ -d "Wallet" ]; then
+        echo "Updating webflasher wallet..."
+        sudo cp Wallet/index.html /var/www/webflasher/
+        sudo cp Wallet/main.js /var/www/webflasher/
+        sudo cp Wallet/style.css /var/www/webflasher/
+        if [ -d "Wallet/pkg" ]; then
+            sudo cp -r Wallet/pkg /var/www/webflasher/
+        fi
+        sudo chown -R www-data:www-data /var/www/webflasher
+    fi
 
     # Update wallet standalone
     cp wallet_standalone.html /var/www/retardio/downloads/wallet.html

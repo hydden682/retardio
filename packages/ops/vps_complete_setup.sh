@@ -170,7 +170,7 @@ RestartSec=10
 WantedBy=multi-user.target
 EOF
 
-# Pool UI service
+# Pool UI service (Gunicorn)
 sudo tee /etc/systemd/system/retardio-pool-ui.service > /dev/null << EOF
 [Unit]
 Description=Retardio Pool Dashboard
@@ -181,7 +181,7 @@ Type=simple
 User=$USER
 WorkingDirectory=$HOME/retardio-coin/packages/pool/pool_ui
 Environment="POOL_API_KEY=$POOL_API_KEY"
-ExecStart=/usr/bin/python3 $HOME/retardio-coin/packages/pool/pool_ui/app.py
+ExecStart=/usr/local/bin/gunicorn --bind 127.0.0.1:5555 --workers 3 app:app
 Restart=always
 RestartSec=10
 
@@ -381,17 +381,12 @@ server {
     root /var/www/retardio;
     index index.html;
 
-    # Main site - Dashboard as Default
+    # Main site - Static Landing Page
     location / {
-        proxy_pass http://127.0.0.1:5555/;
-        proxy_http_version 1.1;
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
+        try_files \$uri \$uri/ /index.html;
     }
 
-    # Pool dashboard (now under explorer for consistency)
+    # Pool dashboard
     location /dashboard {
         proxy_pass http://127.0.0.1:5555/;
         proxy_http_version 1.1;
@@ -421,9 +416,9 @@ server {
         proxy_set_header X-Forwarded-Proto \$scheme;
     }
 
-    # Explorer API
+    # Explorer API (Handled by Next.js now, but kept for legacy if needed)
     location /explorer/api/ {
-        proxy_pass http://127.0.0.1:3002/api/;
+        proxy_pass http://127.0.0.1:8082/api/;
         proxy_http_version 1.1;
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;

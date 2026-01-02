@@ -26,7 +26,10 @@ const RPC_PASSWORD = process.env.RPC_PASSWORD || "pass";
 const RPC_URL = `http://${process.env.RPC_HOST || "127.0.0.1"}:${process.env.RPC_PORT || "18332"}`;
 
 const rpcCall = async (method: string, params: any[] = []) => {
-    if (!process.env.RPC_USER) return null; // Fallback to mock if no creds
+    if (!process.env.RPC_USER) {
+        console.warn("RPC_USER not set, using mock data");
+        return null;
+    }
     const headers = {
         "content-type": "text/plain;",
     };
@@ -35,6 +38,7 @@ const rpcCall = async (method: string, params: any[] = []) => {
     headers["Authorization"] = `Basic ${auth}`;
 
     try {
+        console.log(`RPC Call: ${method} to ${RPC_URL}`);
         const res = await fetch(RPC_URL, {
             method: "POST",
             headers,
@@ -46,11 +50,20 @@ const rpcCall = async (method: string, params: any[] = []) => {
             }),
             cache: "no-store"
         });
+
+        if (!res.ok) {
+            console.error(`RPC HTTP Error: ${res.status} ${res.statusText}`);
+            return null;
+        }
+
         const data = await res.json();
-        if (data.error) throw new Error(data.error.message);
+        if (data.error) {
+            console.error(`RPC Application Error:`, data.error);
+            throw new Error(data.error.message);
+        }
         return data.result;
     } catch (e) {
-        console.error(`RPC Error (${method}):`, e);
+        console.error(`RPC Exception (${method}):`, e);
         return null;
     }
 };

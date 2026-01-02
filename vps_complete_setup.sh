@@ -292,9 +292,24 @@ HTMLEOF
 
 # Nginx config
 sudo tee /etc/nginx/sites-available/retardio << EOF
+# HTTP Redirect to HTTPS (Optional - uncomment if using SSL)
+# server {
+#     listen 80;
+#     server_name $CHAIN_DOMAIN www.$CHAIN_DOMAIN $POOL_DOMAIN www.$POOL_DOMAIN $PUBLIC_IP;
+#     return 301 https://\$host\$request_uri;
+# }
+
 server {
     listen 80;
-    server_name $CHAIN_DOMAIN $PUBLIC_IP;
+    # listen 443 ssl;
+    server_name $CHAIN_DOMAIN www.$CHAIN_DOMAIN $PUBLIC_IP;
+    
+    # SSL Configuration (Uncomment and ensure certs are at these paths)
+    # ssl_certificate /etc/nginx/ssl/retardio.crt;
+    # ssl_certificate_key /etc/nginx/ssl/retardio.key;
+    # ssl_protocols TLSv1.2 TLSv1.3;
+    # ssl_cipher_list ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
+
     root \$HOME/retardio-coin/www;
     index index.html;
 
@@ -308,6 +323,9 @@ server {
         proxy_pass http://127.0.0.1:5555/;
         proxy_http_version 1.1;
         proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
     }
 
     # Pool API
@@ -315,6 +333,9 @@ server {
         proxy_pass http://127.0.0.1:5555/api/;
         proxy_http_version 1.1;
         proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
     }
 
     # Block explorer
@@ -323,6 +344,8 @@ server {
         proxy_http_version 1.1;
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
     }
 
     # Explorer API
@@ -330,6 +353,9 @@ server {
         proxy_pass http://127.0.0.1:3002/api/;
         proxy_http_version 1.1;
         proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
     }
 
     # Downloads
@@ -341,7 +367,12 @@ server {
 
 server {
     listen 80;
-    server_name $POOL_DOMAIN;
+    # listen 443 ssl;
+    server_name $POOL_DOMAIN www.$POOL_DOMAIN;
+
+    # SSL Configuration (Uncomment and ensure certs are at these paths)
+    # ssl_certificate /etc/nginx/ssl/retardio.crt;
+    # ssl_certificate_key /etc/nginx/ssl/retardio.key;
 
     # Redirect all pool domain HTTP traffic to the dashboard on chain domain
     # or just serve the dashboard directly if preferred.
@@ -350,12 +381,18 @@ server {
         proxy_pass http://127.0.0.1:5555/;
         proxy_http_version 1.1;
         proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
     }
 
     location /api/ {
         proxy_pass http://127.0.0.1:5555/api/;
         proxy_http_version 1.1;
         proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
     }
 }
 EOF

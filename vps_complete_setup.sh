@@ -393,16 +393,16 @@ server {
     }
 }
 
-# Webflasher subdomain - HTTP redirect to HTTPS
+# Wallet subdomain - HTTP redirect to HTTPS
 server {
     listen 80;
-    server_name webflasher.$CHAIN_DOMAIN;
+    server_name wallet.$CHAIN_DOMAIN;
     return 301 https://\$host\$request_uri;
 }
 
 server {
     listen 443 ssl;
-    server_name webflasher.$CHAIN_DOMAIN;
+    server_name wallet.$CHAIN_DOMAIN;
 
     ssl_certificate /etc/nginx/ssl/retardiochain.com.pem;
     ssl_certificate_key /etc/nginx/ssl/retardiochain.com.key;
@@ -415,7 +415,7 @@ server {
     add_header X-Content-Type-Options "nosniff" always;
     add_header X-XSS-Protection "1; mode=block" always;
 
-    root /var/www/webflasher;
+    root /var/www/wallet;
     index index.html;
 
     location / {
@@ -524,16 +524,17 @@ if [ "$LOCAL" != "$REMOTE" ]; then
     sed "s/retardiopool.xyz/$POOL_DOMAIN/g; s/retardiochain.com/$CHAIN_DOMAIN/g" \
         retardio_all_in_one.html > /var/www/retardio/downloads/Retardio.html
 
-    # Update webflasher Wallet (if present)
+    # Update Wallet (if present)
     if [ -d "Wallet" ]; then
-        echo "Updating webflasher wallet..."
-        sudo cp Wallet/index.html /var/www/webflasher/
-        sudo cp Wallet/main.js /var/www/webflasher/
-        sudo cp Wallet/style.css /var/www/webflasher/
+        echo "Updating wallet..."
+        sudo mkdir -p /var/www/wallet
+        sudo cp Wallet/index.html /var/www/wallet/
+        sudo cp Wallet/main.js /var/www/wallet/
+        sudo cp Wallet/style.css /var/www/wallet/
         if [ -d "Wallet/pkg" ]; then
-            sudo cp -r Wallet/pkg /var/www/webflasher/
+            sudo cp -r Wallet/pkg /var/www/wallet/
         fi
-        sudo chown -R www-data:www-data /var/www/webflasher
+        sudo chown -R www-data:www-data /var/www/wallet
     fi
 
     # Update wallet standalone

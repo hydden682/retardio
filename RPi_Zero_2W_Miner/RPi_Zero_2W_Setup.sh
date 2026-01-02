@@ -70,6 +70,11 @@ fi
 # 4. Build (Low Memory)
 echo -e "${YELLOW}[4/7] Compiling (This will take hours on Zero 2W)...${NC}"
 echo "Running in low-memory mode (-j1)..."
+
+# Ensure clean build start to avoid cache issues
+rm -rf cmake-build
+rm -f CMakeCache.txt
+
 mkdir -p cmake-build
 cd cmake-build
 

@@ -1,0 +1,37 @@
+   Compiling retardio_wallet v0.1.0 (D:\Github Repository\Wallet)
+error[E0432]: unresolved import `ripemd160::Ripemd160`
+ --> src\lib\crypto.rs:1:5
+  |
+1 | use ripemd160::Ripemd160;
+  |     ^^^^^^^^^^^^^^^^^^^^ no `Ripemd160` in the root
+
+error[E0433]: failed to resolve: use of unresolved module or unlinked crate `rand`
+  --> src\lib\crypto.rs:18:63
+   |
+18 |         let (secret, public_key) = secp.generate_keypair(&mut rand::thread_rng());
+   |                                                               ^^^^ use of unresolved module or unlinked crate `rand`
+   |
+   = help: if you wanted to use a crate named `rand`, use `cargo add rand` to add it to your `Cargo.toml`
+help: consider importing this crate
+   |
+ 1 + use secp256k1::rand;
+   |
+
+warning: use of deprecated associated function `secp256k1::Message::from_slice`: use from_digest_slice instead
+   --> src\lib\crypto.rs:116:39
+    |
+116 |         let msg = secp256k1::Message::from_slice(message_hash)
+    |                                       ^^^^^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated associated function `secp256k1::Message::from_slice`: use from_digest_slice instead
+   --> src\lib\crypto.rs:132:45
+    |
+132 |         let msg = match secp256k1::Message::from_slice(message_hash) {
+    |                                             ^^^^^^^^^^
+
+Some errors have detailed explanations: E0432, E0433.
+For more information about an error, try `rustc --explain E0432`.
+warning: `retardio_wallet` (lib) generated 2 warnings
+error: could not compile `retardio_wallet` (lib) due to 2 previous errors; 2 warnings emitted

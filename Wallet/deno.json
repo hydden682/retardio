@@ -1,0 +1,8 @@
+{
+    "tasks": {
+        "dev": "deno run -A --unstable src/scripts/run.ts"
+    },
+    "imports": {
+        "retardio-wallet": "./pkg/retardio_wallet.js"
+    }
+}

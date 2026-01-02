@@ -1,0 +1,27 @@
+🚀 Initializing Retardio Wallet with RIP-0...
+
+✅ Wallet Created!
+📍 Address: 1E1ozk6KcYzJpUaLqJKJNVZhi2nRwcG4mm
+📝 Recovery Phrase (24 words):
+   list umbrella kangaroo proof aspect foot equal hunt sound above script index silent bless cabbage liar poem fork market decade mosquito organ choose under
+
+🔑 Public Key: 0243e0786b536ac9146e2cf38fbe2e53d0aa6cbe0a1590b88322447dd0b51d1117
+🔐 Private Key (Derived from phrase): c5424a4a5bb1cb8d70c039a2c31607bb248a001dc7cdbe33194d82a3aeb9f7af
+
+🔒 Testing Passphrase Protection...
+  No Passphrase Address:  1E1ozk6KcYzJpUaLqJKJNVZhi2nRwcG4mm
+  With Passphrase Addr:   1Ninsw8tsoaKXdZvkYXNwM715Rs2iD7VLS
+✅ Passphrase correctly changed the derived keys (Salted).
+
+🔄 Testing Wallet Recovery...
+✅ Wallet Recovered!
+📍 Recovered Address: 1E1ozk6KcYzJpUaLqJKJNVZhi2nRwcG4mm
+✨ Match! Recovery successful. ✅
+
+🔏 Signing with recovered wallet...
+✨ Signature Valid? YES ✅
+
+🛡️ Testing Invalid Mnemonic...
+✅ Correctly rejected invalid mnemonic. Error: Invalid mnemonic: mnemonic has an invalid word count: 3. Word count must be 12, 15, 18, 21, or 24
+
+🎉 Retardio Wallet Mnemonic demo complete!

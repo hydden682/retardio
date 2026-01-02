@@ -1,0 +1,16 @@
+# Rust
+target/
+**/*.rs.bk
+
+# Node
+node_modules/
+npm-debug.log
+
+# Build Artifacts
+pkg/
+dist/
+
+# Env & Secrets
+.env
+.DS_Store
+Thumbs.db

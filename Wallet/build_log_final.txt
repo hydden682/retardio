@@ -1,0 +1,13 @@
+   Compiling rand v0.8.5
+   Compiling secp256k1 v0.28.2
+   Compiling retardio_wallet v0.1.0 (D:\Github Repository\Wallet)
+warning: unused import: `Digest`
+ --> src\lib\crypto.rs:3:12
+  |
+3 | use sha2::{Digest, Sha256};
+  |            ^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `retardio_wallet` (lib) generated 1 warning
+    Finished `release` profile [optimized] target(s) in 1.72s

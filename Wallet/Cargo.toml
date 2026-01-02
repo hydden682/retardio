@@ -1,0 +1,29 @@
+[package]
+name    = "retardio_wallet"
+version = "0.1.0"
+edition = "2021"
+
+# -----------------------------------------------------------------
+#   Library – point Cargo at the file we already created.
+# -----------------------------------------------------------------
+[lib]
+crate-type  = ["cdylib", "rlib"]
+path        = "src/lib/crypto.rs"
+
+[dependencies]
+# Pure-Rust elliptic curve cryptography - no clang/C compiler needed
+k256 = { version = "0.13", features = ["ecdsa", "arithmetic"] }
+sha2      = "0.10"
+ripemd    = "0.1"
+bip39     = { version = "2.0", features = ["rand"] }
+bip32     = { version = "0.5", default-features = false, features = ["alloc", "secp256k1", "bip39"] }
+
+wasm-bindgen = "0.2"
+js-sys       = "0.3"
+
+# WASM RNG – essential for Deno/Browser
+getrandom = { version = "0.2", features = ["js"] }
+rand_core = { version = "0.6", features = ["getrandom"] }
+
+[dev-dependencies]
+criterion = "0.5"

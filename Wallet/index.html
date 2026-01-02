@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retardio Wallet | Secure WASM Crypto</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="bg-animation"></div>
+
+    <main class="container fade-in">
+        <header>
+            <h1 class="glow-text">RETARDIO WALLET</h1>
+            <p class="subtitle">Secure Storage</p>
+        </header>
+
+        <section id="setup-section" class="card fade-in">
+            <h2>Welcome to the Future</h2>
+            <p>Generate a new high-security wallet or restore an existing one from a 24-word recovery phrase.</p>
+
+            <div class="input-group">
+                <input type="password" id="passphrase-input" placeholder="Required Passphrase (Salt)...">
+            </div>
+
+            <div class="button-group">
+                <button id="generate-btn" class="btn primary">Generate New Wallet</button>
+                <button id="restore-btn" class="btn secondary">Restore Wallet</button>
+            </div>
+
+            <!-- Restore Section -->
+            <div id="restore-input-area" class="hidden slide-down">
+                <div class="tabs">
+                    <button class="tab-btn active" id="tab-mnemonic">Mnemonic (24 Words)</button>
+                    <button class="tab-btn" id="tab-privkey">Private Key (Hex)</button>
+                </div>
+
+                <div id="restore-mnemonic-content">
+                    <textarea id="mnemonic-input" placeholder="Enter your 24-word recovery phrase..."></textarea>
+                    <input type="password" id="restore-passphrase-input" placeholder="Optional Passphrase (Salt)..."
+                        style="margin-top: 10px;">
+                </div>
+
+                <div id="restore-privkey-content" class="hidden">
+                    <textarea id="privkey-input" placeholder="Enter 64-char Hex Private Key..."></textarea>
+                </div>
+
+                <button id="confirm-restore-btn" class="btn accent">Confirm Recovery</button>
+            </div>
+        </section>
+
+        <!-- Backup Section (Wizard Step 2) -->
+        <section id="backup-section" class="card hidden fade-in">
+            <h2>Backup Your Seed</h2>
+            <div class="alert-header">
+                <svg viewBox="0 0 24 24" width="24" height="24">
+                    <path fill="currentColor"
+                        d="M12 2L1 21h22L12 2zm0 3.45L19.15 19H4.85L12 5.45zM11 16h2v2h-2v-2zm0-7h2v5h-2V9z" />
+                </svg>
+                <span>WARNING: SAVE SECURELY!</span>
+            </div>
+            <p class="warning-text">This phrase is the ONLY way to recover your wallet. If you lose it, your funds are
+                gone forever. <strong>Only shown once.</strong></p>
+
+            <div id="backup-mnemonic-grid" class="mnemonic-grid"></div>
+
+            <div class="button-group">
+                <button id="copy-mnemonic-btn" class="btn secondary">Copy to Clipboard</button>
+                <button id="backup-confirm-btn" class="btn primary">I Saved It - Enter Wallet</button>
+            </div>
+        </section>
+
+        <section id="wallet-section" class="card hidden">
+            <div class="wallet-header">
+                <div class="status-badge">ACTIVE</div>
+                <h3>My Wallet</h3>
+            </div>
+
+            <div class="address-box">
+                <label>RETARDIO ADDRESS</label>
+                <div class="copy-field">
+                    <span id="display-address" class="mono">...</span>
+                    <button class="copy-btn" id="copy-address">COPY</button>
+                </div>
+            </div>
+
+            <!-- Seed reveal area removed from dashboard -->
+            <!-- Seed reveal area removed from dashboard -->
+
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="keys">Save This Information</button>
+                <button class="tab-btn" data-tab="deploy">Verify & Deploy</button>
+            </div>
+
+            <div class="tab-content" id="keys-tab">
+                <div class="key-item">
+                    <label>Public Key (secp256k1)</label>
+                    <code id="display-pubkey">...</code>
+                </div>
+                <div class="key-item">
+                    <label>Private Key (Entropy)</label>
+                    <div class="row-flex">
+                        <code id="display-privkey" class="blur">...</code>
+                        <button id="reveal-privBtn" class="small-btn">REVEAL</button>
+                    </div>
+                </div>
+                <div class="input-group" style="margin-top: 20px;">
+                    <label>Internal Message (For Verification)</label>
+                    <input type="text" id="internal_message" value="RETARDIO_GENESIS_BLOCK_INIT" readonly>
+                </div>
+            </div>
+
+            <div class="tab-content hidden" id="deploy-tab">
+                <p>To deploy your wallet to the chain, you must verify that you have saved your keys.</p>
+                <button id="deploy-btn" class="btn primary full">I understand and have saved my keys</button>
+                <div id="deploy-result" class="hidden banner"></div>
+            </div>
+
+            <button id="logout-btn" class="btn danger outline">Destroy Local Session</button>
+        </section>
+    </main>
+
+    <div id="notification-toast"></div>
+
+    <script type="module" src="main.js"></script>
+</body>
+
+</html>

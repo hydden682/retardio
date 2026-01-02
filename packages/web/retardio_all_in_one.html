@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retardio - Mine Crypto</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 50%, #0a2040 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        .hero {
+            text-align: center;
+            padding: 40px 0;
+        }
+        .hero h1 {
+            font-size: 56px;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        .hero p {
+            font-size: 20px;
+            color: rgba(255,255,255,0.7);
+        }
+        .step-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+        }
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #00d4ff, #0099ff);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .step-title {
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .wallet-box {
+            background: rgba(0, 212, 255, 0.1);
+            border: 2px solid #00d4ff;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .wallet-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 8px;
+        }
+        .wallet-value {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            word-break: break-all;
+            color: #00d4ff;
+            padding: 12px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            min-height: 45px;
+            display: flex;
+            align-items: center;
+        }
+        .private-key-box {
+            background: rgba(255, 100, 100, 0.1);
+            border: 2px solid #ff6666;
+        }
+        .private-key-box .wallet-value {
+            color: #ff9999;
+        }
+        .btn {
+            display: inline-block;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #00d4ff, #0099ff);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
+        }
+        .btn-copy {
+            padding: 8px 16px;
+            font-size: 14px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .btn-copy:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        .config-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .config-item {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 15px;
+        }
+        .config-label {
+            font-size: 12px;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 5px;
+        }
+        .config-value {
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            color: #00ff88;
+        }
+        .warning {
+            background: rgba(255, 200, 0, 0.1);
+            border: 1px solid rgba(255, 200, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            font-size: 14px;
+            color: #ffcc00;
+        }
+        .success {
+            background: rgba(0, 255, 100, 0.1);
+            border: 1px solid rgba(0, 255, 100, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            color: #00ff88;
+        }
+        .hidden { display: none; }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+        .device-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .device-tab {
+            flex: 1;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .device-tab:hover, .device-tab.active {
+            background: rgba(0, 212, 255, 0.2);
+            border-color: #00d4ff;
+        }
+        .device-content { display: none; }
+        .device-content.active { display: block; }
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: rgba(255,255,255,0.4);
+            font-size: 14px;
+        }
+        .footer a {
+            color: #00d4ff;
+            text-decoration: none;
+        }
+        @media (max-width: 600px) {
+            .config-grid { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 36px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hero">
+            <h1>RETARDIO</h1>
+            <p>Solo Pool Mining - Keep 100% of Your Blocks</p>
+            <p style="font-size: 14px; margin-top: 10px; color: rgba(0,212,255,0.8);">✓ No node required - just connect and mine!</p>
+        </div>
+
+        <!-- STEP 1: Generate Wallet -->
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-number">1</div>
+                <div class="step-title">Generate Your Wallet</div>
+            </div>
+
+            <p style="color: rgba(255,255,255,0.7); margin-bottom: 20px;">
+                Create a wallet address to receive your mining rewards.
+            </p>
+
+            <button class="btn" id="generateBtn" onclick="generateWallet()">
+                Generate Wallet
+            </button>
+
+            <div id="walletResult" class="hidden">
+                <div class="wallet-box">
+                    <div class="wallet-label">Your Mining Address (copy this for Step 2)</div>
+                    <div class="flex-between">
+                        <div class="wallet-value" id="walletAddress">-</div>
+                        <button class="btn btn-copy" onclick="copy('walletAddress')">Copy</button>
+                    </div>
+                </div>
+
+                <div class="wallet-box private-key-box">
+                    <div class="wallet-label">Private Key (SAVE THIS SECURELY!)</div>
+                    <div class="flex-between">
+                        <div class="wallet-value" id="privateKey">-</div>
+                        <button class="btn btn-copy" onclick="copy('privateKey')">Copy</button>
+                    </div>
+                </div>
+
+                <div class="warning">
+                    <strong>⚠️ IMPORTANT:</strong> Save your private key! Write it down or store it safely.
+                    This is the ONLY way to access your coins. Never share it with anyone.
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 2: Configure Miner -->
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-number">2</div>
+                <div class="step-title">Connect to the Pool</div>
+            </div>
+
+            <p style="color: rgba(255,255,255,0.7); margin-bottom: 20px;">
+                Point your miner at our stratum pool. No software to install, no node to run - just enter these settings:
+            </p>
+
+            <div class="device-tabs">
+                <div class="device-tab active" onclick="showDevice('nerdminer')">NerdMiner</div>
+                <div class="device-tab" onclick="showDevice('bitaxe')">BitAxe</div>
+                <div class="device-tab" onclick="showDevice('cpu')">CPU Miner</div>
+            </div>
+
+            <div class="config-grid">
+                <div class="config-item">
+                    <div class="config-label">Pool Address</div>
+                    <div class="config-value" id="poolHost">retardiopool.xyz</div>
+                </div>
+                <div class="config-item">
+                    <div class="config-label">Port</div>
+                    <div class="config-value">3333</div>
+                </div>
+                <div class="config-item">
+                    <div class="config-label">Username</div>
+                    <div class="config-value">Your wallet address</div>
+                </div>
+                <div class="config-item">
+                    <div class="config-label">Password</div>
+                    <div class="config-value">x</div>
+                </div>
+            </div>
+
+            <!-- NerdMiner Instructions -->
+            <div id="nerdminer" class="device-content active">
+                <div class="success">
+                    <strong>NerdMiner Setup:</strong><br>
+                    1. Connect to NerdMiner's WiFi (SSID on screen)<br>
+                    2. Go to 192.168.4.1 in your browser<br>
+                    3. Enter pool: <strong id="nerdPool">retardiopool.xyz:3333</strong><br>
+                    4. Enter your wallet address as username<br>
+                    5. Password: <strong>x</strong><br>
+                    6. Save and restart
+                </div>
+            </div>
+
+            <!-- BitAxe Instructions -->
+            <div id="bitaxe" class="device-content">
+                <div class="success">
+                    <strong>BitAxe Setup:</strong><br>
+                    1. Access BitAxe web interface<br>
+                    2. Go to Settings → Pool<br>
+                    3. Pool URL: <strong>stratum+tcp://retardiopool.xyz:3333</strong><br>
+                    4. Worker: Your wallet address<br>
+                    5. Password: <strong>x</strong><br>
+                    6. Save and apply
+                </div>
+            </div>
+
+            <!-- CPU Miner Instructions -->
+            <div id="cpu" class="device-content">
+                <div class="success">
+                    <strong>CPU Mining (Windows):</strong><br>
+                    1. Download cpuminer from releases<br>
+                    2. Run this command:<br>
+                    <code style="display:block; margin-top:10px; padding:10px; background:rgba(0,0,0,0.3); border-radius:5px; word-break:break-all;">
+                        cpuminer -a sha256d -o stratum+tcp://retardiopool.xyz:3333 -u YOUR_WALLET -p x
+                    </code>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 3: Start Mining -->
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-number">3</div>
+                <div class="step-title">Start Mining & Track Progress</div>
+            </div>
+
+            <p style="color: rgba(255,255,255,0.7); margin-bottom: 20px;">
+                Once configured, your miner will connect to the pool and start mining automatically.
+                Check the dashboard to see found blocks and your stats!
+            </p>
+
+            <a href="http://retardiochain.com/explorer" target="_blank" class="btn" style="display: inline-block; text-decoration: none;">
+                View Pool Dashboard
+            </a>
+        </div>
+
+        <div class="step-card" style="background: rgba(0, 212, 255, 0.05); border-color: rgba(0, 212, 255, 0.2);">
+            <div class="step-header">
+                <div class="step-title" style="color: #00d4ff;">How Solo Pool Mining Works</div>
+            </div>
+            <p style="color: rgba(255,255,255,0.8); line-height: 1.6;">
+                <strong>Solo Pool = Best of Both Worlds</strong><br><br>
+                Unlike traditional pools where rewards are split, our solo pool lets you keep <strong>100% of every block you find</strong>.
+                The pool handles all the heavy lifting (running the node, validating blocks, broadcasting to the network) -
+                you just point your miner and start hashing.<br><br>
+                <span style="color: rgba(255,255,255,0.6);">
+                ✓ No node required &nbsp;
+                ✓ No software to install &nbsp;
+                ✓ Keep 100% of rewards &nbsp;
+                ✓ Works with any stratum-compatible miner
+                </span>
+            </p>
+        </div>
+
+        <div class="footer">
+            <p>Retardio Solo Mining Pool</p>
+            <p><a href="https://github.com/hydden682/retardio" target="_blank">GitHub</a></p>
+        </div>
+    </div>
+
+    <!-- secp256k1 Implementation - Self-contained, no external dependencies -->
+    <script>
+    // Self-contained secp256k1 implementation for wallet generation
+    const secp256k1 = (function() {
+        const P = BigInt('0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f');
+        const N = BigInt('0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141');
+        const Gx = BigInt('0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798');
+        const Gy = BigInt('0x483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8');
+        const ZERO = BigInt(0), ONE = BigInt(1), TWO = BigInt(2), THREE = BigInt(3);
+
+        const mod = (a, m = P) => { let r = a % m; return r < ZERO ? r + m : r; };
+        const invert = (a, m = P) => {
+            let [x, y, u, v] = [ZERO, ONE, ONE, ZERO];
+            while (a !== ZERO) { const q = m / a, r = m % a; [m, a] = [a, r]; [x, u] = [u, x - q * u]; [y, v] = [v, y - q * v]; }
+            return mod(x, P);
+        };
+
+        // Point addition/doubling on secp256k1
+        function pointAdd(p1, p2) {
+            if (!p1) return p2; if (!p2) return p1;
+            const [x1, y1] = p1, [x2, y2] = p2;
+            if (x1 === x2) { if (y1 !== y2) return null; return pointDouble(p1); }
+            const slope = mod((y2 - y1) * invert(mod(x2 - x1)));
+            const x3 = mod(slope * slope - x1 - x2);
+            const y3 = mod(slope * (x1 - x3) - y1);
+            return [x3, y3];
+        }
+
+        function pointDouble(p) {
+            if (!p) return null;
+            const [x, y] = p;
+            const slope = mod(THREE * x * x * invert(TWO * y));
+            const x3 = mod(slope * slope - TWO * x);
+            const y3 = mod(slope * (x - x3) - y);
+            return [x3, y3];
+        }
+
+        // Scalar multiplication using double-and-add
+        function pointMultiply(k, p = [Gx, Gy]) {
+            let result = null, addend = p;
+            while (k > ZERO) {
+                if (k & ONE) result = pointAdd(result, addend);
+                addend = pointDouble(addend);
+                k >>= ONE;
+            }
+            return result;
+        }
+
+        // Get public key from private key
+        function getPublicKey(privKey, compressed = true) {
+            const privBigInt = typeof privKey === 'bigint' ? privKey :
+                BigInt('0x' + Array.from(privKey).map(b => b.toString(16).padStart(2, '0')).join(''));
+            const [x, y] = pointMultiply(privBigInt);
+            const xHex = x.toString(16).padStart(64, '0');
+            const yHex = y.toString(16).padStart(64, '0');
+            if (compressed) {
+                const prefix = (y & ONE) === ZERO ? '02' : '03';
+                return hexToBytes(prefix + xHex);
+            }
+            return hexToBytes('04' + xHex + yHex);
+        }
+
+        function hexToBytes(hex) {
+            const bytes = new Uint8Array(hex.length / 2);
+            for (let i = 0; i < bytes.length; i++) bytes[i] = parseInt(hex.substr(i * 2, 2), 16);
+            return bytes;
+        }
+
+        function randomPrivateKey() {
+            const bytes = new Uint8Array(32);
+            crypto.getRandomValues(bytes);
+            // Ensure key is valid (< N)
+            bytes[0] &= 0x7f; // Ensure it's less than N
+            return bytes;
+        }
+
+        return { getPublicKey, utils: { randomPrivateKey } };
+    })();
+
+    // Create global alias for compatibility
+    window.nobleSecp256k1 = secp256k1;
+    </script>
+
+    <script>
+        // ============ WALLET GENERATION ============
+        const BASE58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+
+        function base58Encode(bytes) {
+            let num = BigInt('0x' + Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join(''));
+            let result = '';
+            while (num > 0n) {
+                result = BASE58[Number(num % 58n)] + result;
+                num = num / 58n;
+            }
+            for (let i = 0; i < bytes.length && bytes[i] === 0; i++) result = '1' + result;
+            return result;
+        }
+
+        // Pure JavaScript SHA-256 (works over HTTP, no crypto.subtle needed)
+        function sha256(data) {
+            const K = [
+                0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+                0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+                0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+                0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+                0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+                0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+                0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+                0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
+            ];
+            const rotr = (x, n) => (x >>> n) | (x << (32 - n));
+            const ch = (x, y, z) => (x & y) ^ (~x & z);
+            const maj = (x, y, z) => (x & y) ^ (x & z) ^ (y & z);
+            const sig0 = x => rotr(x, 2) ^ rotr(x, 13) ^ rotr(x, 22);
+            const sig1 = x => rotr(x, 6) ^ rotr(x, 11) ^ rotr(x, 25);
+            const gam0 = x => rotr(x, 7) ^ rotr(x, 18) ^ (x >>> 3);
+            const gam1 = x => rotr(x, 17) ^ rotr(x, 19) ^ (x >>> 10);
+
+            let H = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
+            const msg = new Uint8Array(data);
+            const ml = msg.length * 8;
+            const padLen = (64 - ((msg.length + 9) % 64)) % 64;
+            const padded = new Uint8Array(msg.length + 1 + padLen + 8);
+            padded.set(msg);
+            padded[msg.length] = 0x80;
+            const view = new DataView(padded.buffer);
+            view.setUint32(padded.length - 4, ml, false);
+
+            for (let i = 0; i < padded.length; i += 64) {
+                const W = new Uint32Array(64);
+                for (let t = 0; t < 16; t++) W[t] = view.getUint32(i + t * 4, false);
+                for (let t = 16; t < 64; t++) W[t] = (gam1(W[t-2]) + W[t-7] + gam0(W[t-15]) + W[t-16]) >>> 0;
+                let [a, b, c, d, e, f, g, h] = H;
+                for (let t = 0; t < 64; t++) {
+                    const T1 = (h + sig1(e) + ch(e, f, g) + K[t] + W[t]) >>> 0;
+                    const T2 = (sig0(a) + maj(a, b, c)) >>> 0;
+                    h = g; g = f; f = e; e = (d + T1) >>> 0; d = c; c = b; b = a; a = (T1 + T2) >>> 0;
+                }
+                H = H.map((v, i) => (v + [a,b,c,d,e,f,g,h][i]) >>> 0);
+            }
+            const result = new Uint8Array(32);
+            H.forEach((v, i) => new DataView(result.buffer).setUint32(i * 4, v, false));
+            return result;
+        }
+
+        // RIPEMD-160
+        function ripemd160(msg) {
+            function rotl(x, n) { return ((x << n) | (x >>> (32 - n))) >>> 0; }
+            const K1 = [0x00000000, 0x5a827999, 0x6ed9eba1, 0x8f1bbcdc, 0xa953fd4e];
+            const K2 = [0x50a28be6, 0x5c4dd124, 0x6d703ef3, 0x7a6d76e9, 0x00000000];
+            const R1 = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,7,4,13,1,10,6,15,3,12,0,9,5,2,14,11,8,3,10,14,4,9,15,8,1,2,7,0,6,13,11,5,12,1,9,11,10,0,8,12,4,13,3,7,15,14,5,6,2,4,0,5,9,7,12,2,10,14,1,3,8,11,6,15,13];
+            const R2 = [5,14,7,0,9,2,11,4,13,6,15,8,1,10,3,12,6,11,3,7,0,13,5,10,14,15,8,12,4,9,1,2,15,5,1,3,7,14,6,9,11,8,12,2,10,0,4,13,8,6,4,1,3,11,15,0,5,12,2,13,9,7,10,14,12,15,10,4,1,5,8,7,6,2,13,14,0,3,9,11];
+            const S1 = [11,14,15,12,5,8,7,9,11,13,14,15,6,7,9,8,7,6,8,13,11,9,7,15,7,12,15,9,11,7,13,12,11,13,6,7,14,9,13,15,14,8,13,6,5,12,7,5,11,12,14,15,14,15,9,8,9,14,5,6,8,6,5,12,9,15,5,11,6,8,13,12,5,12,13,14,11,8,5,6];
+            const S2 = [8,9,9,11,13,15,15,5,7,7,8,11,14,14,12,6,9,13,15,7,12,8,9,11,7,7,12,7,6,15,13,11,9,7,15,11,8,6,6,14,12,13,5,14,13,13,7,5,15,5,8,11,14,14,6,14,6,9,12,9,12,5,15,8,8,5,12,9,12,5,14,6,8,13,6,5,15,13,11,11];
+            function f(j, x, y, z) {
+                if (j < 16) return x ^ y ^ z;
+                if (j < 32) return (x & y) | (~x & z);
+                if (j < 48) return (x | ~y) ^ z;
+                if (j < 64) return (x & z) | (y & ~z);
+                return x ^ (y | ~z);
+            }
+            const ml = msg.length * 8;
+            const padded = new Uint8Array(((msg.length + 72) & ~63));
+            padded.set(msg);
+            padded[msg.length] = 0x80;
+            new DataView(padded.buffer).setUint32(padded.length - 8, ml, true);
+            let h0 = 0x67452301, h1 = 0xefcdab89, h2 = 0x98badcfe, h3 = 0x10325476, h4 = 0xc3d2e1f0;
+            for (let i = 0; i < padded.length; i += 64) {
+                const X = [], view = new DataView(padded.buffer);
+                for (let j = 0; j < 16; j++) X[j] = view.getUint32(i + j * 4, true);
+                let al = h0, bl = h1, cl = h2, dl = h3, el = h4;
+                let ar = h0, br = h1, cr = h2, dr = h3, er = h4;
+                for (let j = 0; j < 80; j++) {
+                    const rnd = Math.floor(j / 16);
+                    let t = (al + f(j, bl, cl, dl) + X[R1[j]] + K1[rnd]) >>> 0;
+                    t = (rotl(t, S1[j]) + el) >>> 0;
+                    al = el; el = dl; dl = rotl(cl, 10); cl = bl; bl = t;
+                    t = (ar + f(79 - j, br, cr, dr) + X[R2[j]] + K2[rnd]) >>> 0;
+                    t = (rotl(t, S2[j]) + er) >>> 0;
+                    ar = er; er = dr; dr = rotl(cr, 10); cr = br; br = t;
+                }
+                const t = (h1 + cl + dr) >>> 0;
+                h1 = (h2 + dl + er) >>> 0; h2 = (h3 + el + ar) >>> 0;
+                h3 = (h4 + al + br) >>> 0; h4 = (h0 + bl + cr) >>> 0; h0 = t;
+            }
+            const result = new Uint8Array(20), rv = new DataView(result.buffer);
+            rv.setUint32(0, h0, true); rv.setUint32(4, h1, true); rv.setUint32(8, h2, true);
+            rv.setUint32(12, h3, true); rv.setUint32(16, h4, true);
+            return result;
+        }
+
+        async function generateWallet() {
+            const btn = document.getElementById('generateBtn');
+            btn.textContent = 'Generating...';
+            btn.disabled = true;
+
+            try {
+                // Generate cryptographically secure random private key using noble-secp256k1
+                const privKey = nobleSecp256k1.utils.randomPrivateKey();
+
+                // Derive public key using REAL secp256k1 elliptic curve multiplication
+                const pubKey = nobleSecp256k1.getPublicKey(privKey, true); // compressed
+
+                // Generate address: RIPEMD160(SHA256(pubkey))
+                const sha = sha256(pubKey);
+                const hash160 = ripemd160(sha);
+
+                // Add version byte (35 = 0x23 for Retardio 'F' addresses) and checksum
+                const addrData = new Uint8Array(21);
+                addrData[0] = 35;  // Retardio mainnet address prefix
+                addrData.set(hash160, 1);
+                const addrHash1 = sha256(addrData);
+                const addrHash2 = sha256(addrHash1);
+                const addrFinal = new Uint8Array(25);
+                addrFinal.set(addrData);
+                addrFinal.set(addrHash2.slice(0, 4), 21);
+                const address = base58Encode(addrFinal);
+
+                // Create WIF (Wallet Import Format) - version 163 (0xa3) + privkey + 0x01 (compressed) + checksum
+                const wifData = new Uint8Array(34);
+                wifData[0] = 163;  // Retardio mainnet WIF prefix
+                wifData.set(privKey, 1);
+                wifData[33] = 0x01;
+                const wifHash1 = sha256(wifData);
+                const wifHash2 = sha256(wifHash1);
+                const wifFinal = new Uint8Array(38);
+                wifFinal.set(wifData);
+                wifFinal.set(wifHash2.slice(0, 4), 34);
+                const wif = base58Encode(wifFinal);
+
+                // Display
+                document.getElementById('walletAddress').textContent = address;
+                document.getElementById('privateKey').textContent = wif;
+                document.getElementById('walletResult').classList.remove('hidden');
+            } catch (e) {
+                alert('Error generating wallet: ' + e.message);
+            }
+
+            btn.textContent = 'Generate New Wallet';
+            btn.disabled = false;
+        }
+
+        function copy(id) {
+            const text = document.getElementById(id).textContent;
+            // Fallback for HTTP (navigator.clipboard requires HTTPS)
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-9999px';
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            alert('Copied to clipboard!');
+        }
+
+        function showDevice(device) {
+            document.querySelectorAll('.device-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.device-content').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(device).classList.add('active');
+        }
+
+        // ============ UPDATE CHECKER ============
+        const CURRENT_VERSION = '1.1.0';
+        const VERSION_URL = 'https://raw.githubusercontent.com/hydden682/retardio/29.x-knots/version.json';
+
+        async function checkForUpdates() {
+            try {
+                const response = await fetch(VERSION_URL + '?t=' + Date.now());
+                if (!response.ok) return;
+
+                const data = await response.json();
+                if (data.version && data.version !== CURRENT_VERSION) {
+                    // Compare versions
+                    const current = CURRENT_VERSION.split('.').map(Number);
+                    const latest = data.version.split('.').map(Number);
+
+                    let needsUpdate = false;
+                    for (let i = 0; i < 3; i++) {
+                        if (latest[i] > current[i]) { needsUpdate = true; break; }
+                        if (latest[i] < current[i]) break;
+                    }
+
+                    if (needsUpdate) {
+                        showUpdateBanner(data);
+                    }
+                }
+            } catch (e) {
+                // Silently fail - update check is not critical
+                console.log('Update check failed:', e);
+            }
+        }
+
+        function showUpdateBanner(data) {
+            const banner = document.createElement('div');
+            banner.id = 'updateBanner';
+            banner.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                background: linear-gradient(135deg, #ff6b35, #f7931e);
+                color: white;
+                padding: 15px 20px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                z-index: 10000;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                font-family: inherit;
+            `;
+
+            const critical = data.critical ? '<strong>[SECURITY UPDATE]</strong> ' : '';
+
+            banner.innerHTML = `
+                <div>
+                    ${critical}New version <strong>v${data.version}</strong> available!
+                    <span style="opacity: 0.9">${data.message || ''}</span>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="window.open('${data.release_url}', '_blank')" style="
+                        background: white;
+                        color: #ff6b35;
+                        border: none;
+                        padding: 8px 16px;
+                        border-radius: 5px;
+                        cursor: pointer;
+                        font-weight: bold;
+                    ">Update Now</button>
+                    <button onclick="dismissUpdate()" style="
+                        background: transparent;
+                        color: white;
+                        border: 1px solid white;
+                        padding: 8px 16px;
+                        border-radius: 5px;
+                        cursor: pointer;
+                    ">Later</button>
+                </div>
+            `;
+
+            document.body.prepend(banner);
+            document.body.style.paddingTop = '60px';
+        }
+
+        function dismissUpdate() {
+            const banner = document.getElementById('updateBanner');
+            if (banner) {
+                banner.remove();
+                document.body.style.paddingTop = '0';
+            }
+            // Remember dismissal for this session
+            sessionStorage.setItem('updateDismissed', 'true');
+        }
+
+        // Check for updates on page load (unless already dismissed this session)
+        if (!sessionStorage.getItem('updateDismissed')) {
+            setTimeout(checkForUpdates, 2000); // Check after 2 seconds
+        }
+    </script>
+</body>
+</html>

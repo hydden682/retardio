@@ -115,7 +115,7 @@ impl WalletInner {
         let sha256_hash: [u8; 32] = Sha256::digest(pk_serialized).into();
         let ripemd160_hash: [u8; 20] = Ripemd160::digest(sha256_hash).into();
 
-        let mut versioned = vec![0x00];
+        let mut versioned = vec![35];  // Retardio mainnet version byte (addresses start with 'F')
         versioned.extend_from_slice(&ripemd160_hash);
 
         let check: [u8; 32] = Sha256::digest(Sha256::digest(&versioned)).into();

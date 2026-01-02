@@ -4,16 +4,16 @@
 export class Wallet {
   free(): void;
   [Symbol.dispose](): void;
-  address(): string;
-  mnemonic(): string;
-  static hashMessage(message: string): string;
-  signMessage(message_hash: Uint8Array): string;
+  constructor(passphrase?: string | null);
   static fromMnemonic(phrase: string, passphrase?: string | null): Wallet;
+  static fromPrivateKey(hex: string): Wallet;
+  address(): string;
   publicKey(): string;
   privateKey(): string;
-  static fromPrivateKey(hex: string): Wallet;
+  mnemonic(): string;
+  signMessage(message_hash: Uint8Array): string;
   verifySignature(message_hash: Uint8Array, signature_hex: string): boolean;
-  constructor(passphrase?: string | null);
+  static hashMessage(message: string): string;
 }
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
@@ -21,23 +21,23 @@ export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembl
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
   readonly __wbg_wallet_free: (a: number, b: number) => void;
-  readonly wallet_address: (a: number) => [number, number];
+  readonly wallet_new: (a: number, b: number) => number;
   readonly wallet_fromMnemonic: (a: number, b: number, c: number, d: number) => [number, number, number];
   readonly wallet_fromPrivateKey: (a: number, b: number) => [number, number, number];
-  readonly wallet_hashMessage: (a: number, b: number) => [number, number];
-  readonly wallet_mnemonic: (a: number) => [number, number];
-  readonly wallet_new: (a: number, b: number) => number;
-  readonly wallet_privateKey: (a: number) => [number, number];
+  readonly wallet_address: (a: number) => [number, number];
   readonly wallet_publicKey: (a: number) => [number, number];
+  readonly wallet_privateKey: (a: number) => [number, number];
+  readonly wallet_mnemonic: (a: number) => [number, number];
   readonly wallet_signMessage: (a: number, b: number, c: number) => [number, number, number, number];
   readonly wallet_verifySignature: (a: number, b: number, c: number, d: number, e: number) => number;
+  readonly wallet_hashMessage: (a: number, b: number) => [number, number];
   readonly __wbindgen_exn_store: (a: number) => void;
   readonly __externref_table_alloc: () => number;
   readonly __wbindgen_externrefs: WebAssembly.Table;
-  readonly __wbindgen_free: (a: number, b: number, c: number) => void;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
   readonly __externref_table_dealloc: (a: number) => void;
+  readonly __wbindgen_free: (a: number, b: number, c: number) => void;
   readonly __wbindgen_start: () => void;
 }
 

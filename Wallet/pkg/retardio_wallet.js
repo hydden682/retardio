@@ -139,76 +139,15 @@ export class Wallet {
         wasm.__wbg_wallet_free(ptr, 0);
     }
     /**
-     * @returns {string}
+     * @param {string | null} [passphrase]
      */
-    address() {
-        let deferred1_0;
-        let deferred1_1;
-        try {
-            const ret = wasm.wallet_address(this.__wbg_ptr);
-            deferred1_0 = ret[0];
-            deferred1_1 = ret[1];
-            return getStringFromWasm0(ret[0], ret[1]);
-        } finally {
-            wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
-        }
-    }
-    /**
-     * @returns {string}
-     */
-    mnemonic() {
-        let deferred1_0;
-        let deferred1_1;
-        try {
-            const ret = wasm.wallet_mnemonic(this.__wbg_ptr);
-            deferred1_0 = ret[0];
-            deferred1_1 = ret[1];
-            return getStringFromWasm0(ret[0], ret[1]);
-        } finally {
-            wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
-        }
-    }
-    /**
-     * @param {string} message
-     * @returns {string}
-     */
-    static hashMessage(message) {
-        let deferred2_0;
-        let deferred2_1;
-        try {
-            const ptr0 = passStringToWasm0(message, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-            const len0 = WASM_VECTOR_LEN;
-            const ret = wasm.wallet_hashMessage(ptr0, len0);
-            deferred2_0 = ret[0];
-            deferred2_1 = ret[1];
-            return getStringFromWasm0(ret[0], ret[1]);
-        } finally {
-            wasm.__wbindgen_free(deferred2_0, deferred2_1, 1);
-        }
-    }
-    /**
-     * @param {Uint8Array} message_hash
-     * @returns {string}
-     */
-    signMessage(message_hash) {
-        let deferred3_0;
-        let deferred3_1;
-        try {
-            const ptr0 = passArray8ToWasm0(message_hash, wasm.__wbindgen_malloc);
-            const len0 = WASM_VECTOR_LEN;
-            const ret = wasm.wallet_signMessage(this.__wbg_ptr, ptr0, len0);
-            var ptr2 = ret[0];
-            var len2 = ret[1];
-            if (ret[3]) {
-                ptr2 = 0; len2 = 0;
-                throw takeFromExternrefTable0(ret[2]);
-            }
-            deferred3_0 = ptr2;
-            deferred3_1 = len2;
-            return getStringFromWasm0(ptr2, len2);
-        } finally {
-            wasm.__wbindgen_free(deferred3_0, deferred3_1, 1);
-        }
+    constructor(passphrase) {
+        var ptr0 = isLikeNone(passphrase) ? 0 : passStringToWasm0(passphrase, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        var len0 = WASM_VECTOR_LEN;
+        const ret = wasm.wallet_new(ptr0, len0);
+        this.__wbg_ptr = ret >>> 0;
+        WalletFinalization.register(this, this.__wbg_ptr, this);
+        return this;
     }
     /**
      * @param {string} phrase
@@ -225,6 +164,34 @@ export class Wallet {
             throw takeFromExternrefTable0(ret[1]);
         }
         return Wallet.__wrap(ret[0]);
+    }
+    /**
+     * @param {string} hex
+     * @returns {Wallet}
+     */
+    static fromPrivateKey(hex) {
+        const ptr0 = passStringToWasm0(hex, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.wallet_fromPrivateKey(ptr0, len0);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
+        }
+        return Wallet.__wrap(ret[0]);
+    }
+    /**
+     * @returns {string}
+     */
+    address() {
+        let deferred1_0;
+        let deferred1_1;
+        try {
+            const ret = wasm.wallet_address(this.__wbg_ptr);
+            deferred1_0 = ret[0];
+            deferred1_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+        }
     }
     /**
      * @returns {string}
@@ -257,17 +224,43 @@ export class Wallet {
         }
     }
     /**
-     * @param {string} hex
-     * @returns {Wallet}
+     * @returns {string}
      */
-    static fromPrivateKey(hex) {
-        const ptr0 = passStringToWasm0(hex, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        const len0 = WASM_VECTOR_LEN;
-        const ret = wasm.wallet_fromPrivateKey(ptr0, len0);
-        if (ret[2]) {
-            throw takeFromExternrefTable0(ret[1]);
+    mnemonic() {
+        let deferred1_0;
+        let deferred1_1;
+        try {
+            const ret = wasm.wallet_mnemonic(this.__wbg_ptr);
+            deferred1_0 = ret[0];
+            deferred1_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
         }
-        return Wallet.__wrap(ret[0]);
+    }
+    /**
+     * @param {Uint8Array} message_hash
+     * @returns {string}
+     */
+    signMessage(message_hash) {
+        let deferred3_0;
+        let deferred3_1;
+        try {
+            const ptr0 = passArray8ToWasm0(message_hash, wasm.__wbindgen_malloc);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.wallet_signMessage(this.__wbg_ptr, ptr0, len0);
+            var ptr2 = ret[0];
+            var len2 = ret[1];
+            if (ret[3]) {
+                ptr2 = 0; len2 = 0;
+                throw takeFromExternrefTable0(ret[2]);
+            }
+            deferred3_0 = ptr2;
+            deferred3_1 = len2;
+            return getStringFromWasm0(ptr2, len2);
+        } finally {
+            wasm.__wbindgen_free(deferred3_0, deferred3_1, 1);
+        }
     }
     /**
      * @param {Uint8Array} message_hash
@@ -283,15 +276,22 @@ export class Wallet {
         return ret !== 0;
     }
     /**
-     * @param {string | null} [passphrase]
+     * @param {string} message
+     * @returns {string}
      */
-    constructor(passphrase) {
-        var ptr0 = isLikeNone(passphrase) ? 0 : passStringToWasm0(passphrase, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        var len0 = WASM_VECTOR_LEN;
-        const ret = wasm.wallet_new(ptr0, len0);
-        this.__wbg_ptr = ret >>> 0;
-        WalletFinalization.register(this, this.__wbg_ptr, this);
-        return this;
+    static hashMessage(message) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(message, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.wallet_hashMessage(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free(deferred2_0, deferred2_1, 1);
+        }
     }
 }
 if (Symbol.dispose) Wallet.prototype[Symbol.dispose] = Wallet.prototype.free;

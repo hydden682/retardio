@@ -50,7 +50,7 @@ sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
 sudo apt update
 sudo apt install -y libstdc++6
 
-pip3 install flask flask-cors requests
+pip3 install flask flask-cors requests gunicorn
 
 # Clone repo
 echo "[3/8] Cloning Retardio..."
@@ -234,6 +234,19 @@ sudo mkdir -p /var/www/retardio/downloads
 sudo mkdir -p /var/www/webflasher
 sudo chown -R $USER:$USER /var/www/retardio
 sudo chown -R $USER:$USER /var/www/webflasher
+
+# Setup Webflash
+cp ~/retardio-coin/packages/web/website/flasher.html /var/www/webflasher/index.html
+# Copy assets to webflasher if needed (assuming assets are shared or in website dir)
+if [ -d "~/retardio-coin/packages/web/website/assets" ]; then
+    cp -r ~/retardio-coin/packages/web/website/assets /var/www/webflasher/
+    cp -r ~/retardio-coin/packages/web/website/css /var/www/webflasher/
+    cp -r ~/retardio-coin/packages/web/website/js /var/www/webflasher/
+fi
+
+# Setup Wallet (Use standalone generator as requested)
+sudo mkdir -p /var/www/wallet
+cp ~/retardio-coin/packages/web/wallet_standalone.html /var/www/wallet/index.html
 
 # Create configured all-in-one HTML
 sed "s/retardiopool.xyz/$POOL_DOMAIN/g; s/retardiochain.com/$CHAIN_DOMAIN/g" \
@@ -470,6 +483,28 @@ server {
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
+    }
+}
+
+server {
+    listen 80;
+    server_name webflash.$CHAIN_DOMAIN;
+    return 301 https://\$host\$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name webflash.$CHAIN_DOMAIN;
+
+    ssl_certificate /etc/nginx/ssl/retardiochain.com.pem;
+    ssl_certificate_key /etc/nginx/ssl/retardiochain.com.key;
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    root /var/www/webflasher;
+    index index.html;
+
+    location / {
+        try_files \$uri \$uri/ =404;
     }
 }
 EOF

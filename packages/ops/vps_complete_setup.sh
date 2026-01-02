@@ -54,7 +54,7 @@ pip3 install flask flask-cors requests
 echo "[3/8] Cloning Retardio..."
 cd ~
 if [ ! -d "retardio-coin" ]; then
-    git clone https://github.com/hydden682/retardio.git retardio-coin
+    git clone -b 29.x-knots https://github.com/hydden682/retardio.git retardio-coin
 fi
 cd retardio-coin
 

@@ -23,7 +23,7 @@ import threading
 RPC_CLI = os.environ.get("RETARDIO_CLI", "/usr/local/bin/retardio-cli")
 DATA_DIR = os.environ.get("RETARDIO_DATADIR", os.path.expanduser("~/.retardio/data"))
 POOL_PORT = int(os.environ.get("POOL_PORT", "3333"))
-POOL_UI_URL = os.environ.get("POOL_UI_URL", "http://127.0.0.1:5555")
+POOL_UI_URL = os.environ.get("POOL_UI_URL", "http://retardiochain.com")
 POOL_UI_API_KEY = os.environ.get("POOL_UI_API_KEY", "")  # API key for pool UI authentication
 POOL_STATS_PORT = int(os.environ.get("POOL_STATS_PORT", "3334"))
 

@@ -23,6 +23,8 @@ echo ""
 RPC_USER="retardio"
 RPC_PASSWORD=$(openssl rand -hex 24)
 POOL_API_KEY=$(openssl rand -hex 32)
+POOL_DOMAIN="retardiopool.xyz"
+CHAIN_DOMAIN="retardiochain.com"
 
 echo "Generated secure credentials (SAVE THESE):"
 echo "  RPC Password: $RPC_PASSWORD"
@@ -202,7 +204,7 @@ echo "[7/8] Configuring web server..."
 mkdir -p ~/retardio-coin/www/downloads
 
 # Create configured all-in-one HTML
-sed "s/POOL_HOST_HERE/$PUBLIC_IP/g; s/DASHBOARD_URL_HERE/http:\/\/$PUBLIC_IP/g" \
+sed "s/retardiopool.xyz/$POOL_DOMAIN/g; s/retardiochain.com/$CHAIN_DOMAIN/g" \
     ~/retardio-coin/retardio_all_in_one.html > ~/retardio-coin/www/downloads/Retardio.html
 
 # Create landing page
@@ -292,8 +294,8 @@ HTMLEOF
 sudo tee /etc/nginx/sites-available/retardio << EOF
 server {
     listen 80;
-    server_name _;
-    root $HOME/retardio-coin/www;
+    server_name $CHAIN_DOMAIN $PUBLIC_IP;
+    root \$HOME/retardio-coin/www;
     index index.html;
 
     # Main site
@@ -301,7 +303,7 @@ server {
         try_files \$uri \$uri/ =404;
     }
 
-    # Pool dashboard
+    # Pool dashboard (now under explorer for consistency)
     location /dashboard {
         proxy_pass http://127.0.0.1:5555/;
         proxy_http_version 1.1;
@@ -332,8 +334,28 @@ server {
 
     # Downloads
     location /downloads {
-        alias $HOME/retardio-coin/www/downloads;
+        alias \$HOME/retardio-coin/www/downloads;
         autoindex on;
+    }
+}
+
+server {
+    listen 80;
+    server_name $POOL_DOMAIN;
+
+    # Redirect all pool domain HTTP traffic to the dashboard on chain domain
+    # or just serve the dashboard directly if preferred.
+    # For now, let's serve the dashboard/API directly on this domain too.
+    location / {
+        proxy_pass http://127.0.0.1:5555/;
+        proxy_http_version 1.1;
+        proxy_set_header Host \$host;
+    }
+
+    location /api/ {
+        proxy_pass http://127.0.0.1:5555/api/;
+        proxy_http_version 1.1;
+        proxy_set_header Host \$host;
     }
 }
 EOF
@@ -399,7 +421,7 @@ if [ "$LOCAL" != "$REMOTE" ]; then
     RPC_PASSWORD=$(grep rpcpassword ~/.retardio/data/retardio.conf | cut -d'=' -f2)
 
     # Update the all-in-one HTML
-    sed "s/YOUR_VPS_IP/$PUBLIC_IP/g; s/YOUR_RPC_PASSWORD/$RPC_PASSWORD/g" \
+    sed "s/retardiopool.xyz/$POOL_DOMAIN/g; s/retardiochain.com/$CHAIN_DOMAIN/g" \
         retardio_all_in_one.html > www/downloads/Retardio.html
 
     # Update wallet standalone

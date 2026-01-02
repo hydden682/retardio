@@ -26,28 +26,34 @@ echo -e "${GREEN}==================================================${NC}"
 echo -e "${GREEN}   Retardio Miner Setup (Pi Zero 2 W Edition)   ${NC}"
 echo -e "${GREEN}==================================================${NC}"
 
-# 1. Critical Swap Setup
-echo -e "${YELLOW}[1/7] Configuring Swap (Critical for 512MB RAM)...${NC}"
-FREE_SWAP=$(free -m | awk '/^Swap:/{print $2}')
-if [ "$FREE_SWAP" -lt 1000 ]; then
-    echo "Creating ${SWAP_SIZE_MB}MB swap file..."
-    sudo dphys-swapfile swapoff || true
-    sudo sed -i "s/^CONF_SWAPSIZE=.*/CONF_SWAPSIZE=${SWAP_SIZE_MB}/" /etc/dphys-swapfile
-    sudo dphys-swapfile setup
-    sudo dphys-swapfile swapon
-    echo "Swap enabled."
-else
-    echo "Swap already sufficient ($FREE_SWAP MB)."
-fi
-
-# 2. Dependencies
-echo -e "${YELLOW}[2/7] Installing Dependencies...${NC}"
+# 1. Dependencies (Moved First to ensure dphys-swapfile exists)
+echo -e "${YELLOW}[1/7] Installing Dependencies...${NC}"
 sudo apt update
 sudo apt install -y build-essential libtool autotools-dev automake pkg-config \
     libssl-dev libevent-dev bsdmainutils python3 libboost-system-dev \
     libboost-filesystem-dev libboost-test-dev libboost-thread-dev \
     libsqlite3-dev libminiupnpc-dev libnatpmp-dev cmake ninja-build git \
     curl dphys-swapfile
+
+# 2. Critical Swap Setup
+echo -e "${YELLOW}[2/7] Configuring Swap (Critical for 512MB RAM)...${NC}"
+FREE_SWAP=$(free -m | awk '/^Swap:/{print $2}')
+# Check if swap is less than 1800MB (approx 2GB target)
+if [ "$FREE_SWAP" -lt 1800 ]; then
+    echo "Creating ${SWAP_SIZE_MB}MB swap file..."
+    sudo dphys-swapfile swapoff || true
+    # Use sed to safely replace or append the CONF_SWAPSIZE line
+    if grep -q "^CONF_SWAPSIZE" /etc/dphys-swapfile; then
+        sudo sed -i "s/^CONF_SWAPSIZE=.*/CONF_SWAPSIZE=${SWAP_SIZE_MB}/" /etc/dphys-swapfile
+    else
+        echo "CONF_SWAPSIZE=${SWAP_SIZE_MB}" | sudo tee -a /etc/dphys-swapfile
+    fi
+    sudo dphys-swapfile setup
+    sudo dphys-swapfile swapon
+    echo "Swap enabled."
+else
+    echo "Swap already sufficient ($FREE_SWAP MB)."
+fi
 
 # 3. Clone
 echo -e "${YELLOW}[3/7] Cloning Repository...${NC}"

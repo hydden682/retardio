@@ -31,7 +31,7 @@ This sets up:
 
 | Component | Port | Description |
 |-----------|------|-------------|
-| Node RPC | 18332 | Bitcoin RPC interface |
+| Node RPC | 18332 | Retardio Coin RPC interface |
 | Node P2P | 18333 | Peer-to-peer network |
 | Stratum Pool | 3333 | Mining pool (pool_v8.py) |
 | Dashboard | 5555 | Pool statistics UI |

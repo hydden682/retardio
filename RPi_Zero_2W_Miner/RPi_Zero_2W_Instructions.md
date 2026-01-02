@@ -23,14 +23,22 @@ Since the Pi Zero 2 W is slow to setup, we start with a clean OS.
 
 Power on the Pi Zero 2 W and wait 2-3 minutes for it to connect to WiFi.
 
-**Option A: SSH from PC**
+**Option A: One-Line Download (Easiest)**
+In your Pi's terminal, run:
+
+```bash
+wget https://raw.githubusercontent.com/hydden682/retardio/29.x-knots/RPi_Zero_2W_Miner/RPi_Zero_2W_Setup.sh
+chmod +x RPi_Zero_2W_Setup.sh
+```
+
+**Option B: SSH from PC**
 
 ```bash
 scp RPi_Zero_2W_Setup.sh retardio@retardio-miner.local:~/
 ssh retardio@retardio-miner.local
 ```
 
-**Option B: On the Device**
+**Option C: Manual Creation**
 (If you have a monitor/keyboard attached)
 
 1. Login.
@@ -45,13 +53,14 @@ ssh retardio@retardio-miner.local
 1. Run the setup:
 
     ```bash
-    chmod +x RPi_Zero_2W_Setup.sh
     ./RPi_Zero_2W_Setup.sh
     ```
 
+    *(If prompted for password during dependency install, enter it)*
+
 2. **What it does:**
+    * Installs dependencies (Fixes `dphys-swapfile` error).
     * Creates a **2GB Swap File** (Essential - do not skip).
-    * Installs dependencies.
     * Downloads Retardio Switch.
     * Compiles the miner in "Low Memory Mode".
     * Configures `retardiod` to **mine automatically** (`gen=1`).

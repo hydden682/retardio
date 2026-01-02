@@ -41,3 +41,5 @@ Retardio-v*/
 
 # Claude Code local settings (contains command history)
 .claude/
+CMakeCache.txt
+cmake-build/

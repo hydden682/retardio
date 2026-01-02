@@ -324,7 +324,7 @@ sudo tee /etc/nginx/sites-available/retardio << EOF
 server {
     listen 80;
     listen 443 ssl;
-    server_name $CHAIN_DOMAIN www.$CHAIN_DOMAIN $PUBLIC_IP;
+    server_name $CHAIN_DOMAIN www.$CHAIN_DOMAIN dashboard.$CHAIN_DOMAIN $PUBLIC_IP;
     
     # SSL Configuration
     ssl_certificate /etc/nginx/ssl/retardiochain.com.pem;
@@ -341,9 +341,14 @@ server {
     root /var/www/retardio;
     index index.html;
 
-    # Main site
+    # Main site - Dashboard as Default
     location / {
-        try_files \$uri \$uri/ =404;
+        proxy_pass http://127.0.0.1:5555/;
+        proxy_http_version 1.1;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
     }
 
     # Pool dashboard (now under explorer for consistency)

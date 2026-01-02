@@ -21,20 +21,97 @@ const MOCK_BLOCKS: Block[] = Array.from({ length: 10 }).map((_, i) => ({
     reward: 50
 }));
 
+const RPC_USER = process.env.RPC_USER || "user";
+const RPC_PASSWORD = process.env.RPC_PASSWORD || "pass";
+const RPC_URL = `http://${process.env.RPC_HOST || "127.0.0.1"}:${process.env.RPC_PORT || "18332"}`;
+
+const rpcCall = async (method: string, params: any[] = []) => {
+    if (!process.env.RPC_USER) return null; // Fallback to mock if no creds
+    const headers = {
+        "content-type": "text/plain;",
+    };
+    const auth = Buffer.from(`${RPC_USER}:${RPC_PASSWORD}`).toString("base64");
+    // @ts-ignore
+    headers["Authorization"] = `Basic ${auth}`;
+
+    try {
+        const res = await fetch(RPC_URL, {
+            method: "POST",
+            headers,
+            body: JSON.stringify({
+                jsonrpc: "1.0",
+                id: "explorer",
+                method,
+                params,
+            }),
+            cache: "no-store"
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error.message);
+        return data.result;
+    } catch (e) {
+        console.error(`RPC Error (${method}):`, e);
+        return null;
+    }
+};
+
 export const api = {
     getStats: async () => {
+        const info = await rpcCall("getmininginfo");
+        if (!info) {
+            return {
+                height: 10500,
+                hashrate: "420.69 MH/s",
+                difficulty: "1,234.56",
+                supply: "525,000 RTC",
+                avgBlockTime: "60s"
+            };
+        }
         return {
-            height: 10500,
-            hashrate: "420.69 MH/s",
-            difficulty: "1,234.56",
-            supply: "525,000 RTC",
+            height: info.blocks,
+            hashrate: `${(info.networkhashps / 1000000).toFixed(2)} MH/s`,
+            difficulty: info.difficulty.toFixed(2),
+            supply: `${(info.blocks * 50).toLocaleString()} RTC`, // Approximation
             avgBlockTime: "60s"
         };
     },
     getLatestBlocks: async () => {
-        return MOCK_BLOCKS;
+        const height = await rpcCall("getblockcount");
+        if (!height) return MOCK_BLOCKS;
+
+        const blocks: Block[] = [];
+        const count = 10;
+        for (let i = 0; i < count; i++) {
+            const h = height - i;
+            if (h < 0) break;
+            const hash = await rpcCall("getblockhash", [h]);
+            const block = await rpcCall("getblock", [hash]);
+            if (block) {
+                blocks.push({
+                    height: block.height,
+                    hash: block.hash,
+                    timestamp: block.time * 1000,
+                    size: block.size,
+                    tx_count: block.tx.length,
+                    miner: "Retardio Miner", // P2Pool attribution is harder, straightforward placeholder
+                    reward: 50
+                });
+            }
+        }
+        return blocks;
     },
     getBlock: async (height: number) => {
-        return MOCK_BLOCKS[0]; // TODO: Real implementation
+        const hash = await rpcCall("getblockhash", [Number(height)]);
+        if (!hash) return MOCK_BLOCKS[0];
+        const block = await rpcCall("getblock", [hash]);
+        return {
+            height: block.height,
+            hash: block.hash,
+            timestamp: block.time * 1000,
+            size: block.size,
+            tx_count: block.tx.length,
+            miner: "Retardio Miner",
+            reward: 50
+        };
     }
 };

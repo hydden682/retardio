@@ -50,6 +50,11 @@ sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
 sudo apt update
 sudo apt install -y libstdc++6
 
+# Install Node.js 20.x
+echo "Installing Node.js 20..."
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs
+
 pip3 install flask flask-cors requests gunicorn
 
 # Clone repo
@@ -184,7 +189,7 @@ RestartSec=10
 WantedBy=multi-user.target
 EOF
 
-# Block Explorer service
+# Block Explorer service (Next.js)
 sudo tee /etc/systemd/system/retardio-explorer.service > /dev/null << EOF
 [Unit]
 Description=Retardio Block Explorer
@@ -193,16 +198,28 @@ After=retardio-node.service
 [Service]
 Type=simple
 User=$USER
-User=$USER
-WorkingDirectory=$HOME/retardio-coin/packages/explorer
-Environment="PORT=3002"
-ExecStart=/usr/bin/python3 $HOME/retardio-coin/packages/explorer/app.py
+WorkingDirectory=$HOME/retardio-coin/packages/explorer-next
+Environment="PORT=8082"
+Environment="NODE_ENV=production"
+Environment="RPC_USER=$RPC_USER"
+Environment="RPC_PASSWORD=$RPC_PASSWORD"
+Environment="RPC_HOST=127.0.0.1"
+Environment="RPC_PORT=18332"
+ExecStart=/usr/bin/npm start
 Restart=always
 RestartSec=10
 
 [Install]
 WantedBy=multi-user.target
 EOF
+
+# Install Explorer Dependencies & Build
+echo "[6a/8] Building Block Explorer..."
+cd ~/retardio-coin/packages/explorer-next
+# Check if we are on a small VPS and need to limit memory for build
+export NODE_OPTIONS="--max-old-space-size=2048"
+npm install
+npm run build
 
 # Update pool config with correct paths
 sed -i "s|/home/hydden682|$HOME|g" ~/retardio-coin/packages/pool/pool_v8.py
@@ -396,7 +413,7 @@ server {
 
     # Block explorer
     location /explorer {
-        proxy_pass http://127.0.0.1:3002/;
+        proxy_pass http://127.0.0.1:8082/;
         proxy_http_version 1.1;
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
@@ -539,13 +556,16 @@ sleep 10
 
 sudo systemctl restart retardio-pool retardio-pool-ui retardio-explorer
 
-# Register local node with explorer
+# Register local node with explorer (Wait for Next.js to start)
 echo ""
 echo "Registering node with block explorer..."
-sleep 5
-curl -s -X POST http://127.0.0.1:3002/api/nodes/register \
-    -H "Content-Type: application/json" \
-    -d "{\"host\": \"127.0.0.1\", \"port\": 18332, \"rpc_user\": \"$RPC_USER\", \"rpc_pass\": \"$RPC_PASSWORD\"}" || true
+sleep 20
+# For the Next.js explorer, we might not need explicit registration if it pulls from RPC directly
+# But if there's a hook, we keep it. The MockAPI currently creates fake data, 
+# so we need to ensure the REAL API client is used in production.
+# TODO: Ensure the Next.js app uses the real RPC creds from environment or config.
+# For now, we assume the Next.js app is configured to talk to localhost:18332
+
 
 # Create auto-update script
 echo "Creating auto-update script..."

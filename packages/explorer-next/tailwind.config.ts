@@ -9,15 +9,15 @@ const config: Config = {
     theme: {
         extend: {
             colors: {
-                background: "#0f172a", // Slate-900 (Dripscan-like deep blue/black)
-                foreground: "#f8fafc", // Slate-50
-                card: "#1e293b",       // Slate-800
-                "card-hover": "#334155", // Slate-700
-                border: "#334155",     // Slate-700
-                primary: "#00d4ff",    // Retardio Cyan
-                secondary: "#10b981",  // Emerald-500
-                danger: "#ef4444",
-                muted: "#94a3b8",      // Slate-400
+                background: "#000000", // Pure Black
+                foreground: "#ffffff", // Pure White
+                card: "#111111",       // Dark Gray
+                "card-hover": "#1a1a1a", // Slightly Lighter Gray
+                border: "#333333",     // Dark Gray Border
+                primary: "#FFD700",    // Retardio Gold/Yellow
+                secondary: "#E5C100",  // Darker Yellow
+                danger: "#ff4444",
+                muted: "#888888",      // Neutral Gray
             },
             fontFamily: {
                 sans: ['var(--font-inter)', 'sans-serif'],

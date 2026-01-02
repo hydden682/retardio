@@ -374,9 +374,7 @@ server {
     # ssl_certificate /etc/nginx/ssl/retardio.crt;
     # ssl_certificate_key /etc/nginx/ssl/retardio.key;
 
-    # Redirect all pool domain HTTP traffic to the dashboard on chain domain
-    # or just serve the dashboard directly if preferred.
-    # For now, let's serve the dashboard/API directly on this domain too.
+    # Ensure / also works for the dashboard on the pool domain
     location / {
         proxy_pass http://127.0.0.1:5555/;
         proxy_http_version 1.1;
@@ -384,6 +382,12 @@ server {
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
+    }
+
+    location /dashboard {
+        proxy_pass http://127.0.0.1:5555/;
+        proxy_http_version 1.1;
+        proxy_set_header Host \$host;
     }
 
     location /api/ {

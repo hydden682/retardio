@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mining Pool - RetardioChain</title>
+    <meta name="description"
+        content="Join the official RetardioChain mining pool. Low fees, reliable payouts, and real-time statistics.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                Retardio<span>Chain</span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="pool.html" class="active">Mining Pool</a></li>
+                <li><a href="flasher.html">Web Flasher</a></li>
+                <li><a href="setup.html">Setup Guide</a></li>
+            </ul>
+            <a href="pool.html" class="nav-cta">Start Mining</a>
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 12h18M3 6h18M3 18h18" />
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Pool Hero -->
+    <section class="hero" style="min-height: auto; padding-top: 8rem; padding-bottom: 4rem;">
+        <div class="hero-content">
+            <span class="hero-badge">Official Pool</span>
+            <h1>Mining <span>Pool</span></h1>
+            <p class="hero-subtitle">
+                Low 1% fee, reliable payouts, and real-time statistics.
+                Connect your miner and start earning RTC.
+            </p>
+        </div>
+    </section>
+
+    <!-- Pool Stats -->
+    <section class="section" style="padding-top: 2rem;">
+        <div class="container">
+            <div class="pool-stats">
+                <div class="pool-stat-card">
+                    <h4>Pool Status</h4>
+                    <div class="value live">
+                        <span class="live-dot"></span>
+                        <span id="poolStatus">Online</span>
+                    </div>
+                </div>
+                <div class="pool-stat-card">
+                    <h4>Pool Hashrate</h4>
+                    <div class="value" id="poolHashrate">--</div>
+                </div>
+                <div class="pool-stat-card">
+                    <h4>Active Workers</h4>
+                    <div class="value" id="activeWorkers">--</div>
+                </div>
+                <div class="pool-stat-card">
+                    <h4>Blocks Found</h4>
+                    <div class="value" id="blocksFound">--</div>
+                </div>
+                <div class="pool-stat-card">
+                    <h4>Network Height</h4>
+                    <div class="value" id="networkHeight">--</div>
+                </div>
+                <div class="pool-stat-card">
+                    <h4>Pool Fee</h4>
+                    <div class="value">1%</div>
+                </div>
+            </div>
+
+            <!-- Mining Configuration -->
+            <div class="section-header">
+                <h2>Connect to Pool</h2>
+                <p>Configure your miner with these settings</p>
+            </div>
+
+            <div class="mining-config">
+                <div class="config-row">
+                    <div class="config-label">Stratum URL</div>
+                    <div class="config-value">
+                        <span id="stratumUrl">stratum+tcp://66.135.25.59:3333</span>
+                        <button class="copy-btn" onclick="copyToClipboard('stratumUrl')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="config-row">
+                    <div class="config-label">Username</div>
+                    <div class="config-value">
+                        <span>YOUR_WALLET_ADDRESS</span>
+                    </div>
+                </div>
+                <div class="config-row">
+                    <div class="config-label">Password</div>
+                    <div class="config-value">
+                        <span>x</span>
+                    </div>
+                </div>
+                <div class="config-row">
+                    <div class="config-label">Algorithm</div>
+                    <div class="config-value">
+                        <span>Native Algorithm</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Example Commands -->
+            <div class="mt-2">
+                <h3 style="margin-bottom: 1rem;">Example Mining Commands</h3>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-title">Linux/Mac Miner</span>
+                        <button class="code-copy" onclick="copyCodeBlock(this)">Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <pre>./miner -a native_algo -o stratum+tcp://66.135.25.59:3333 -u YOUR_WALLET_ADDRESS -p x</pre>
+                    </div>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-title">Windows Miner</span>
+                        <button class="code-copy" onclick="copyCodeBlock(this)">Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <pre>miner.exe -a native_algo -o stratum+tcp://66.135.25.59:3333 -u YOUR_WALLET_ADDRESS -p x</pre>
+                    </div>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-title">With Worker Name</span>
+                        <button class="code-copy" onclick="copyCodeBlock(this)">Copy</button>
+                    </div>
+                    <div class="code-content">
+                        <pre>./miner -a native_algo -o stratum+tcp://66.135.25.59:3333 -u YOUR_WALLET_ADDRESS.worker1 -p x</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Worker Stats Lookup -->
+    <section class="section section-dark">
+        <div class="container">
+            <div class="section-header">
+                <h2>Check Your Stats</h2>
+                <p>Enter your wallet address to view your mining statistics</p>
+            </div>
+
+            <div class="mining-config" style="max-width: 700px; margin: 0 auto;">
+                <div style="display: flex; gap: 1rem; padding: 1rem 0;">
+                    <input type="text" id="workerAddress" placeholder="Enter your wallet address (R...)"
+                        style="flex: 1; background: var(--bg-tertiary); border: 1px solid var(--border-color);
+                                  border-radius: 8px; padding: 1rem; color: var(--text-primary); font-family: 'JetBrains Mono', monospace;">
+                    <button class="btn btn-primary" onclick="lookupWorker()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="11" cy="11" r="8" />
+                            <path d="M21 21l-4.35-4.35" />
+                        </svg>
+                        Lookup
+                    </button>
+                </div>
+            </div>
+
+            <div id="workerStats" style="display: none; margin-top: 2rem;">
+                <div class="pool-stats">
+                    <div class="pool-stat-card">
+                        <h4>Your Hashrate</h4>
+                        <div class="value" id="workerHashrate">--</div>
+                    </div>
+                    <div class="pool-stat-card">
+                        <h4>Shares Accepted</h4>
+                        <div class="value" id="workerShares">--</div>
+                    </div>
+                    <div class="pool-stat-card">
+                        <h4>Pending Balance</h4>
+                        <div class="value" id="workerBalance">--</div>
+                    </div>
+                    <div class="pool-stat-card">
+                        <h4>Total Paid</h4>
+                        <div class="value" id="workerPaid">--</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recent Blocks -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Recent Blocks</h2>
+                <p>Blocks found by the pool</p>
+            </div>
+
+            <div class="specs-table" id="recentBlocks">
+                <div class="specs-row">
+                    <div class="specs-label" style="flex: 0 0 100px;">Height</div>
+                    <div class="specs-label" style="flex: 1;">Hash</div>
+                    <div class="specs-label" style="flex: 0 0 150px;">Reward</div>
+                    <div class="specs-label" style="flex: 0 0 150px;">Time</div>
+                </div>
+                <div class="specs-row" id="noBlocks">
+                    <div class="specs-value" style="flex: 1; text-align: center; color: var(--text-muted);">
+                        Loading blocks...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Getting Started -->
+    <section class="section section-dark">
+        <div class="container">
+            <div class="section-header">
+                <h2>Getting Started</h2>
+                <p>New to mining? Follow these steps</p>
+            </div>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Get a Wallet</h3>
+                        <p>Download the RetardioChain wallet from our <a
+                                href="https://github.com/oxmay/retardio-coin/releases">releases page</a> or use the <a
+                                href="flasher.html">Web Flasher</a> to set up a hardware wallet.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Configure Miner</h3>
+                        <p>Configure your mining software to connect to our pool. See our <a href="setup.html">setup
+                                guide</a> for detailed instructions.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Configure and Mine</h3>
+                        <p>Use the mining commands above, replacing <code>YOUR_WALLET_ADDRESS</code> with your actual
+                            RetardioChain address (starts with R).</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Track Your Earnings</h3>
+                        <p>Use the stats lookup above to monitor your hashrate and pending balance. Payouts are
+                            processed automatically.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-2">
+                <a href="setup.html" class="btn btn-primary">View Full Setup Guide</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-main">
+                <div class="footer-brand">
+                    <h3>Retardio<span>Chain</span></h3>
+                    <p>CPU-mineable cryptocurrency built for accessibility. No specialized hardware required.</p>
+                    <div class="footer-social">
+                        <a href="https://github.com/oxmay/retardio-coin" target="_blank" aria-label="GitHub">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                            </svg>
+                        </a>
+                        <a href="https://discord.gg/retardio" target="_blank" aria-label="Discord">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z" />
+                            </svg>
+                        </a>
+                        <a href="https://twitter.com/retardiochain" target="_blank" aria-label="Twitter">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="setup.html">Setup Guide</a></li>
+                        <li><a href="pool.html">Mining Pool</a></li>
+                        <li><a href="flasher.html">Web Flasher</a></li>
+                        <li><a href="https://explorer.retardiochain.com" target="_blank">Block Explorer</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Developers</h4>
+                    <ul>
+                        <li><a href="https://github.com/oxmay/retardio-coin" target="_blank">GitHub</a></li>
+                        <li><a href="https://github.com/oxmay/retardio-coin/wiki" target="_blank">Documentation</a></li>
+                        <li><a href="https://github.com/oxmay/retardio-coin/issues" target="_blank">Report Issues</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Network</h4>
+                    <ul>
+                        <li><a href="pool.html">Pool Stats</a></li>
+                        <li><a href="https://explorer.retardiochain.com/api/status" target="_blank">API Status</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 RetardioChain. Open source under MIT License.</p>
+                <p>Built with determination.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        // Pool-specific functionality
+        const POOL_API = 'http://66.135.25.59:5555';
+        const POOL_STATS_API = 'http://66.135.25.59:3334';
+
+        async function fetchPoolStats() {
+            try {
+                const response = await fetch(POOL_STATS_API + '/stats');
+                const data = await response.json();
+
+                document.getElementById('poolHashrate').textContent = formatHashrate(data.pool_hashrate || 0);
+                document.getElementById('activeWorkers').textContent = data.workers || 0;
+                document.getElementById('blocksFound').textContent = data.blocks_found || 0;
+                document.getElementById('networkHeight').textContent = data.height || '--';
+            } catch (error) {
+                console.error('Failed to fetch pool stats:', error);
+            }
+        }
+
+        async function lookupWorker() {
+            const address = document.getElementById('workerAddress').value.trim();
+            if (!address) return;
+
+            try {
+                const response = await fetch(POOL_STATS_API + '/worker/' + address);
+                const data = await response.json();
+
+                document.getElementById('workerStats').style.display = 'block';
+                document.getElementById('workerHashrate').textContent = formatHashrate(data.hashrate || 0);
+                document.getElementById('workerShares').textContent = data.shares || 0;
+                document.getElementById('workerBalance').textContent = (data.balance || 0).toFixed(4) + ' RTC';
+                document.getElementById('workerPaid').textContent = (data.paid || 0).toFixed(4) + ' RTC';
+            } catch (error) {
+                console.error('Failed to fetch worker stats:', error);
+                document.getElementById('workerStats').style.display = 'block';
+                document.getElementById('workerHashrate').textContent = 'Not found';
+                document.getElementById('workerShares').textContent = '--';
+                document.getElementById('workerBalance').textContent = '--';
+                document.getElementById('workerPaid').textContent = '--';
+            }
+        }
+
+        function formatHashrate(hashrate) {
+            if (hashrate >= 1e12) return (hashrate / 1e12).toFixed(2) + ' TH/s';
+            if (hashrate >= 1e9) return (hashrate / 1e9).toFixed(2) + ' GH/s';
+            if (hashrate >= 1e6) return (hashrate / 1e6).toFixed(2) + ' MH/s';
+            if (hashrate >= 1e3) return (hashrate / 1e3).toFixed(2) + ' KH/s';
+            return hashrate.toFixed(2) + ' H/s';
+        }
+
+        function copyToClipboard(elementId) {
+            const text = document.getElementById(elementId).textContent;
+            navigator.clipboard.writeText(text);
+        }
+
+        function copyCodeBlock(button) {
+            const code = button.closest('.code-block').querySelector('pre').textContent;
+            navigator.clipboard.writeText(code);
+            button.textContent = 'Copied!';
+            setTimeout(() => button.textContent = 'Copy', 2000);
+        }
+
+        // Fetch stats on load
+        fetchPoolStats();
+        setInterval(fetchPoolStats, 30000);
+    </script>
+</body>
+
+</html>

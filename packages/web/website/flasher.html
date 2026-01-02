@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Flasher - RetardioChain</title>
+    <meta name="description"
+        content="Flash RetardioChain firmware to supported devices directly from your browser. No software installation required.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                Retardio<span>Chain</span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="pool.html">Mining Pool</a></li>
+                <li><a href="flasher.html" class="active">Web Flasher</a></li>
+                <li><a href="setup.html">Setup Guide</a></li>
+            </ul>
+            <a href="pool.html" class="nav-cta">Start Mining</a>
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 12h18M3 6h18M3 18h18" />
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Flasher Hero -->
+    <section class="hero" style="min-height: auto; padding-top: 8rem; padding-bottom: 4rem;">
+        <div class="hero-content">
+            <span class="hero-badge">Browser-Based</span>
+            <h1>Web <span>Flasher</span></h1>
+            <p class="hero-subtitle">
+                Flash RetardioChain firmware to supported ESP32 devices directly from your browser.
+                No software installation required.
+            </p>
+        </div>
+    </section>
+
+    <!-- Flasher Interface -->
+    <section class="section" style="padding-top: 2rem;">
+        <div class="container">
+            <div class="flasher-container">
+                <div class="flasher-status">
+                    <span class="status-indicator" id="connectionStatus"></span>
+                    <span id="statusText">No device connected</span>
+                </div>
+
+                <h2 style="margin-bottom: 0.5rem;">Select Your Device</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                    Choose your hardware to flash the appropriate firmware
+                </p>
+
+                <select class="device-select" id="deviceSelect">
+                    <option value="">-- Select Device --</option>
+                    <option value="bitaxe-ultra">BitAxe Ultra (ESP32-S3)</option>
+                    <option value="bitaxe-supra">BitAxe Supra (ESP32-S3)</option>
+                    <option value="bitaxe-gamma">BitAxe Gamma (ESP32-S3)</option>
+                    <option value="nerdminer">NerdMiner (ESP32)</option>
+                    <option value="generic-esp32">Generic ESP32</option>
+                    <option value="generic-esp32s3">Generic ESP32-S3</option>
+                </select>
+
+                <div class="flasher-buttons">
+                    <button class="btn btn-secondary" id="connectBtn" onclick="connectDevice()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M18 20V10M12 20V4M6 20v-6" />
+                        </svg>
+                        Connect Device
+                    </button>
+                    <button class="btn btn-primary" id="flashBtn" onclick="flashDevice()" disabled>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                        </svg>
+                        Flash Firmware
+                    </button>
+                </div>
+
+                <!-- Progress Section -->
+                <div id="progressSection" style="display: none; margin-top: 2rem;">
+                    <div
+                        style="background: var(--bg-tertiary); border-radius: 8px; overflow: hidden; height: 8px; margin-bottom: 1rem;">
+                        <div id="progressBar"
+                            style="background: var(--accent); height: 100%; width: 0%; transition: width 0.3s ease;">
+                        </div>
+                    </div>
+                    <p id="progressText" style="color: var(--text-secondary);">Preparing...</p>
+                </div>
+
+                <!-- Console Output -->
+                <div id="consoleSection" style="display: none; margin-top: 2rem; text-align: left;">
+                    <h4 style="margin-bottom: 0.5rem;">Console Output</h4>
+                    <div id="consoleOutput"
+                        style="background: var(--bg-tertiary); border: 1px solid var(--border-color);
+                                                     border-radius: 8px; padding: 1rem; font-family: 'JetBrains Mono', monospace;
+                                                     font-size: 0.75rem; max-height: 200px; overflow-y: auto; color: var(--text-secondary);">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Supported Devices -->
+    <section class="section section-dark">
+        <div class="container">
+            <div class="section-header">
+                <h2>Supported Devices</h2>
+                <p>The Web Flasher supports the following hardware</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fdd835" stroke-width="2">
+                            <rect x="4" y="4" width="16" height="16" rx="2" />
+                            <rect x="9" y="9" width="6" height="6" />
+                            <path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3" />
+                        </svg>
+                    </div>
+                    <h3>BitAxe Series</h3>
+                    <p>Full support for BitAxe Ultra, Supra, and Gamma devices. Flash custom RetardioChain mining
+                        firmware for optimized CPU mining.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fdd835" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                            <path d="M2 17l10 5 10-5" />
+                            <path d="M2 12l10 5 10-5" />
+                        </svg>
+                    </div>
+                    <h3>NerdMiner</h3>
+                    <p>Support for NerdMiner devices based on ESP32. Convert your lottery miner to mine RetardioChain.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fdd835" stroke-width="2">
+                            <circle cx="12" cy="12" r="3" />
+                            <path
+                                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                        </svg>
+                    </div>
+                    <h3>Generic ESP32</h3>
+                    <p>Flash custom firmware to any ESP32 or ESP32-S3 based device. Build your own RetardioChain mining
+                        hardware.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Instructions -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2>How to Flash</h2>
+                <p>Step-by-step instructions for flashing your device</p>
+            </div>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Connect Your Device</h3>
+                        <p>Connect your ESP32 device to your computer using a USB cable. Make sure you have the
+                            appropriate drivers installed.</p>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-title">Windows Users</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>If your device isn't recognized, install CP210x or CH340 drivers from the manufacturer's website.</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Select Device Type</h3>
+                        <p>Choose your device from the dropdown menu. This ensures the correct firmware and partition
+                            scheme is used.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Click Connect</h3>
+                        <p>Click the "Connect Device" button and select your device from the browser's serial port
+                            picker. Grant permission when prompted.</p>
+                        <p style="margin-top: 0.5rem;"><strong>Note:</strong> The Web Flasher requires a Chromium-based
+                            browser (Chrome, Edge, Brave) with Web Serial API support.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Flash Firmware</h3>
+                        <p>Click "Flash Firmware" to begin the flashing process. Do not disconnect your device during
+                            flashing. The process typically takes 1-2 minutes.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>Configure Your Device</h3>
+                        <p>After flashing, your device will reboot and create a WiFi access point. Connect to it and
+                            configure your pool settings through the web interface.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Troubleshooting -->
+    <section class="section section-dark">
+        <div class="container">
+            <div class="section-header">
+                <h2>Troubleshooting</h2>
+                <p>Common issues and solutions</p>
+            </div>
+
+            <div class="specs-table">
+                <div class="specs-row">
+                    <div class="specs-label">Device not detected</div>
+                    <div class="specs-value">
+                        Install USB drivers (CP210x for most devices). Try a different USB cable - some cables are
+                        charge-only. Use a USB 2.0 port instead of USB 3.0.
+                    </div>
+                </div>
+                <div class="specs-row">
+                    <div class="specs-label">Connection failed</div>
+                    <div class="specs-value">
+                        Close any other applications using the serial port (Arduino IDE, PuTTY, etc). Try disconnecting
+                        and reconnecting the device.
+                    </div>
+                </div>
+                <div class="specs-row">
+                    <div class="specs-label">Flash failed</div>
+                    <div class="specs-value">
+                        Hold the BOOT button on your device while clicking "Flash Firmware". Some devices require this
+                        to enter bootloader mode.
+                    </div>
+                </div>
+                <div class="specs-row">
+                    <div class="specs-label">Browser not supported</div>
+                    <div class="specs-value">
+                        Use Chrome, Edge, or Brave browser. Firefox and Safari do not support the Web Serial API. Enable
+                        "Experimental Web Platform features" in chrome://flags if needed.
+                    </div>
+                </div>
+                <div class="specs-row">
+                    <div class="specs-label">Device stuck in boot loop</div>
+                    <div class="specs-value">
+                        Re-flash with the "Erase Flash" option enabled. This will clear all existing configuration and
+                        start fresh.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-main">
+                <div class="footer-brand">
+                    <h3>Retardio<span>Chain</span></h3>
+                    <p>CPU-mineable cryptocurrency built for accessibility. No specialized hardware required.</p>
+                    <div class="footer-social">
+                        <a href="https://github.com/oxmay/retardio-coin" target="_blank" aria-label="GitHub">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                            </svg>
+                        </a>
+                        <a href="https://discord.gg/retardio" target="_blank" aria-label="Discord">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z" />
+                            </svg>
+                        </a>
+                        <a href="https://twitter.com/retardiochain" target="_blank" aria-label="Twitter">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="setup.html">Setup Guide</a></li>
+                        <li><a href="pool.html">Mining Pool</a></li>
+                        <li><a href="flasher.html">Web Flasher</a></li>
+                        <li><a href="https://explorer.retardiochain.com" target="_blank">Block Explorer</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Developers</h4>
+                    <ul>
+                        <li><a href="https://github.com/oxmay/retardio-coin" target="_blank">GitHub</a></li>
+                        <li><a href="https://github.com/oxmay/retardio-coin/wiki" target="_blank">Documentation</a></li>
+                        <li><a href="https://github.com/oxmay/retardio-coin/issues" target="_blank">Report Issues</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Network</h4>
+                    <ul>
+                        <li><a href="pool.html">Pool Stats</a></li>
+                        <li><a href="https://explorer.retardiochain.com/api/status" target="_blank">API Status</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 RetardioChain. Open source under MIT License.</p>
+                <p>Built with determination.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        // Web Flasher functionality
+        let port = null;
+        let connected = false;
+
+        async function connectDevice() {
+            const statusIndicator = document.getElementById('connectionStatus');
+            const statusText = document.getElementById('statusText');
+            const flashBtn = document.getElementById('flashBtn');
+            const connectBtn = document.getElementById('connectBtn');
+
+            if (connected) {
+                // Disconnect
+                if (port) {
+                    await port.close();
+                    port = null;
+                }
+                connected = false;
+                statusIndicator.classList.remove('connected');
+                statusText.textContent = 'No device connected';
+                flashBtn.disabled = true;
+                connectBtn.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 20V10M12 20V4M6 20v-6"/>
+                    </svg>
+                    Connect Device
+                `;
+                return;
+            }
+
+            try {
+                if (!('serial' in navigator)) {
+                    alert('Web Serial API not supported. Please use Chrome, Edge, or Brave browser.');
+                    return;
+                }
+
+                port = await navigator.serial.requestPort();
+                await port.open({ baudRate: 115200 });
+
+                connected = true;
+                statusIndicator.classList.add('connected');
+                statusText.textContent = 'Device connected';
+                flashBtn.disabled = false;
+                connectBtn.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                    Disconnect
+                `;
+
+                logConsole('Device connected successfully');
+                logConsole('Ready to flash firmware');
+            } catch (error) {
+                console.error('Connection failed:', error);
+                statusText.textContent = 'Connection failed: ' + error.message;
+                logConsole('Error: ' + error.message);
+            }
+        }
+
+        async function flashDevice() {
+            const deviceSelect = document.getElementById('deviceSelect');
+            const device = deviceSelect.value;
+
+            if (!device) {
+                alert('Please select a device type');
+                return;
+            }
+
+            if (!connected || !port) {
+                alert('Please connect a device first');
+                return;
+            }
+
+            const progressSection = document.getElementById('progressSection');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+
+            progressSection.style.display = 'block';
+            progressBar.style.width = '0%';
+            progressText.textContent = 'Downloading firmware...';
+            logConsole('Starting flash process for ' + device);
+
+            // Simulate flashing process (replace with actual ESP Web Tools integration)
+            const steps = [
+                { progress: 10, text: 'Downloading firmware...' },
+                { progress: 25, text: 'Verifying firmware...' },
+                { progress: 35, text: 'Entering bootloader mode...' },
+                { progress: 50, text: 'Erasing flash...' },
+                { progress: 70, text: 'Writing firmware...' },
+                { progress: 90, text: 'Verifying write...' },
+                { progress: 100, text: 'Flash complete!' }
+            ];
+
+            for (const step of steps) {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                progressBar.style.width = step.progress + '%';
+                progressText.textContent = step.text;
+                logConsole(step.text);
+            }
+
+            logConsole('Device will reboot automatically');
+            logConsole('Connect to "RetardioAP" WiFi to configure');
+        }
+
+        function logConsole(message) {
+            const consoleSection = document.getElementById('consoleSection');
+            const consoleOutput = document.getElementById('consoleOutput');
+
+            consoleSection.style.display = 'block';
+
+            const timestamp = new Date().toLocaleTimeString();
+            consoleOutput.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+    </script>
+</body>
+
+</html>

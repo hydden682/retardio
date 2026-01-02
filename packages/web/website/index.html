@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RetardioChain - CPU-Mineable Cryptocurrency</title>
+    <meta name="description"
+        content="RetardioChain is a CPU-mineable cryptocurrency designed for accessibility. Mine with any computer, no specialized hardware required.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                Retardio<span>Chain</span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="pool.html">Mining Pool</a></li>
+                <li><a href="flasher.html">Web Flasher</a></li>
+                <li><a href="setup.html">Setup Guide</a></li>
+            </ul>
+            <a href="pool.html" class="nav-cta">Start Mining</a>
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 12h18M3 6h18M3 18h18" />
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <span class="hero-badge">Custom Proof-of-Work</span>
+            <h1>Mine Crypto with <span>any ESC-enabled device</span></h1>
+            <p class="hero-subtitle">
+                RetardioChain is designed for accessibility. Mine with hardware you already own.
+            </p>
+            <div class="hero-buttons">
+                <a href="pool.html" class="btn btn-primary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                        <path d="M2 17l10 5 10-5" />
+                        <path d="M2 12l10 5 10-5" />
+                    </svg>
+                    Start Mining
+                </a>
+                <a href="setup.html" class="btn btn-secondary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 20h9" />
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                    </svg>
+                    Setup Guide
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Stats -->
+    <section class="stats">
+        <div class="stats-container">
+            <div class="stat-item">
+                <div class="stat-value" id="blockHeight">--</div>
+                <div class="stat-label">Block Height</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="difficulty">--</div>
+                <div class="stat-label">Difficulty</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="hashrate">--</div>
+                <div class="stat-label">Network Hashrate</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="supply">--</div>
+                <div class="stat-label">Circulating Supply</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Why RetardioChain?</h2>
+                <p>Designed from the ground up for fair, accessible mining</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fdd835" stroke-width="2">
+                            <rect x="4" y="4" width="16" height="16" rx="2" />
+                            <rect x="9" y="9" width="6" height="6" />
+                            <path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3" />
+                        </svg>
+                    </div>
+                    <h3>Native Algorithm</h3>
+                    <p>Retardio's custom Proof-of-Work algorithm. Designed for fair distribution.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fdd835" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        </svg>
+                    </div>
+                    <h3>ASIC Resistant</h3>
+                    <p>Algorithm design mitigates centralization. Mining remains accessible.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fdd835" stroke-width="2">
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 6 12 12 16 14" />
+                        </svg>
+                    </div>
+                    <h3>Fast Block Times</h3>
+                    <p>15-second block time targets for efficient confirmations.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fdd835" stroke-width="2">
+                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                        </svg>
+                    </div>
+                    <h3>Emission Curve</h3>
+                    <p>Smooth emission model with monthly reduction. Sustainable supply mechanics.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fdd835" stroke-width="2">
+                            <path
+                                d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                            <line x1="12" y1="22.08" x2="12" y2="12" />
+                        </svg>
+                    </div>
+                    <h3>Solo & Pool Mining</h3>
+                    <p>Flexible mining options. Run your own node for solo mining or connect to our public pool for
+                        consistent rewards.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fdd835" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                        </svg>
+                    </div>
+                    <h3>Open Source</h3>
+                    <p>Fully open source codebase. Review, audit, and contribute to the project on GitHub.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technical Specs -->
+    <section class="section section-dark">
+        <div class="container">
+            <div class="section-header">
+                <h2>Technical Specifications</h2>
+                <p>Built on proven Bitcoin technology with modern optimizations</p>
+            </div>
+            <div class="specs-table">
+                <div class="specs-row">
+                    <div class="specs-label">Algorithm</div>
+                    <div class="specs-value">Retardio's custom Proof-of-Work algorithm</div>
+                </div>
+                <div class="specs-row">
+                    <div class="specs-label">Block Time</div>
+                    <div class="specs-value">15 seconds</div>
+                </div>
+                <div class="specs-row">
+                    <div class="specs-label">Initial Block Reward</div>
+                    <div class="specs-value">~2397 RTC</div>
+                </div>
+                <div class="specs-row">
+                    <div class="specs-label">Emission Model</div>
+                    <div class="specs-value">Monthly reduction</div>
+                </div>
+                <div class="specs-row">
+                    <div class="specs-label">Total Supply</div>
+                    <div class="specs-value">Asymptotic limit</div>
+                </div>
+                <div class="specs-row">
+                    <div class="specs-label">Difficulty Adjustment</div>
+                    <div class="specs-value">Per-block adjustment</div>
+                </div>
+                <div class="specs-row">
+                    <div class="specs-label">Address Prefix</div>
+                    <div class="specs-value">R (mainnet), F (testnet)</div>
+                </div>
+                <div class="specs-row">
+                    <div class="specs-label">P2P Port</div>
+                    <div class="specs-value">18333</div>
+                </div>
+                <div class="specs-row">
+                    <div class="specs-label">RPC Port</div>
+                    <div class="specs-value">18332</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Get Started CTA -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Ready to Start Mining?</h2>
+                <p>Configure your device with our setup guide</p>
+            </div>
+            <div class="hero-buttons" style="justify-content: center;">
+                <a href="setup.html" class="btn btn-primary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 20h9" />
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                    </svg>
+                    View Setup Guide
+                </a>
+                <a href="https://github.com/oxmay/retardio-coin" target="_blank" class="btn btn-secondary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                    </svg>
+                    View on GitHub
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-main">
+                <div class="footer-brand">
+                    <h3>Retardio<span>Chain</span></h3>
+                    <p>Custom Proof-of-Work cryptocurrency.</p>
+                    <div class="footer-social">
+                        <a href="https://github.com/oxmay/retardio-coin" target="_blank" aria-label="GitHub">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                            </svg>
+                        </a>
+                        <a href="https://discord.gg/retardio" target="_blank" aria-label="Discord">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z" />
+                            </svg>
+                        </a>
+                        <a href="https://twitter.com/retardiochain" target="_blank" aria-label="Twitter">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="setup.html">Setup Guide</a></li>
+                        <li><a href="pool.html">Mining Pool</a></li>
+                        <li><a href="flasher.html">Web Flasher</a></li>
+                        <li><a href="https://explorer.retardiochain.com" target="_blank">Block Explorer</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Developers</h4>
+                    <ul>
+                        <li><a href="https://github.com/oxmay/retardio-coin" target="_blank">GitHub</a></li>
+                        <li><a href="https://github.com/oxmay/retardio-coin/wiki" target="_blank">Documentation</a></li>
+                        <li><a href="https://github.com/oxmay/retardio-coin/issues" target="_blank">Report Issues</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Network</h4>
+                    <ul>
+                        <li><a href="pool.html">Pool Stats</a></li>
+                        <li><a href="https://explorer.retardiochain.com/api/status" target="_blank">API Status</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 RetardioChain. Open source under MIT License.</p>
+                <p>Built with determination.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+
+</html>

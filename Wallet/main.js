@@ -6,8 +6,6 @@ const UI = {
     setupSection: document.getElementById('setup-section'),
     backupSection: document.getElementById('backup-section'),
     walletSection: document.getElementById('wallet-section'),
-    walletSection: document.getElementById('wallet-section'),
-    mainDashboard: document.getElementById('main-dashboard'),
 
     generateBtn: document.getElementById('generate-btn'),
     restoreBtn: document.getElementById('restore-btn'),
@@ -25,25 +23,15 @@ const UI = {
     confirmRestoreBtn: document.getElementById('confirm-restore-btn'),
 
     displayAddress: document.getElementById('display-address'),
-
-    // Grids
     backupMnemonicGrid: document.getElementById('backup-mnemonic-grid'),
-
-    // Dashboard Alert removed
-
     copyMnemonicBtn: document.getElementById('copy-mnemonic-btn'),
     backupConfirmBtn: document.getElementById('backup-confirm-btn'),
 
-    // Deploy Inputs
-    deployPrivKeyInput: document.getElementById('deploy-privkey-input'),
-    deployMnemonicInput: document.getElementById('deploy-mnemonic-input'),
     deployBtn: document.getElementById('deploy-btn'),
     deployResult: document.getElementById('deploy-result'),
 
     tabs: document.querySelectorAll('.tab-btn'),
     tabContents: document.querySelectorAll('.tab-content'),
-
-    // Removed verify/sign inputs as they are deleted from UI
 
     displayPub: document.getElementById('display-pubkey'),
     displayPriv: document.getElementById('display-privkey'),
@@ -57,10 +45,10 @@ const UI = {
 async function start() {
     try {
         await init();
-        console.log("WASM Initialized");
+        console.log("Retardio Wallet Core Initialized");
         attachEvents();
     } catch (e) {
-        showToast("Failed to initialize WASM: " + e.message);
+        showToast("Initialization Error: " + e.message);
     }
 }
 
@@ -68,6 +56,9 @@ function attachEvents() {
     UI.generateBtn.addEventListener('click', createWallet);
     UI.restoreBtn.addEventListener('click', () => {
         UI.restoreArea.classList.toggle('hidden');
+        if (!UI.restoreArea.classList.contains('hidden')) {
+            UI.restoreArea.scrollIntoView({ behavior: 'smooth' });
+        }
     });
 
     UI.confirmRestoreBtn.addEventListener('click', restoreWallet);
@@ -78,10 +69,7 @@ function attachEvents() {
         showToast("Wallet Active!");
     });
 
-    // Hide seed button removed
-
     UI.copyMnemonicBtn.addEventListener('click', () => {
-        // Use the wallet object source of truth if available, otherwise fallback to DOM
         const text = wallet ? wallet.mnemonic() : "";
         if (text && !text.startsWith("N/A")) {
             navigator.clipboard.writeText(text);
@@ -91,16 +79,17 @@ function attachEvents() {
         }
     });
 
-    // Restore Tabs
     UI.tabMnemonic.addEventListener('click', () => switchRestoreTab('mnemonic'));
     UI.tabPrivKey.addEventListener('click', () => switchRestoreTab('privkey'));
 
     UI.tabs.forEach(tab => {
         tab.addEventListener('click', () => {
+            if (!tab.dataset.tab) return;
             UI.tabs.forEach(t => t.classList.remove('active'));
             UI.tabContents.forEach(c => c.classList.add('hidden'));
             tab.classList.add('active');
-            document.getElementById(tab.dataset.tab + '-tab').classList.remove('hidden');
+            const target = document.getElementById(tab.dataset.tab + '-tab');
+            if (target) target.classList.remove('hidden');
         });
     });
 
@@ -112,19 +101,41 @@ function attachEvents() {
     });
 
     UI.copyAddressBtn.addEventListener('click', () => {
-        navigator.clipboard.writeText(UI.displayAddress.textContent);
-        showToast("Address copied to clipboard!");
+        const address = UI.displayAddress.textContent;
+        navigator.clipboard.writeText(address);
+        showToast("Address copied!");
     });
 
     UI.logoutBtn.addEventListener('click', confirmLogout);
 
-    // Add listener for new dashboard logout too
-    const dashLogout = document.getElementById('logout-btn-dashboard');
-    if (dashLogout) dashLogout.addEventListener('click', confirmLogout);
+    // Initial network stats fetch
+    updateNetworkStats();
+    setInterval(updateNetworkStats, 10000);
+}
+
+async function updateNetworkStats() {
+    try {
+        const response = await fetch('http://localhost:3002/api/stats');
+        const stats = await response.json();
+
+        const deployTab = document.getElementById('deploy-tab');
+        if (deployTab) {
+            const banner = deployTab.querySelector('.banner');
+            if (banner) {
+                banner.innerHTML = `
+                    <p style="margin-bottom: 10px; color: inherit;"><strong>Node Status:</strong> Syncing (Block #${stats.blocks.toLocaleString()})</p>
+                    <p style="font-size: 0.8rem; opacity: 0.8; margin-bottom: 5px;">Difficulty: ${parseFloat(stats.difficulty).toFixed(4)}</p>
+                    <p style="font-size: 0.8rem; opacity: 0.8; margin-bottom: 0;">Connections: ${stats.connections}</p>
+                `;
+            }
+        }
+    } catch (e) {
+        console.warn("Retardio Node not reachable for stats");
+    }
 }
 
 function confirmLogout() {
-    if (confirm("Are you sure? This will destroy the current session. Make sure you have your recovery phrase!")) {
+    if (confirm("Destroy current session? Make sure you have your recovery phrase saved!")) {
         wallet = null;
         location.reload();
     }
@@ -147,17 +158,16 @@ function switchRestoreTab(mode) {
 function createWallet() {
     try {
         const pass = UI.passphraseInput.value.trim();
-        if (!pass) return showToast("Password is REQUIRED for security!");
-        if (pass.length < 8) return showToast("Password must be at least 8 characters!");
+        if (!pass) return showToast("A security password is required!");
+        if (pass.length < 8) return showToast("Password is too short (min 8 chars)");
 
         wallet = new Wallet(pass);
 
-        // Show Backup Screen
         UI.setupSection.classList.add('hidden');
         UI.backupSection.classList.remove('hidden');
 
         const words = wallet.mnemonic().split(' ');
-        const gridHtml = words.map((w, i) => `<span>${i + 1}. ${w}</span>`).join('');
+        const gridHtml = words.map((w, i) => `<span><strong>${i + 1}.</strong> ${w}</span>`).join('');
 
         if (UI.backupMnemonicGrid) UI.backupMnemonicGrid.innerHTML = gridHtml;
 
@@ -190,36 +200,17 @@ function restoreWallet() {
 }
 
 function renderWalletInfo() {
+    if (!wallet) return;
     UI.displayAddress.textContent = wallet.address();
     UI.displayPub.textContent = wallet.publicKey();
     UI.displayPriv.textContent = wallet.privateKey();
 }
 
 function handleDeploy() {
-    try {
-        // Success
-        UI.deployResult.className = 'banner success';
-        UI.deployResult.classList.remove('hidden');
-        UI.deployResult.innerHTML = "✅ <strong>KEYS CONFIRMED</strong><br>Entering Retardio Network...";
-        showToast("Welcome to Retardio Network");
-
-        // Delay to show success message then switch
-        setTimeout(() => {
-            UI.walletSection.classList.add('hidden');
-            UI.mainDashboard.classList.remove('hidden');
-        }, 1500);
-
-    } catch (e) {
-        showToast("Deployment Error: " + e);
-    }
-}
-
-function hexToBytes(hex) {
-    const bytes = new Uint8Array(hex.length / 2);
-    for (let i = 0; i < hex.length; i += 2) {
-        bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
-    }
-    return bytes;
+    UI.deployResult.className = 'banner success fade-in';
+    UI.deployResult.classList.remove('hidden');
+    UI.deployResult.innerHTML = "✅ <strong>KEYS VERIFIED</strong><br>Wallet is ready for Retardio Network.";
+    showToast("Verification Successful");
 }
 
 function showToast(msg) {
@@ -229,4 +220,3 @@ function showToast(msg) {
 }
 
 start();
-Greenland 

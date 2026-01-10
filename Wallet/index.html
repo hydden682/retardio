@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,35 +7,33 @@
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
-
 <body>
     <div class="bg-animation"></div>
 
     <main class="container fade-in">
         <header>
-            <h1 class="glow-text">RETARDIO WALLET</h1>
-            <p class="subtitle">Secure Storage</p>
+            <h1 class="glow-text">RETARDIO</h1>
+            <p class="subtitle">Secure Node Wallet</p>
         </header>
 
+        <!-- SETUP SECTION -->
         <section id="setup-section" class="card fade-in">
-            <h2>Welcome to the Future</h2>
+            <h2>Welcome to Retardio</h2>
             <p>Generate a new high-security wallet or restore an existing one from a 24-word recovery phrase.</p>
 
             <div class="input-group">
-                <input type="password" id="passphrase-input" placeholder="Required Passphrase (Salt)...">
+                <label>Security Passphrase (Salt)</label>
+                <input type="password" id="passphrase-input" placeholder="Min 8 characters recommended...">
             </div>
 
             <div class="button-group">
-                <button id="generate-btn" class="btn primary">Generate New Wallet</button>
-                <button id="restore-btn" class="btn secondary">Restore Wallet</button>
+                <button id="generate-btn" class="btn primary">Generate New</button>
+                <button id="restore-btn" class="btn secondary">Restore Phrase</button>
             </div>
 
-            <!-- Restore Section -->
-            <div id="restore-input-area" class="hidden slide-down">
+            <div id="restore-input-area" class="hidden slide-down" style="margin-top: 30px;">
                 <div class="tabs">
                     <button class="tab-btn active" id="tab-mnemonic">Mnemonic (24 Words)</button>
                     <button class="tab-btn" id="tab-privkey">Private Key (Hex)</button>
@@ -44,86 +41,98 @@
 
                 <div id="restore-mnemonic-content">
                     <textarea id="mnemonic-input" placeholder="Enter your 24-word recovery phrase..."></textarea>
-                    <input type="password" id="restore-passphrase-input" placeholder="Optional Passphrase (Salt)..."
-                        style="margin-top: 10px;">
+                    <div class="input-group" style="margin-top: 15px;">
+                        <label>Optional Mnemonic Passphrase</label>
+                        <input type="password" id="restore-passphrase-input" placeholder="Salt used during creation...">
+                    </div>
                 </div>
 
                 <div id="restore-privkey-content" class="hidden">
                     <textarea id="privkey-input" placeholder="Enter 64-char Hex Private Key..."></textarea>
                 </div>
 
-                <button id="confirm-restore-btn" class="btn accent">Confirm Recovery</button>
+                <button id="confirm-restore-btn" class="btn accent" style="width: 100%; margin-top: 20px;">Confirm Recovery</button>
             </div>
         </section>
 
-        <!-- Backup Section (Wizard Step 2) -->
+        <!-- BACKUP SECTION -->
         <section id="backup-section" class="card hidden fade-in">
-            <h2>Backup Your Seed</h2>
-            <div class="alert-header">
-                <svg viewBox="0 0 24 24" width="24" height="24">
-                    <path fill="currentColor"
-                        d="M12 2L1 21h22L12 2zm0 3.45L19.15 19H4.85L12 5.45zM11 16h2v2h-2v-2zm0-7h2v5h-2V9z" />
-                </svg>
-                <span>WARNING: SAVE SECURELY!</span>
-            </div>
-            <p class="warning-text">This phrase is the ONLY way to recover your wallet. If you lose it, your funds are
-                gone forever. <strong>Only shown once.</strong></p>
+            <h2 style="color: var(--accent);">Critical Security</h2>
+            <p>Your 24-word recovery phrase is the <strong>only way</strong> to recover your funds. Write it down and keep it offline.</p>
 
             <div id="backup-mnemonic-grid" class="mnemonic-grid"></div>
 
             <div class="button-group">
                 <button id="copy-mnemonic-btn" class="btn secondary">Copy to Clipboard</button>
-                <button id="backup-confirm-btn" class="btn primary">I Saved It - Enter Wallet</button>
+                <button id="backup-confirm-btn" class="btn primary">I've Saved It</button>
             </div>
         </section>
 
+        <!-- WALLET DASHBOARD -->
         <section id="wallet-section" class="card hidden">
             <div class="wallet-header">
-                <div class="status-badge">ACTIVE</div>
-                <h3>My Wallet</h3>
+                <div>
+                    <div class="status-badge">SECURE SESSION</div>
+                    <h3 style="margin-top: 10px; font-family: 'Orbitron', sans-serif;">PROXIMITY WALLET</h3>
+                </div>
+                <div style="text-align: right;">
+                    <span id="balance-display" style="font-size: 1.5rem; color: var(--primary); font-family: 'Orbitron';">0.00 RET</span>
+                </div>
             </div>
 
             <div class="address-box">
                 <label>RETARDIO ADDRESS</label>
                 <div class="copy-field">
                     <span id="display-address" class="mono">...</span>
-                    <button class="copy-btn" id="copy-address">COPY</button>
+                    <button class="copy-btn" id="copy-address">COPY ADDRESS</button>
                 </div>
             </div>
 
-            <!-- Seed reveal area removed from dashboard -->
-            <!-- Seed reveal area removed from dashboard -->
-
             <div class="tabs">
-                <button class="tab-btn active" data-tab="keys">Save This Information</button>
-                <button class="tab-btn" data-tab="deploy">Verify & Deploy</button>
+                <button class="tab-btn active" data-tab="keys">Security Info</button>
+                <button class="tab-btn" data-tab="transact">Send / Receive</button>
+                <button class="tab-btn" data-tab="deploy">Network Status</button>
             </div>
 
+            <!-- Keys Tab -->
             <div class="tab-content" id="keys-tab">
                 <div class="key-item">
                     <label>Public Key (secp256k1)</label>
                     <code id="display-pubkey">...</code>
                 </div>
                 <div class="key-item">
-                    <label>Private Key (Entropy)</label>
+                    <label>Private Key (Encrypted)</label>
                     <div class="row-flex">
                         <code id="display-privkey" class="blur">...</code>
                         <button id="reveal-privBtn" class="small-btn">REVEAL</button>
                     </div>
                 </div>
-                <div class="input-group" style="margin-top: 20px;">
-                    <label>Internal Message (For Verification)</label>
-                    <input type="text" id="internal_message" value="RETARDIO_GENESIS_BLOCK_INIT" readonly>
-                </div>
             </div>
 
+            <!-- Transact Tab -->
+            <div class="tab-content hidden" id="transact-tab">
+                <div class="input-group">
+                    <label>Recipient Address</label>
+                    <input type="text" id="send-address" placeholder="F...">
+                </div>
+                <div class="input-group">
+                    <label>Amount (RET)</label>
+                    <input type="number" id="send-amount" placeholder="0.00">
+                </div>
+                <button class="btn accent" style="width: 100%;">Sign & Send Transaction</button>
+            </div>
+
+            <!-- Network/Deploy Tab -->
             <div class="tab-content hidden" id="deploy-tab">
-                <p>To deploy your wallet to the chain, you must verify that you have saved your keys.</p>
-                <button id="deploy-btn" class="btn primary full">I understand and have saved my keys</button>
+                <div class="banner success" style="margin-top: 0;">
+                    <p style="margin-bottom: 10px; color: inherit;"><strong>Node Status:</strong> Local Syncing...</p>
+                    <p style="font-size: 0.8rem; opacity: 0.8; margin-bottom: 0;">Wallet is fully derivation-consistent with Genesis Block 0.</p>
+                </div>
+                <button id="deploy-btn" class="btn secondary" style="width: 100%; margin-top: 20px;">Force Re-broadcast Init</button>
                 <div id="deploy-result" class="hidden banner"></div>
             </div>
 
-            <button id="logout-btn" class="btn danger outline">Destroy Local Session</button>
+            <button id="logout-btn" class="btn danger" style="width: 100%; margin-top: 40px; border: none;">Destroy Session</button>
         </section>
     </main>
 
@@ -131,5 +140,4 @@
 
     <script type="module" src="main.js"></script>
 </body>
-
 </html>
